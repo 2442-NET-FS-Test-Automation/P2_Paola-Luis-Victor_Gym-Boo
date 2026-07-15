@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Scalar.AspNetCore;
+
 
 var builder = WebApplication.CreateBuilder();
 
@@ -13,14 +13,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "v1");
-    });
-
+    app.MapScalarApiReference();
 }
 
-app.MapGet("/", () => "Hello world!");
+app.MapGet("/", () => Results.Redirect("Scalar/#tag/gym-boocontrollers"));
 
 app.Run();
