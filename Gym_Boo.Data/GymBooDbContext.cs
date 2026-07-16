@@ -8,14 +8,16 @@ public class GymBooDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Admin> Admins { get; set; }
-    public DbSet<Member> Members { get; set; }
-    public DbSet<Instructor> Instructors { get; set; }
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<Member> Members => Set<Member>();
+    public DbSet<Instructor> Instructors => Set<Instructor>();
+
+    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
+    public DbSet<MemberSubscription> MemberSubscriptions => Set<MemberSubscription>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
 
         // Inheritance config TPH (Table-Per-Hierarchy)
         modelBuilder.Entity<User>()
@@ -28,11 +30,37 @@ public class GymBooDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Lastname).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
             entity.Property(e => e.PasswordHash).IsRequired();
 
             entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<SubscriptionPlan>(entity =>
+        {
+            entity.HasKey(sp => sp.Id);
+            entity.Property(sp => sp.Name).IsRequired().HasMaxLength(100);
+            entity.Property(sp => sp.Price).HasPrecision(18, 2);
+            entity.Property(sp => sp.Recurrence).IsRequired();
+        });
+
+        modelBuilder.Entity<MemberSubscription>(entity =>
+        {
+            entity.HasKey(ms => ms.Id);
+            entity.Property(ms => ms.StartDate).IsRequired();
+            entity.Property(ms => ms.ExpirationDate).IsRequired();
+
+            
+            entity.HasOne(ms => ms.Plan)
+                .WithMany(p => p.MemberSubscriptions)
+                .HasForeignKey(ms => ms.PlanId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(ms => ms.Member)
+                .WithOne(m => m.MemberSubscription)
+                .HasForeignKey<MemberSubscription>(ms => ms.MemberId) 
+                .OnDelete(DeleteBehavior.Cascade); 
         });
     }
 }
