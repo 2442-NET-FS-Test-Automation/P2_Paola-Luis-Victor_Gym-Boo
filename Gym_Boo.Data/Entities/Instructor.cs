@@ -2,5 +2,5 @@ namespace GymBoo.Data.Entities;
 
 public class Instructor : User
 {
-    // Instructor specific properties here
+    public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 }
