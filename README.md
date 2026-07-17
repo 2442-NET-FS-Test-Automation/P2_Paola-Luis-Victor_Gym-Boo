@@ -1,5 +1,5 @@
 # 👻 GymBoo Fullstack Application
-> *A description here*
+GymBoo is a full-stack web application designed to simplify gym management by connecting members, instructors, and administrators. Members can use the platform to create an account, browse scheduled classes using specific filters, book available spots, and leave ratings for instructors. Instructors get their own dashboard to manage class templates, set their own availability, and view a digital list of registered members for roll call. Administrators have full control to manage the gym's sports catalog, register or disable instructors, and view business reports that track metrics like class popularity, peak hours, and total revenue.
 
 ## 1. Project Overview
 
