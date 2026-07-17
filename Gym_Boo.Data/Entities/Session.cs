@@ -7,6 +7,8 @@ public class Session
     public DateTime End { get; set; }
     public int Slots { get; set; } 
 
+    public decimal CancellationFee { get; set; }
+
     public int ClassId { get; set; }
     public Class Class { get; set; } = null!;
 

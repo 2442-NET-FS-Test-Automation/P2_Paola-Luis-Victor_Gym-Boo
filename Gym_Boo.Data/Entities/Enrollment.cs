@@ -16,6 +16,7 @@ public class Enrollment
     public EnrollmentStatus Status { get; set; } = EnrollmentStatus.Enrolled;
     public bool CancellationFeeApplied { get; set; } = false;
 
-    // Relation with review pending
-    
+    // Relation with review - multiple reviews are possible for one enrollment
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
 }

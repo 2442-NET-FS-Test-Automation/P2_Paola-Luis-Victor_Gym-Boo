@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GymBoo.Data.Enums;
 
 namespace GymBoo.Data.Entities;
 
@@ -12,6 +13,8 @@ public class Review
     public int SessionId { get; set; }
     public Session Session { get; set; } = null!;
 
+    public ReviewType ReviewType { get; set; }
+    
     [Range(1, 5)]
     public int Rating { get; set; }
     public string Comment { get; set; } = string.Empty;

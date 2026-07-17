@@ -8,20 +8,29 @@ public class GymBooDbContext : DbContext
     {
     }
 
+    // --- USER HIERARCHY ---
     public DbSet<User> Users => Set<User>();
     public DbSet<Admin> Admins => Set<Admin>();
     public DbSet<Member> Members => Set<Member>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
 
+    // --- MEMBER'S PLANS AND SUBSCRIPTIONS  ---
     public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
     public DbSet<MemberSubscription> MemberSubscriptions => Set<MemberSubscription>();
 
+    // --- CLASSES/SESSIONS/ENROLLMENT OPERATIONS ---
     public DbSet<Place> Places => Set<Place>();
     public DbSet<Class> Classes => Set<Class>();
     public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+
+    // --- FOR SPECIFIC FEATURES ---
+    public DbSet<Review> Reviews { get; set; }
+    public DbSet<Availability> Availabilities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // --- Configuring data with Fluent API ---
 
         // Inheritance config TPH (Table-Per-Hierarchy)
         modelBuilder.Entity<User>()
@@ -91,6 +100,7 @@ public class GymBooDbContext : DbContext
             entity.Property(l => l.Start).IsRequired();
             entity.Property(l => l.End).IsRequired();
             entity.Property(l => l.Slots).IsRequired();
+            entity.Property(l => l.CancellationFee).IsRequired().HasPrecision(18,2);
 
             entity.HasOne(l => l.Class)
                 .WithMany(c => c.Sessions)
@@ -106,6 +116,49 @@ public class GymBooDbContext : DbContext
                 .WithMany(p => p.Sessions)
                 .HasForeignKey(s => s.PlaceId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Enrollment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Status).HasConversion<string>();
+
+            entity.HasOne(e => e.Member)
+                .WithMany(m => m.Enrollments)
+                .HasForeignKey(e => e.MemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Session)
+                .WithMany(s => s.Enrollments)
+                .HasForeignKey(e => e.SessionId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Comment).HasMaxLength(1000);
+            entity.Property(r => r.ReviewType).HasConversion<string>().IsRequired();
+
+            entity.HasOne(r => r.Enrollment)
+                .WithMany(e => e.Reviews)
+                .HasForeignKey(r => r.EnrollmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.Session)
+                .WithMany(s => s.Reviews)
+                .HasForeignKey(r => r.SessionId)
+                .OnDelete(DeleteBehavior.NoAction); // Solves cascade deletion on multiple paths for SQL Server
+        });
+
+        modelBuilder.Entity<Availability>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+
+            entity.HasOne(a => a.Instructor)
+                .WithMany(i => i.Availabilities)
+                .HasForeignKey(a => a.InstructorId)
+                .OnDelete(DeleteBehavior.Cascade); //ON deleting instructor, also its availability
         });
     }
 }
