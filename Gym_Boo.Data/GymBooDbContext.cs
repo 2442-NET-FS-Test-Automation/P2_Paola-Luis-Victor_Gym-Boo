@@ -18,7 +18,7 @@ public class GymBooDbContext : DbContext
 
     public DbSet<Place> Places => Set<Place>();
     public DbSet<Class> Classes => Set<Class>();
-    public DbSet<Lesson> Lessons => Set<Lesson>();
+    public DbSet<Session> Sessions => Set<Session>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,9 +36,13 @@ public class GymBooDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.PasswordHash).IsRequired();
 
             entity.HasIndex(e => e.Email).IsUnique();
+
+            //Global filter, EF will exclude inactive users automatically
+            entity.HasQueryFilter(u => u.IsActive);
         });
 
         modelBuilder.Entity<SubscriptionPlan>(entity =>
@@ -79,15 +83,9 @@ public class GymBooDbContext : DbContext
             entity.HasKey(c => c.Id);
             entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
             entity.Property(c => c.Description).HasMaxLength(500);
-            entity.Property(c => c.DurationInMinutes).IsRequired();
-
-            entity.HasOne(c => c.Place)
-                .WithMany(p => p.Classes)
-                .HasForeignKey(c => c.PlaceId)
-                .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<Lesson>(entity =>
+        modelBuilder.Entity<Session>(entity =>
         {
             entity.HasKey(l => l.Id);
             entity.Property(l => l.Start).IsRequired();
@@ -95,13 +93,18 @@ public class GymBooDbContext : DbContext
             entity.Property(l => l.Slots).IsRequired();
 
             entity.HasOne(l => l.Class)
-                .WithMany(c => c.Lessons)
+                .WithMany(c => c.Sessions)
                 .HasForeignKey(l => l.ClassId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(l => l.Instructor)
-                .WithMany(i => i.Lessons)
+                .WithMany(i => i.Sessions)
                 .HasForeignKey(l => l.InstructorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(s => s.Place)
+                .WithMany(p => p.Sessions)
+                .HasForeignKey(s => s.PlaceId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
