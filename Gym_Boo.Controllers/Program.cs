@@ -49,7 +49,8 @@ try
 
     app.Run();
 }
-catch (Exception e)
+// FIX: Filtrar la excepción de aborto del host para que las herramientas de EF Core funcionen correctamente
+catch (Exception e) when (e.GetType().Name != "HostAbortedException")
 {
     Log.Fatal("The application terminated unexpectedly during startup: \n Message: {Message}", e.Message);
 }
