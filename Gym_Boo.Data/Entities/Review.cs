@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using GymBoo.Data.Enums;
 
-namespace GymBoo.Data.Entities;
+namespace Gym_Boo.Data.Entities;
 
 public class Review
 {

@@ -1,6 +1,6 @@
 using GymBoo.Data.Enums;
 
-namespace GymBoo.Data.Entities;
+namespace Gym_Boo.Data.Entities;
 
 public class User
 {

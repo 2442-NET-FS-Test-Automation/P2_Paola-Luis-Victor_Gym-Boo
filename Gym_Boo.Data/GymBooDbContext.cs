@@ -1,5 +1,5 @@
+using Gym_Boo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using GymBoo.Data.Entities;
 using GymBoo.Data.Enums;
 using Microsoft.AspNetCore.Identity;
 

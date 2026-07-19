@@ -1,4 +1,4 @@
-using GymBoo.Data.Entities;
+using Gym_Boo.Data.Entities;
 using GymBoo.Data.Repositories;
 
 namespace GymBoo.ControllerApi.Services;
