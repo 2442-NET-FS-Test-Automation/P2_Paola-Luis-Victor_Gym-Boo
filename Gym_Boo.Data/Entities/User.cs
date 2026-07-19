@@ -2,7 +2,7 @@ using GymBoo.Data.Enums;
 
 namespace GymBoo.Data.Entities;
 
-public abstract class User
+public class User
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
