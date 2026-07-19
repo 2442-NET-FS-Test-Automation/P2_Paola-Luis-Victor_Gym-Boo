@@ -20,6 +20,7 @@ public class GymBooDbContext : DbContext
 
     // --- CLASSES/SESSIONS/ENROLLMENT OPERATIONS ---
     public DbSet<Place> Places => Set<Place>();
+    public DbSet<Discipline> Disciplines => Set<Discipline>();
     public DbSet<Class> Classes => Set<Class>();
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
@@ -80,6 +81,17 @@ public class GymBooDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<Discipline>(
+            entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(30);
+            entity.Property(p => p.Available).IsRequired().HasDefaultValue(true);
+
+            entity.HasQueryFilter(d => d.Available);
+        });
+
+
         modelBuilder.Entity<Place>(entity =>
         {
             entity.HasKey(p => p.Id);
@@ -92,24 +104,29 @@ public class GymBooDbContext : DbContext
             entity.HasKey(c => c.Id);
             entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
             entity.Property(c => c.Description).HasMaxLength(500);
+
+            entity.HasOne(c => c.Discipline)
+            .WithMany(d => d.Classes)
+            .HasForeignKey(c => c.DisciplineId)
+            .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Session>(entity =>
         {
-            entity.HasKey(l => l.Id);
-            entity.Property(l => l.Start).IsRequired();
-            entity.Property(l => l.End).IsRequired();
-            entity.Property(l => l.Slots).IsRequired();
-            entity.Property(l => l.CancellationFee).IsRequired().HasPrecision(18,2);
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Start).IsRequired();
+            entity.Property(s => s.End).IsRequired();
+            entity.Property(s => s.Slots).IsRequired();
+            entity.Property(s => s.CancellationFee).IsRequired().HasPrecision(18,2);
 
-            entity.HasOne(l => l.Class)
-                .WithMany(c => c.Sessions)
-                .HasForeignKey(l => l.ClassId)
+            entity.HasOne(s => s.Class)
+                .WithMany(s => s.Sessions)
+                .HasForeignKey(s => s.ClassId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(l => l.Instructor)
-                .WithMany(i => i.Sessions)
-                .HasForeignKey(l => l.InstructorId)
+            entity.HasOne(s => s.Instructor)
+                .WithMany(s => s.Sessions)
+                .HasForeignKey(s => s.InstructorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(s => s.Place)
