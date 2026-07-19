@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Gymboo.Api.Extensions;
+using GymBoo.Api.Extensions;
 using Serilog;
 using Scalar.AspNetCore;
 
