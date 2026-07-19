@@ -12,36 +12,49 @@ public class SessionRepository : ISessionRepository
         _context = context;
     }
 
-    public Task AddAsync(Session session)
+    public async Task AddAsync(Session session)
     {
-        throw new NotImplementedException();
+        await _context.Sessions.AddAsync(session);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var session = await _context.Sessions.FindAsync(id);
+
+        if (session is null)
+            return false;
+
+        _context.Sessions.Remove(session);
+
+        return true;
     }
 
     public async Task<IReadOnlyList<Session>> GetAllAsync()
     {
-        return await _context.Sessions.ToListAsync();
+        return await _context.Sessions
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<IReadOnlyList<Session>> GetAllOnNextAsync()
     {
         return await SessionsWithClass()
-        .Where(s => s.Start > DateTime.UtcNow)
-        .ToListAsync();
+            .AsNoTracking()
+            .Where(s => s.Start > DateTime.UtcNow)
+            .ToListAsync();
     }
 
-    public Task<Session?> GetByIdAsync(int id)
+    public async Task<Session?> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Sessions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public Task UpdateAsync(Session session)
     {
-        throw new NotImplementedException();
+        _context.Sessions.Update(session);
+        return Task.CompletedTask;
     }
 
 

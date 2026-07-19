@@ -1,7 +1,7 @@
 using GymBoo.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gymboo.Api.Extensions;
+namespace GymBoo.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
