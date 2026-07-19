@@ -380,3 +380,42 @@ Displays:
 - Total late cancellation penalties
 
 </details>
+
+## 2. Architecture & Design
+
+This section provides an overview of the application's architecture, database design, and user interface prototype.
+
+---
+
+## 📊 Class Diagram
+
+The following diagram illustrates the main domain entities and their relationships.
+
+<p align="center">
+  <img src="README.assets/class-diagram-GymBoo.png" alt="Class Diagram" width="900">
+</p>
+
+---
+
+## 🗄️ Database Relational Schema
+
+The relational database schema used by the application.
+
+<p align="center">
+  <img src="README.assets/schema-GymBooDb.png" alt="Database Relational Schema" width="900">
+</p>
+
+---
+
+## 🎨 UI Prototype (Figma)
+
+The following image shows the high-fidelity prototype designed in Figma.
+
+<p align="center">
+  <img src="README.assets/screen-GymBoo.png" alt="Figma Prototype" width="900">
+</p>
+
+### 🔗 Interactive Prototype
+
+> **Figma Prototype:**  
+> https://crave-split-68372088.figma.site/
