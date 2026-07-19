@@ -1,3 +1,4 @@
+using GymBoo.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gymboo.Api.Extensions;
@@ -45,10 +46,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        // services.AddScoped<IFulfillmentService, FulfillmentService>();
-        // services.AddScoped<OrderFactory>();
-        // services.AddScoped<BurstPlanner>();
-        // services.AddScoped<ISeeder, Seeder>();
+        services.AddScoped<ISessionRepository, SessionRepository>();
 
         return services;
     }
