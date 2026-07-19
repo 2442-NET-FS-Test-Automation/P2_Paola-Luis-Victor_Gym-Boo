@@ -11,4 +11,5 @@ public interface ISessionRepository
     Task AddAsync(Session session);
     Task UpdateAsync(Session session);
     Task<bool> DeleteAsync(int id);
+    Task<IReadOnlyList<Session>> GetAvailableClassesAsync(string? discipline, DateTime? date);
 }

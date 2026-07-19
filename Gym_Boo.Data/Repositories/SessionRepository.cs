@@ -44,6 +44,11 @@ public class SessionRepository : ISessionRepository
             .ToListAsync();
     }
 
+    public async Task<IReadOnlyList<Session>> GetAvailableClassesAsync(string? discipline, DateTime? date)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Session?> GetByIdAsync(int id)
     {
         return await _context.Sessions
