@@ -1,4 +1,4 @@
-namespace GymBoo.Data.Enums;
+namespace Gym_Boo.Data.Enums;
 
 public enum Role
 {

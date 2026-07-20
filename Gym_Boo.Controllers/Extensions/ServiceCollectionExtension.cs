@@ -1,7 +1,8 @@
-using GymBoo.Data.Repositories;
+using Gym_Boo.ControllerApi.Services;
+using Gym_Boo.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace GymBoo.ControllerApi.Extensions;
+namespace Gym_Boo.ControllerApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -47,6 +48,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ISessionRepository, SessionRepository>();
+        services.AddScoped<ISessionService, SessionService>();
 
         return services;
     }

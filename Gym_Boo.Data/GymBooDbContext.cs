@@ -1,6 +1,6 @@
 using Gym_Boo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using GymBoo.Data.Enums;
+using Gym_Boo.Data.Enums;
 using Microsoft.AspNetCore.Identity;
 
 public class GymBooDbContext : DbContext
@@ -37,7 +37,6 @@ public class GymBooDbContext : DbContext
         // Inheritance config TPH (Table-Per-Hierarchy)
         modelBuilder.Entity<User>()
             .HasDiscriminator<Role>("Role") // Use 'Role' column for distinct them
-            .HasValue<Admin>(Role.Admin)
             .HasValue<Member>(Role.Member)
             .HasValue<Instructor>(Role.Instructor);
 

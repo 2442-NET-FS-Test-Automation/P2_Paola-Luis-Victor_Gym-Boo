@@ -1,7 +1,8 @@
 using Gym_Boo.Data.Entities;
+using Gym_Boo.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace GymBoo.Data.Repositories;
+namespace Gym_Boo.Data.Repositories;
 
 public class SessionRepository : ISessionRepository
 {
@@ -47,7 +48,24 @@ public class SessionRepository : ISessionRepository
 
     public async Task<IReadOnlyList<Session>> GetAvailableClassesAsync(string? discipline, DateTime? date)
     {
-        throw new NotImplementedException();
+        var query = _context.Sessions
+        .Include(s => s.Class)
+        .Include(s => s.Instructor)
+        .Include(s => s.Enrollments)
+        .AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(discipline))
+        {
+            query = query.Where(s => s.Class.Discipline.Name.ToLower() == discipline.ToLower());
+        }
+
+        if (date.HasValue)
+        {
+            var targetDate = date.Value.Date;
+            query = query.Where(s => s.Start.Date == targetDate);
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<Session?> GetByIdAsync(int id)

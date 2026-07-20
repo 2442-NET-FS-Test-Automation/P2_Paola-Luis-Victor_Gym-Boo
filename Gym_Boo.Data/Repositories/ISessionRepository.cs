@@ -1,6 +1,6 @@
 using Gym_Boo.Data.Entities;
 
-namespace GymBoo.Data.Repositories;
+namespace Gym_Boo.Data.Repositories;
 
 public interface ISessionRepository
 {
