@@ -177,5 +177,233 @@ public class GymBooDbContext : DbContext
                 .HasForeignKey(a => a.InstructorId)
                 .OnDelete(DeleteBehavior.Cascade); //ON deleting instructor, also its availability
         });
+
+
+        // --- SEEDING DATA ---
+
+        // Hash estático precalculado de "Password123!" usando PasswordHasher<User>
+        const string DEFAULT_PASSWORD_HASH = "AQAAAAIAAYagAAAAEBX4M2T5G6b9zQ8J7y/1v8K9R0P1Q2R3S4T5U6V7W8X9Y0Z==";
+
+        // 1. USUARIOS (TPH)
+        var adminUser = new User
+        {
+            Id = 1,
+            Name = "Juan",
+            LastName = "Admin",
+            Email = "admin@gymboo.com",
+            PasswordHash = DEFAULT_PASSWORD_HASH,
+            Role = Role.Admin,
+            IsActive = true
+        };
+
+        var instructor1 = new Instructor
+        {
+            Id = 2,
+            Name = "Carlos",
+            LastName = "Mendoza",
+            Email = "carlos.mendoza@gymboo.com",
+            PasswordHash = DEFAULT_PASSWORD_HASH,
+            Role = Role.Instructor,
+            IsActive = true
+        };
+
+        var instructor2 = new Instructor
+        {
+            Id = 3,
+            Name = "Valeria",
+            LastName = "Ríos",
+            Email = "valeria.rios@gymboo.com",
+            PasswordHash = DEFAULT_PASSWORD_HASH,
+            Role = Role.Instructor,
+            IsActive = true
+        };
+
+        var member1 = new Member
+        {
+            Id = 4,
+            Name = "Sofía",
+            LastName = "Gómez",
+            Email = "sofia.gomez@gmail.com",
+            PasswordHash = DEFAULT_PASSWORD_HASH,
+            Role = Role.Member,
+            IsActive = true
+        };
+
+        var member2 = new Member
+        {
+            Id = 5,
+            Name = "Diego",
+            LastName = "Torres",
+            Email = "diego.torres@gmail.com",
+            PasswordHash = DEFAULT_PASSWORD_HASH,
+            Role = Role.Member,
+            IsActive = true
+        };
+
+        modelBuilder.Entity<User>().HasData(adminUser);
+        modelBuilder.Entity<Instructor>().HasData(instructor1, instructor2);
+        modelBuilder.Entity<Member>().HasData(member1, member2);
+
+        // 2. DISPONIBILIDADES DE INSTRUCTORES
+        modelBuilder.Entity<Availability>().HasData(
+            new Availability
+            {
+                Id = 1,
+                InstructorId = 2, // Carlos Mendoza
+                DayOfWeek = DayOfWeek.Monday,
+                StartTime = new TimeSpan(7, 0, 0),
+                EndTime = new TimeSpan(12, 0, 0)
+            },
+            new Availability
+            {
+                Id = 2,
+                InstructorId = 3, // Valeria Ríos
+                DayOfWeek = DayOfWeek.Wednesday,
+                StartTime = new TimeSpan(16, 0, 0),
+                EndTime = new TimeSpan(20, 0, 0)
+            }
+        );
+
+        // 3. PLANES Y SUSCRIPCIONES
+        var monthlyPlan = new SubscriptionPlan
+        {
+            Id = 1,
+            Name = "Plan Mensual Estándar",
+            Price = 799.00m,
+            Recurrence = Recurrence.Monthly
+        };
+
+        var yearlyPlan = new SubscriptionPlan
+        {
+            Id = 2,
+            Name = "Plan Anual VIP",
+            Price = 7999.00m,
+            Recurrence = Recurrence.Yearly
+        };
+
+        modelBuilder.Entity<SubscriptionPlan>().HasData(monthlyPlan, yearlyPlan);
+
+        modelBuilder.Entity<MemberSubscription>().HasData(
+            new MemberSubscription
+            {
+                Id = 1,
+                MemberId = 4, // Sofía Gómez
+                PlanId = 1,   // Mensual
+                StartDate = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                ExpirationDate = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new MemberSubscription
+            {
+                Id = 2,
+                MemberId = 5, // Diego Torres
+                PlanId = 2,   // Anual
+                StartDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                ExpirationDate = new DateTime(2027, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
+
+        // 4. LUGARES (PLACES)
+        var mainHall = new Place { Id = 1, Name = "Salón Principal", MaxCapacity = 25 };
+        var yogaStudio = new Place { Id = 2, Name = "Estudio Mind & Body", MaxCapacity = 15 };
+
+        modelBuilder.Entity<Place>().HasData(mainHall, yogaStudio);
+
+        // 5. DISCIPLINAS Y CLASES
+        var crossfitDisc = new Discipline { Id = 1, Name = "CrossFit", Available = true };
+        var yogaDisc = new Discipline { Id = 2, Name = "Yoga", Available = true };
+
+        modelBuilder.Entity<Discipline>().HasData(crossfitDisc, yogaDisc);
+
+        var crossfitBasic = new Class
+        {
+            Id = 1,
+            Name = "CrossFit WOD Principiantes",
+            Description = "Entrenamiento funcional de alta intensidad adaptado a nivel inicial.",
+            DisciplineId = 1
+        };
+
+        var vinyasaYoga = new Class
+        {
+            Id = 2,
+            Name = "Vinyasa Flow Yoga",
+            Description = "Secuencia dinámica de posturas coordinadas con la respiración.",
+            DisciplineId = 2
+        };
+
+        modelBuilder.Entity<Class>().HasData(crossfitBasic, vinyasaYoga);
+
+        // 6. SESIONES
+        var session1 = new Session
+        {
+            Id = 1,
+            ClassId = 1,
+            InstructorId = 2, // Carlos
+            PlaceId = 1,      // Salón Principal
+            Start = new DateTime(2026, 7, 21, 8, 0, 0, DateTimeKind.Utc),
+            End = new DateTime(2026, 7, 21, 9, 0, 0, DateTimeKind.Utc),
+            Slots = 20,
+            CancellationFee = 50.00m
+        };
+
+        var session2 = new Session
+        {
+            Id = 2,
+            ClassId = 2,
+            InstructorId = 3, // Valeria
+            PlaceId = 2,      // Estudio Mind & Body
+            Start = new DateTime(2026, 7, 22, 17, 0, 0, DateTimeKind.Utc),
+            End = new DateTime(2026, 7, 22, 18, 0, 0, DateTimeKind.Utc),
+            Slots = 12,
+            CancellationFee = 35.00m
+        };
+
+        modelBuilder.Entity<Session>().HasData(session1, session2);
+
+        // 7. INSCRIPCIONES (ENROLLMENTS)
+        var enrollment1 = new Enrollment
+        {
+            Id = 1,
+            MemberId = 4, // Sofía
+            SessionId = 1,
+            EnrollmentDateTime = new DateTime(2026, 7, 20, 10, 30, 0, DateTimeKind.Utc),
+            Status = EnrollmentStatus.Enrolled,
+            CancellationFeeApplied = false
+        };
+
+        var enrollment2 = new Enrollment
+        {
+            Id = 2,
+            MemberId = 5, // Diego
+            SessionId = 2,
+            EnrollmentDateTime = new DateTime(2026, 7, 20, 11, 15, 0, DateTimeKind.Utc),
+            Status = EnrollmentStatus.Enrolled,
+            CancellationFeeApplied = false
+        };
+
+        modelBuilder.Entity<Enrollment>().HasData(enrollment1, enrollment2);
+
+        // 8. RESEÑAS
+        modelBuilder.Entity<Review>().HasData(
+            new Review
+            {
+                Id = 1,
+                EnrollmentId = 1,
+                SessionId = 1,
+                ReviewType = ReviewType.Class,
+                Rating = 5,
+                Comment = "Excelente clase de CrossFit, muy dinámica y bien guiada.",
+                CreatedAt = new DateTime(2026, 7, 21, 9, 15, 0, DateTimeKind.Utc)
+            },
+            new Review
+            {
+                Id = 2,
+                EnrollmentId = 2,
+                SessionId = 2,
+                ReviewType = ReviewType.Instructor,
+                Rating = 5,
+                Comment = "Valeria explica los movimientos con mucha paciencia.",
+                CreatedAt = new DateTime(2026, 7, 22, 18, 10, 0, DateTimeKind.Utc)
+            }
+        );
     }
 }
