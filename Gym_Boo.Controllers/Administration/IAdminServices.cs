@@ -1,16 +1,20 @@
-﻿namespace Gym_Boo.Controllers.Administration;
+﻿using Gym_Boo.Data.Entities;
+
+namespace Gym_Boo.Controllers.Administration;
 
 public interface IAdminServices
 {
     //Discipline related functions
-    Task newDiscipline(string discipline);
-    Task deleteDiscipline(string discipline);
-    Task updateDiscipline(string discipline);
+    Task<bool> NewDisciplineAsync(string discipline);
+    Task<bool> DeleteDiscipline(string discipline);
+    Task<bool> DisableDiscipline(int id);
+    Task<bool> UpdateDiscipline(int id, string newName);
     
     //Instructor related functions
-    Task newInstructor(string instructor);
-    Task deleteInstructor(string instructor);
-    Task updateInstructor(string instructor);
+    Task GetInstructor(int id);
+    Task<bool> NewInstructor(User newInstructor);
+    Task<bool> DeleteInstructor(int id);
+    Task<bool> UpdateInstructor(User instructor);
     
     //Revenue Related functions
     Task MostPopularClass();
