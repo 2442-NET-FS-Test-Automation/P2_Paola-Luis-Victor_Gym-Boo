@@ -39,6 +39,7 @@ public class SessionRepository : ISessionRepository
     public async Task<IReadOnlyList<Session>> GetAllOnNextAsync()
     {
         return await SessionsWithClass()
+
             .AsNoTracking()
             .Where(s => s.Start > DateTime.UtcNow)
             .ToListAsync();
@@ -65,6 +66,6 @@ public class SessionRepository : ISessionRepository
 
     private IQueryable<Session> SessionsWithClass()
     {
-        return _context.Sessions.Include(s => s.Class);
+        return _context.Sessions.Include(s => s.Class).Include(s => s.Instructor);
     }
 }
