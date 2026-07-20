@@ -11,7 +11,6 @@ public class GymBooDbContext : DbContext
 
     // --- USER HIERARCHY ---
     public DbSet<User> Users => Set<User>();
-    public DbSet<Admin> Admins => Set<Admin>();
     public DbSet<Member> Members => Set<Member>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
 
@@ -36,7 +35,8 @@ public class GymBooDbContext : DbContext
 
         // Inheritance config TPH (Table-Per-Hierarchy)
         modelBuilder.Entity<User>()
-            .HasDiscriminator<Role>("Role") // Use 'Role' column for distinct them
+            .HasDiscriminator<Role>("Role")
+            .HasValue<User>(Role.Admin) // Use 'Role' column for distinct them
             .HasValue<Member>(Role.Member)
             .HasValue<Instructor>(Role.Instructor);
 
@@ -177,19 +177,5 @@ public class GymBooDbContext : DbContext
                 .HasForeignKey(a => a.InstructorId)
                 .OnDelete(DeleteBehavior.Cascade); //ON deleting instructor, also its availability
         });
-
-        var adminUser = new User
-        {
-            Id = 1,
-            Email = "admin@test.com",
-            Name = "Juan",
-            LastName = "Admin",
-            Role = Role.Admin,
-            IsActive = true
-        };
-        
-        var hasher = new PasswordHasher<User>();
-        adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123!");
-        modelBuilder.Entity<User>().HasData(adminUser);
     }
 }

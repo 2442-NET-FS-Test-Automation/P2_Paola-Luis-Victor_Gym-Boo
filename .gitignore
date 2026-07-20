@@ -58,3 +58,5 @@ nunit-*.xml
 
 #Hide credentials
 appsettings.Development.json
+
+Migrations/

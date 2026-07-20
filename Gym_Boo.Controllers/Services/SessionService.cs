@@ -7,9 +7,9 @@ namespace Gym_Boo.ControllerApi.Services;
 
 class SessionService : ISessionService
 {
-    private readonly SessionRepository _repo;
+    private readonly ISessionRepository _repo;
 
-    public SessionService(SessionRepository repo)
+    public SessionService(ISessionRepository repo)
     {
         _repo = repo;
     }
