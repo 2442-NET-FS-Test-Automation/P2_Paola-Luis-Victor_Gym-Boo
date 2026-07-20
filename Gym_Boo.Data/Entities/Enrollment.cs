@@ -1,4 +1,4 @@
-using GymBoo.Data.Enums;
+using Gym_Boo.Data.Enums;
 
 namespace Gym_Boo.Data.Entities;
 
