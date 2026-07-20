@@ -222,7 +222,7 @@ Dashboard includes:
 - Instructor profile
 - Photo
 - Description
-- Average rating
+- Average rating (Based on sessions)
 - Upcoming classes
 
 Only users with the **Instructor** role can access it.

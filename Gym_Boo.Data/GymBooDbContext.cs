@@ -1,6 +1,7 @@
+using Gym_Boo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using GymBoo.Data.Entities;
 using GymBoo.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 
 public class GymBooDbContext : DbContext
 {
@@ -177,5 +178,19 @@ public class GymBooDbContext : DbContext
                 .HasForeignKey(a => a.InstructorId)
                 .OnDelete(DeleteBehavior.Cascade); //ON deleting instructor, also its availability
         });
+
+        var adminUser = new User
+        {
+            Id = 1,
+            Email = "admin@test.com",
+            Name = "Juan",
+            LastName = "Admin",
+            Role = Role.Admin,
+            IsActive = true
+        };
+        
+        var hasher = new PasswordHasher<User>();
+        adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123!");
+        modelBuilder.Entity<User>().HasData(adminUser);
     }
 }

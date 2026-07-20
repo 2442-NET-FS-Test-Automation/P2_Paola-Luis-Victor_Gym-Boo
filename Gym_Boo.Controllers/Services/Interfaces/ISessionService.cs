@@ -1,4 +1,4 @@
-using GymBoo.Data.Entities;
+using Gym_Boo.Data.Entities;
 
 namespace GymBoo.ControllerApi.Services;
 

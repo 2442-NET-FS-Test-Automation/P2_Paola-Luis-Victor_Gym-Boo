@@ -1,8 +1,8 @@
 using GymBoo.Data.Enums;
 
-namespace GymBoo.Data.Entities;
+namespace Gym_Boo.Data.Entities;
 
-public abstract class User
+public class User
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
