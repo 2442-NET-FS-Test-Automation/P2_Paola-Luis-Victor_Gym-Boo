@@ -150,4 +150,9 @@ public class AdminServices : IAdminServices
     {
         throw new NotImplementedException();
     }
+
+    public Task<List<Session>> GetAttendance(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

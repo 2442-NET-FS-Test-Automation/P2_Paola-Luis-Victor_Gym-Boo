@@ -22,4 +22,6 @@ public interface IAdminServices
     Task ReseravtionReports();
     Task ClassRevenue();
     
+    //Class
+    Task <List<Session>> GetAttendance(int id);
 }
