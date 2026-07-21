@@ -197,7 +197,7 @@ If less than 2 hours remain:
 - The possible reviews for a session are based on a Review Type Enum 
 
 ```http
-POST /api/instructors/{id}/reviews
+POST /api/reviews/{reviewType}
 ```
 
 - API validates attendance before saving.
