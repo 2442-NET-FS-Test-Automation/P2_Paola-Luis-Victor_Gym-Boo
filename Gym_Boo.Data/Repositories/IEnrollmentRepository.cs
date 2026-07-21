@@ -7,4 +7,8 @@ public interface IEnrollmentRepository
     Task<bool> MemberHasConflictReservationAsync(int userId, DateTime startTime, DateTime endTime);
 
     Task AddEnrollmentAsync(Enrollment enrollment);
+
+    Task<Enrollment?> GetByIdWithSessionAsync(int enrollmentId);
+
+    Task UpdateAsync(Enrollment enrollment);
 }

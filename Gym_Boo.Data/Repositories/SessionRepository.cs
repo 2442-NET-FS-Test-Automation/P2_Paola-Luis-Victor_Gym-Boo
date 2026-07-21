@@ -1,5 +1,4 @@
 using Gym_Boo.Data.Entities;
-using Gym_Boo.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Data.Repositories;
@@ -50,8 +49,10 @@ public class SessionRepository : ISessionRepository
     {
         var query = _context.Sessions
         .Include(s => s.Class)
+            .ThenInclude(c => c.Discipline)
         .Include(s => s.Instructor)
         .Include(s => s.Enrollments)
+        .Include(s => s.Place)
         .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(discipline))
