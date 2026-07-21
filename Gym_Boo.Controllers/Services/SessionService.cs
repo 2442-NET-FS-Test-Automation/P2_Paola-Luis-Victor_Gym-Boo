@@ -32,7 +32,7 @@ class SessionService : ISessionService
         return sessions.Select(s => new ClassSessionDto(
             Id: s.Id,
             ClassName: s.Class?.Name ?? "No name",
-            Discipline: s.Class?.Discipline.Name ?? "General",
+            Discipline: s.Class?.Discipline?.Name ?? "General",
             InstructorName: s.Instructor.Name + " " + s.Instructor.LastName,
             StartTime: s.Start,
             EndTime: s.End,

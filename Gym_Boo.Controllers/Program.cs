@@ -28,6 +28,7 @@ try
         .Enrich.FromLogContext());
 
     builder.Services.AddOpenApi();
+    builder.Services.AddControllers();
 
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
@@ -44,6 +45,8 @@ try
         app.MapOpenApi();
         app.MapScalarApiReference();
     }
+
+    app.MapControllers();
 
     app.MapGet("/", () => Results.Redirect("Scalar/#tag/gym-boocontrollers"));
 

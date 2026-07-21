@@ -20,19 +20,41 @@ public class ReservationsController : ControllerBase
     {
         try
         {
-            var enrollment = await _reservationService.ReserveClassAsync(dto);
+            var enrollmentDto = await _reservationService.ReserveClassAsync(dto);
 
-            // 201 Created
-            return CreatedAtAction(
-                actionName: "GetById",
-                controllerName: "Reservations",
-                routeValues: new { id = enrollment.Id },
-                value: enrollment
-            );
+            return Created(enrollmentDto.Id.ToString(), enrollmentDto);
+
+            // 201 Created (To use later)
+            // return CreatedAtAction(
+            //     actionName: "GetById",
+            //     controllerName: "Reservations",
+            //     routeValues: new { id = enrollment.Id },
+            //     value: enrollment
+            // );
         }
         catch (InvalidOperationException ex)
         {
-            // 400 Bad Request si fallan las validaciones de negocio (cupo lleno o duplicado)
+            // 400 Bad Request si fallan las validaciones de negocio
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // DELETE /api/reservations/15?userId=3
+    // (OR DELETE /api/reservations/15 obtaining userId from JWT token)
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<CancelReservationResultDto>> Cancel(int id, [FromQuery] int userId)
+    {
+        try
+        {
+            var result = await _reservationService.CancelReservationAsync(id, userId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
             return BadRequest(new { message = ex.Message });
         }
     }
