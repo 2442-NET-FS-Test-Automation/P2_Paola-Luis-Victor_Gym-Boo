@@ -1,5 +1,5 @@
 ﻿using Gym_Boo.Data.Entities;
-using Microsoft.AspNetCore.Identity;
+using Gym_Boo.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Controllers.Instructor;
@@ -7,35 +7,46 @@ namespace Gym_Boo.Controllers.Instructor;
 public class InstructorServices : IInstructorServices
 {
     private readonly GymBooDbContext _db;
-    
+
     public InstructorServices(GymBooDbContext db)
     {
         _db = db;
     }
-    
-    public async Task<User> GetInstructor(string email, string hashed)
-    { 
-        var ans = await _db.Users.FirstOrDefaultAsync(i => i.Email == email && i.PasswordHash == hashed);
-        if (ans == null)
-        {
-            return null;
-        }
-        return ans;
+
+    public async Task<User?> GetInstructor(int id, CancellationToken ct)
+    {
+        return await _db.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id, ct);
     }
 
     public async Task<bool> NewSession(Session session, CancellationToken ct)
     {
-        var check = await _db.Sessions.FirstOrDefaultAsync(i => i.Id == session.Id);
-        if (check != null)
+        if (session.Id != 0 && await _db.Sessions.AnyAsync(s => s.Id == session.Id, ct))
+        {
             return false;
-        
-        await _db.Sessions.AddAsync(session);
+        }
+
+        await _db.Sessions.AddAsync(session, ct);
         await _db.SaveChangesAsync(ct);
         return true;
     }
 
-    public Task<List<User>> Registered(int id)
+    public async Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var subscribers = await _db.Enrollments
+            .AsNoTracking()
+            .Where(e => e.SessionId == id && e.Status == EnrollmentStatus.Enrolled)
+            .Select(e => new SubscriberDto(
+                e.MemberId,
+                e.Member.Email
+            ))
+            .ToListAsync(ct);
+
+        return new SessionAttendanceResponseDto(
+            SessionId: id,
+            TotalEnrolled: subscribers.Count,
+            Subscribers: subscribers
+        );
     }
 }

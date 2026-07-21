@@ -5,10 +5,11 @@ namespace Gym_Boo.Controllers.Instructor;
 public interface IInstructorServices
 {
     //Instructor profile
-    Task<User> GetInstructor(string email, string password);
+    Task<User> GetInstructor(int id, CancellationToken ct);
     
     //Session Manaagement
     Task<bool> NewSession(Session session, CancellationToken ct);
-
-    Task<List<User>> Registered(int id);
+    
+    //Class
+    Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct);
 }

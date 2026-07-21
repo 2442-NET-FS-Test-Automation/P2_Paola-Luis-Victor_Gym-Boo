@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Administration;
 
-// DTOs to replace raw primitives & domain entities
-
-
 [ApiController]
 [Route("api/admin")]
 [Authorize(Roles = "Admin")]
@@ -15,7 +12,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
 {
     // --- DISCIPLINES MANAGEMENT ---
 
-    [HttpPost("disciplines")]
+    [HttpPost("disciplines/create")]
     public async Task<IActionResult> CreateDiscipline([FromBody] DisciplineDto dto, CancellationToken ct)
     {
         var result = await adminServices.NewDisciplineAsync(dto.Name, ct);
@@ -106,16 +103,5 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
             return NotFound($"Instructor with ID {id} not found.");
 
         return Ok(new { message = "Instructor removed successfully." });
-    }
-
-    [HttpGet("reports/{id:int}")]
-    public async Task<IActionResult> GetAssistance(int id, CancellationToken ct)
-    {
-        var result = await adminServices.GetAttendance(id, ct);
-    
-        if (result is null)
-            return NotFound($"Session with ID {id} is empty.");
-
-        return Ok(result);
     }
 }

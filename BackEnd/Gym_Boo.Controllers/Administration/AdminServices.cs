@@ -161,21 +161,5 @@ public class AdminServices : IAdminServices
         throw new NotImplementedException();
     }
 
-    public async Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct)
-    {
-        var subscribers = await _db.Enrollments
-            .Where(e => e.SessionId == id && e.Status == EnrollmentStatus.Enrolled)
-            .Select(e => new SubscriberDto(
-                e.MemberId,
-                e.Member.Email
-            ))
-            .AsNoTracking()
-            .ToListAsync(ct);
 
-        return new SessionAttendanceResponseDto(
-            SessionId: id,
-            TotalEnrolled: subscribers.Count,
-            Subscribers: subscribers
-        );
-    }
 }

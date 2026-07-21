@@ -22,6 +22,4 @@ public interface IAdminServices
     Task ReseravtionReports(CancellationToken ct);
     Task ClassRevenue(CancellationToken ct);
     
-    //Class
-    Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct);
 }
