@@ -13,4 +13,6 @@ public interface IEnrollmentRepository
     Task UpdateAsync(Enrollment enrollment);
 
     Task<IReadOnlyList<Enrollment>> GetByUserIdAsync(int userId);
+
+    Task<bool> EnrollmentHasBeenAttendedAsync(int enrollmentId);
 }

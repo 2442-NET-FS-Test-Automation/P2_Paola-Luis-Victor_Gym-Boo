@@ -18,6 +18,14 @@ public class EnrollmentRepository : IEnrollmentRepository
         await _context.Enrollments.AddAsync(enrollment);
     }
 
+    public async Task<bool> EnrollmentHasBeenAttendedAsync(int enrollmentId)
+    {
+        return await _context.Enrollments
+                .AsNoTracking()
+                .AnyAsync(e => e.Id == enrollmentId
+                && e.Status == EnrollmentStatus.Attended);
+    }
+
     public async Task<Enrollment?> GetByIdWithSessionAsync(int enrollmentId)
     {
         return await _context.Enrollments
