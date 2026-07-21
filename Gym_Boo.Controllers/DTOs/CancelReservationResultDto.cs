@@ -1,8 +1,8 @@
-namespace Gym_Boo.Data.DTOs;
+namespace Gym_Boo.ControllerApi.Dtos;
 
 public record CancelReservationResultDto(
     int EnrollmentId,
     string Status,
     bool HasPenalty,
-    string Message
+    decimal Amount
 );

@@ -2,7 +2,7 @@ namespace Gym_Boo.Data.Enums;
 
 public enum ReviewType
 {
-    Facilities,
-    Class,
-    Instructor
+    Facilities = 1,
+    Class = 2,
+    Instructor = 3
 }

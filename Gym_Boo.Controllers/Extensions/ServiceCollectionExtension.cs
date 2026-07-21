@@ -49,6 +49,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<ISessionService, SessionService>();
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+        services.AddScoped<IReservationService, ReservationService>();
+        services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         return services;
     }

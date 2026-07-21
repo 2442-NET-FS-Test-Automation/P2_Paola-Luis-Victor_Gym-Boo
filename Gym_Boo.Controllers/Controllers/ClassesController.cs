@@ -22,4 +22,5 @@ public class ClassesController : ControllerBase
         var classes = await _sessionService.GetFilteredSessionsAsync(discipline, date);
         return Ok(classes);
     }
+
 }
