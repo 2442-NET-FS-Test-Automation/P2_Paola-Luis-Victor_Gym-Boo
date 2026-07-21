@@ -181,11 +181,11 @@ If less than 2 hours remain:
 ---
 
 <details>
-<summary><strong>US-07 · Instructor Reviews ⭐ (Team Feature)</strong></summary>
+<summary><strong>US-07 · Multiple Reviews ⭐ (Team Feature)</strong></summary>
 
 ### 👤 User Story
 **As a** member,  
-**I want** to review instructors after attending their classes,  
+**I want** to add reviews related to the classes I attended,  
 **So that** I can share my experience.
 
 ### ✅ Acceptance Criteria
@@ -194,6 +194,7 @@ If less than 2 hours remain:
 - Members submit:
   - Rating (1–5 stars)
   - Short comment
+- The possible reviews for a session are based on a Review Type Enum 
 
 ```http
 POST /api/instructors/{id}/reviews
