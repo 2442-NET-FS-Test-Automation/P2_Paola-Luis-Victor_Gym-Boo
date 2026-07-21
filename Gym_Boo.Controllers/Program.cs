@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Gym_Boo.Controllers.Administration;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
 using Serilog;
@@ -28,6 +29,8 @@ try
         .Enrich.FromLogContext());
 
     builder.Services.AddOpenApi();
+
+    builder.Services.AddScoped<IAdminServices, AdminServices>();
 
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 

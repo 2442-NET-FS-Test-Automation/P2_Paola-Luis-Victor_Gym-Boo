@@ -1,4 +1,5 @@
 ﻿using Gym_Boo.Data.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Controllers.Administration;
@@ -14,7 +15,6 @@ public class AdminServices : IAdminServices
     
     public async Task<bool> NewDisciplineAsync(string discipline)
     {
-        if (string.IsNullOrWhiteSpace(discipline)) return false;
 
         var normalizedName = discipline.Trim().ToLower();
         if (await _db.Disciplines.AnyAsync(d => d.Name == normalizedName))
@@ -31,7 +31,6 @@ public class AdminServices : IAdminServices
 
     public async Task<bool> DeleteDiscipline(string discipline)
     {
-        if (string.IsNullOrWhiteSpace(discipline)) return false;
 
         var disciplineToDelete = await _db.Disciplines
             .FirstOrDefaultAsync(d => d.Name == discipline.Trim().ToLower());
@@ -64,7 +63,6 @@ public class AdminServices : IAdminServices
 
     public async Task<bool> UpdateDiscipline(int id, string newName)
     {
-        // Fixed: Changed signature to take an ID and the new name to apply
         var target = await _db.Disciplines.FirstOrDefaultAsync(d => d.Id == id);
         
         if (target == null || string.IsNullOrWhiteSpace(newName))
@@ -78,15 +76,20 @@ public class AdminServices : IAdminServices
         return true;
     }
 
-    public Task GetInstructor(int id)
+    public async Task<bool> GetInstructor(int id)
     {
-        throw new NotImplementedException();
+        var target = await _db.Users.FirstOrDefaultAsync(i => i.Id == id);
+
+        if (target == null)
+        {
+            return false;
+        }
+        
+        return  true;
     }
     
     public async Task<bool> NewInstructor(User newInstructor)
     {
-        if (newInstructor == null) return false;
-
         var normalizedName = newInstructor.Name.Trim().ToLower();
         var normalizedLastName = newInstructor.LastName.Trim().ToLower();
 
@@ -101,7 +104,7 @@ public class AdminServices : IAdminServices
             await _db.SaveChangesAsync();
             return true;
         }
-        
+
         return false;
     }
 
@@ -122,17 +125,20 @@ public class AdminServices : IAdminServices
 
     public async Task<bool> UpdateInstructor(User instructor)
     {
-        // Implemented basic update logic stub assuming entity tracking
-        if (instructor == null) return false;
-        
         _db.Users.Update(instructor);
         await _db.SaveChangesAsync();
         return true;
     }
     
-    public Task MostPopularClass()
+    public async Task<List<Session>> MostPopularClass()
     {
-        throw new NotImplementedException();
+        var topRatedSessions = await _db.Sessions
+            .Include(s => s.Class)       
+            .Include(s => s.Instructor)  
+            .OrderByDescending(s => s.Reviews.Select(r => r.Rating).DefaultIfEmpty(0).Average())
+            .ToListAsync();
+
+        return topRatedSessions;
     }
 
     public Task ReseravtionReports()

@@ -1,4 +1,5 @@
 ﻿using Gym_Boo.Data.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Administration;
 
@@ -11,13 +12,13 @@ public interface IAdminServices
     Task<bool> UpdateDiscipline(int id, string newName);
     
     //Instructor related functions
-    Task GetInstructor(int id);
+    Task<bool> GetInstructor(int id);
     Task<bool> NewInstructor(User newInstructor);
     Task<bool> DeleteInstructor(int id);
     Task<bool> UpdateInstructor(User instructor);
     
     //Revenue Related functions
-    Task MostPopularClass();
+    Task<List<Session>> MostPopularClass();
     Task ReseravtionReports();
     Task ClassRevenue();
     
