@@ -66,7 +66,7 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetInstructor(int id)
     {
         var instructor = await _adminServices.GetInstructor(id);
-        if (instructor == null) 
+        if (instructor == false) 
             return NotFound($"Instructor with ID {id} not found.");
 
         return Ok(instructor);

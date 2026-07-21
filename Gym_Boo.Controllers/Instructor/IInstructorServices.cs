@@ -1,6 +1,14 @@
-﻿namespace Gym_Boo.Controllers.Instructor;
+﻿using Gym_Boo.Data.Entities;
+
+namespace Gym_Boo.Controllers.Instructor;
 
 public interface IInstructorServices
 {
+    //Instructor profile
+    Task<User> GetInstructor(string email, string password);
     
+    //Session Manaagement
+    Task<bool> NewSession(Session session);
+
+    Task<List<User>> Registered(int id);
 }
