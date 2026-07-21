@@ -15,6 +15,19 @@ public class ReservationsController : ControllerBase
         _reservationService = reservationService;
     }
 
+    // GET /api/reservations?userId=1
+    [HttpGet]
+    public async Task<ActionResult<UserReservationsResponseDto>> GetMyReservations([FromQuery] int userId)
+    {
+        if (userId <= 0)
+        {
+            return BadRequest(new { message = "You must provide a valid 'userId'." });
+        }
+
+        var history = await _reservationService.GetUserReservationHistoryAsync(userId);
+        return Ok(history);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateReservationDto dto)
     {

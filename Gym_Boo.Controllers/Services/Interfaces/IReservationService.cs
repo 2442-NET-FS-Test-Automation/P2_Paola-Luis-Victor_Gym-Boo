@@ -9,4 +9,6 @@ public interface IReservationService
     Task<EnrolledDto> ReserveClassAsync(CreateReservationDto dto);
 
     Task<CancelReservationResultDto> CancelReservationAsync(int enrollmentId, int userId);
+
+    Task<UserReservationsResponseDto> GetUserReservationHistoryAsync(int userId);
 }

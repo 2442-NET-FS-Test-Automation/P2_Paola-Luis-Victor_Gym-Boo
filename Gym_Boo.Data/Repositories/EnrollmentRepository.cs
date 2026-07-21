@@ -25,6 +25,23 @@ public class EnrollmentRepository : IEnrollmentRepository
         .FirstOrDefaultAsync(e => e.Id == enrollmentId);
     }
 
+    public async Task<IReadOnlyList<Enrollment>> GetByUserIdAsync(int userId)
+    {
+        return await _context.Enrollments
+        .AsNoTracking()
+        .Include(e => e.Session)
+            .ThenInclude(s => s.Class)
+                .ThenInclude(c => c.Discipline)
+        .Include(e => e.Session)
+            .ThenInclude(s => s.Instructor)
+        .Include(e => e.Session)
+            .ThenInclude(s => s.Place)
+
+        .Where(e => e.MemberId == userId)
+        .OrderByDescending(e => e.Session.Start)
+        .ToListAsync();
+    }
+
     public async Task<bool> MemberHasConflictReservationAsync(int userId, DateTime startTime, DateTime endTime)
     {
         return await _context.Enrollments

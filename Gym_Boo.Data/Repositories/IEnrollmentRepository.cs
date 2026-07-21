@@ -11,4 +11,6 @@ public interface IEnrollmentRepository
     Task<Enrollment?> GetByIdWithSessionAsync(int enrollmentId);
 
     Task UpdateAsync(Enrollment enrollment);
+
+    Task<IReadOnlyList<Enrollment>> GetByUserIdAsync(int userId);
 }

@@ -70,6 +70,38 @@ public class ReservationService : IReservationService
         );
     }
 
+    public async Task<UserReservationsResponseDto> GetUserReservationHistoryAsync(int userId)
+    {
+        var enrollments = await _enrollmentRepo.GetByUserIdAsync(userId);
+        var now = DateTime.UtcNow;
+
+        var mappedItems = enrollments.Select(e => new ReservationItemDto(
+            EnrollmentId: e.Id,
+            SessionId: e.SessionId,
+            ClassName: e.Session?.Class?.Name ?? "Class without a name",
+            Discipline: e.Session?.Class?.Discipline.Name ?? "General",
+            InstructorName: e.Session?.Instructor?.Name ?? "Without instructor",
+            StartTime: e.Session?.Start ?? DateTime.MinValue,
+            EndTime: e.Session?.End ?? DateTime.MinValue,
+            Location: e.Session?.Place?.Name ?? "Location not specified",
+            Status: e.Status.ToString(),
+            HasPenalty: e.CancellationFeeApplied
+        )).ToList();
+
+        // Classify Past and On Next
+        var upcoming = mappedItems
+            .Where(item => item.StartTime >= now)
+            .OrderBy(item => item.StartTime) // Next in ascending order (closest first)
+            .ToList();
+
+        var past = mappedItems
+            .Where(item => item.StartTime < now)
+            .OrderByDescending(item => item.StartTime) // Passes in descending order (most recent first)
+            .ToList();
+
+        return new UserReservationsResponseDto(Upcoming: upcoming, Past: past);
+    }
+
     public async Task<EnrolledDto> ReserveClassAsync(CreateReservationDto dto)
     {
         // 1. Validates existent class session
