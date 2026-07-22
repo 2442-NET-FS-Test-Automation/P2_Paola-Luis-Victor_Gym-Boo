@@ -23,12 +23,14 @@ public class InstructorServices : IInstructorServices
         return ans;
     }
 
-    public async Task<bool> NewSession(Session session)
+    public async Task<bool> NewSession(Session session, CancellationToken ct)
     {
-        
+        var check = await _db.Sessions.FirstOrDefaultAsync(i => i.Id == session.Id);
+        if (check != null)
+            return false;
         
         await _db.Sessions.AddAsync(session);
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(ct);
         return true;
     }
 

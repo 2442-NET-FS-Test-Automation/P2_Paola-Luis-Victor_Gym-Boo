@@ -8,7 +8,7 @@ public interface IInstructorServices
     Task<User> GetInstructor(string email, string password);
     
     //Session Manaagement
-    Task<bool> NewSession(Session session);
+    Task<bool> NewSession(Session session, CancellationToken ct);
 
     Task<List<User>> Registered(int id);
 }

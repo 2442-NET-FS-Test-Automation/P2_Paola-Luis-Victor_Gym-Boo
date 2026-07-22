@@ -5,24 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Administration;
 
+// DTOs to replace raw primitives & domain entities
+
+
 [ApiController]
-[Route("controllers/admin")]
+[Route("api/admin")]
 [Authorize(Roles = "Admin")]
-public class AdminController : ControllerBase
+public class AdminController(IAdminServices adminServices) : ControllerBase
 {
-    private readonly IAdminServices _adminServices;
-
-    public AdminController(IAdminServices adminServices)
-    {
-        _adminServices = adminServices;
-    }
-
     // --- DISCIPLINES MANAGEMENT ---
 
     [HttpPost("disciplines")]
-    public async Task<IActionResult> CreateDiscipline([FromBody] string name)
+    public async Task<IActionResult> CreateDiscipline([FromBody] DisciplineDto dto, CancellationToken ct)
     {
-        var result = await _adminServices.NewDisciplineAsync(name);
+        var result = await adminServices.NewDisciplineAsync(dto.Name, ct);
         if (!result) 
             return BadRequest("Discipline could not be created. It may already exist or the name is invalid.");
 
@@ -30,9 +26,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpPut("disciplines/{id:int}")]
-    public async Task<IActionResult> UpdateDiscipline(int id, [FromBody] string newName)
+    public async Task<IActionResult> UpdateDiscipline(int id, [FromBody] DisciplineDto dto, CancellationToken ct)
     {
-        var result = await _adminServices.UpdateDiscipline(id, newName);
+        var result = await adminServices.UpdateDiscipline(id, dto.Name, ct);
         if (!result) 
             return NotFound($"Discipline with ID {id} not found or invalid name provided.");
 
@@ -40,9 +36,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpPatch("disciplines/{id:int}/toggle-status")]
-    public async Task<IActionResult> ToggleDisciplineStatus(int id)
+    public async Task<IActionResult> ToggleDisciplineStatus(int id, CancellationToken ct)
     {
-        var result = await _adminServices.DisableDiscipline(id);
+        var result = await adminServices.DisableDiscipline(id, ct);
         if (!result) 
             return NotFound($"Discipline with ID {id} not found.");
 
@@ -50,9 +46,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("disciplines")]
-    public async Task<IActionResult> DeleteDiscipline([FromQuery] string name)
+    public async Task<IActionResult> DeleteDiscipline([FromQuery] string name, CancellationToken ct)
     {
-        var result = await _adminServices.DeleteDiscipline(name);
+        var result = await adminServices.DeleteDiscipline(name, ct);
         if (!result) 
             return NotFound($"Discipline '{name}' not found.");
 
@@ -63,35 +59,39 @@ public class AdminController : ControllerBase
     // --- INSTRUCTORS MANAGEMENT ---
 
     [HttpGet("instructors/{id:int}")]
-    public async Task<IActionResult> GetInstructor(int id)
+    public async Task<IActionResult> GetInstructor(int id, CancellationToken ct)
     {
-        var instructor = await _adminServices.GetInstructor(id);
-        if (instructor == false) 
+        var instructor = await adminServices.GetInstructor(id, ct);
+        if (instructor is false) 
             return NotFound($"Instructor with ID {id} not found.");
 
         return Ok(instructor);
     }
 
     [HttpPost("instructors")]
-    public async Task<IActionResult> CreateInstructor([FromBody] User instructor)
+    public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto dto, CancellationToken ct)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        
-        instructor.Role = Role.Instructor; 
+        // Map DTO to User entity
+        var instructor = new User 
+        { 
+            Email = dto.Email, 
+            Role = Role.Instructor 
+        };
 
-        var result = await _adminServices.NewInstructor(instructor);
+        var result = await adminServices.NewInstructor(instructor, ct);
         if (!result) 
             return BadRequest("Could not add instructor. A user with that email already exists.");
 
         return CreatedAtAction(nameof(GetInstructor), new { id = instructor.Id }, instructor);
     }
 
-    [HttpPut("instructors")]
-    public async Task<IActionResult> UpdateInstructor([FromBody] User instructor)
+    [HttpPut("instructors/{id:int}")]
+    public async Task<IActionResult> UpdateInstructor(int id, [FromBody] User instructor, CancellationToken ct)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (id != instructor.Id)
+            return BadRequest("ID in route does not match entity ID.");
 
-        var result = await _adminServices.UpdateInstructor(instructor);
+        var result = await adminServices.UpdateInstructor(instructor, ct);
         if (!result) 
             return NotFound($"Instructor with ID {instructor.Id} not found.");
 
@@ -99,12 +99,23 @@ public class AdminController : ControllerBase
     }
 
     [HttpDelete("instructors/{id:int}")]
-    public async Task<IActionResult> RemoveInstructor(int id)
+    public async Task<IActionResult> RemoveInstructor(int id, CancellationToken ct)
     {
-        var result = await _adminServices.DeleteInstructor(id);
+        var result = await adminServices.DeleteInstructor(id, ct);
         if (!result) 
             return NotFound($"Instructor with ID {id} not found.");
 
         return Ok(new { message = "Instructor removed successfully." });
+    }
+
+    [HttpGet("reports/{id:int}")]
+    public async Task<IActionResult> GetAssistance(int id, CancellationToken ct)
+    {
+        var result = await adminServices.GetAttendance(id, ct);
+    
+        if (result is null)
+            return NotFound($"Session with ID {id} is empty.");
+
+        return Ok(result);
     }
 }
