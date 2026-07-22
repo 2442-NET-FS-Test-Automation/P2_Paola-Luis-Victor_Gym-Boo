@@ -1,3 +1,34 @@
+:root {
+  --color-bg: #101012;
+  --color-bg-sidebar: #0b0b0d;
+  --color-bg-elevated: #17171a;
+  --color-border: #232327;
+  --color-border-soft: #1c1c20;
+
+  --color-accent: #c6f42a;
+  --color-accent-soft: rgba(198, 244, 42, 0.12);
+  --color-accent-text: #0d0d0d;
+
+  --color-text: #ffffff;
+  --color-text-muted: #9a9aa2;
+  --color-text-subtle: #6b6b72;
+
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(220, 38, 38, 0.18);
+  --color-warning: #f5b942;
+  --color-warning-bg: rgba(245, 185, 66, 0.14);
+  --color-success: #34d399;
+  --color-success-bg: rgba(16, 185, 129, 0.14);
+  --color-info: #60a5fa;
+  --color-info-bg: rgba(59, 130, 246, 0.14);
+  --color-purple: #c084fc;
+  --color-purple-bg: rgba(168, 85, 247, 0.14);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -11,11 +42,12 @@ body,
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #101012;
-  color: white;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
