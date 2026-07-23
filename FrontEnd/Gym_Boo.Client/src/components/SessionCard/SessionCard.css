@@ -88,3 +88,10 @@
     color: var(--color-success);
     font-weight: 700;
 }
+
+.session-card.is-disabled {
+    opacity: 0.5;
+    filter: grayscale(0.3);
+    cursor: not-allowed;
+    pointer-events: none;
+}

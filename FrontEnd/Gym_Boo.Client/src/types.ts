@@ -3,6 +3,7 @@ export interface ApiClassSession {
     className: string;
     discipline: string;
     instructorName: string;
+    instructorRating: number;
     startTime: string; // ISO
     endTime: string; // ISO
     location: string;
@@ -13,6 +14,7 @@ export interface ApiClassSession {
 export interface ClassFilters {
     discipline?: string;
     date?: string; // ISO date-time
+    past?: boolean;
 }
 
 export interface DateOption {
