@@ -5,6 +5,7 @@ public record ClassSessionDto(
     string ClassName,
     string Discipline,
     string InstructorName,
+    decimal InstructorRating,
     DateTime StartTime,
     DateTime EndTime,
     string Location,
