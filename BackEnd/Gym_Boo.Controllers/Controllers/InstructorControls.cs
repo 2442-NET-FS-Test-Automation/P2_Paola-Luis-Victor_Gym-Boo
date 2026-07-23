@@ -6,7 +6,7 @@ namespace Gym_Boo.Controllers.Instructor;
 
 [ApiController]
 [Route("api/instructor")]
-[Authorize(Roles = "Instructor")]
+//[Authorize(Roles = "Instructor")]
 public class InstructorControls(IInstructorServices instructorServices) : ControllerBase
 {
     [HttpGet("{id:int}")]

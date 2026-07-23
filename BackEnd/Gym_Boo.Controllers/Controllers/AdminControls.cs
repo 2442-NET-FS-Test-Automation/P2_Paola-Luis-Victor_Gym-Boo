@@ -7,7 +7,7 @@ namespace Gym_Boo.Controllers.Administration;
 
 [ApiController]
 [Route("api/admin")]
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
 public class AdminController(IAdminServices adminServices) : ControllerBase
 {
     // --- DISCIPLINES MANAGEMENT ---

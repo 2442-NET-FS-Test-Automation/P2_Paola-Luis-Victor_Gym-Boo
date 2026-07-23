@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Gym_Boo.Controllers.Administration;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
+using Gym_Boo.Controllers.Instructor;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -32,6 +33,7 @@ try
     builder.Services.AddControllers();
 
     builder.Services.AddScoped<IAdminServices, AdminServices>();
+    builder.Services.AddScoped<IInstructorServices, InstructorServices>();
 
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
