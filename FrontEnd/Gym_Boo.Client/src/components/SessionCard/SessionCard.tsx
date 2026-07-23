@@ -42,7 +42,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
 
             <div className="session-card__rating">
                 <Star size={14} fill="currentColor" />
-                <span>—</span>
+                <span>{ session.instructorRating }</span>
             </div>
 
             <div className="session-card__instructor">

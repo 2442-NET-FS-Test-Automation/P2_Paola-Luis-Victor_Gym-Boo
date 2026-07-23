@@ -30,6 +30,7 @@ const Discover = () => {
         getClasses({
             discipline: discipline || undefined,
             date: date ? `${date}T00:00:00` : undefined,
+            past: !availableOnly, // checked -> past=false (only upcoming); unchecked -> past=true (includes expired)
         })
             .then((data) => {
                 if (cancelled) return;
@@ -39,7 +40,7 @@ const Discover = () => {
                 );
             })
             .catch(() => {
-                if (!cancelled) setError("We couldn't load the classes. Try again.");
+                if (!cancelled) setError("We were unable to load the classes. Please try again.");
             })
             .finally(() => {
                 if (!cancelled) setLoading(false);
@@ -48,7 +49,7 @@ const Discover = () => {
         return () => {
             cancelled = true;
         };
-    }, [discipline, date]);
+    }, [discipline, date, availableOnly]);
 
     const filteredSessions = useMemo(() => {
         return allSessions.filter((s) => {
@@ -57,7 +58,9 @@ const Discover = () => {
                 !term ||
                 s.className.toLowerCase().includes(term) ||
                 s.instructorName.toLowerCase().includes(term);
+
             const matchesAvailability = !availableOnly || s.availableSpots > 0;
+
             return matchesSearch && matchesAvailability;
         });
     }, [allSessions, search, availableOnly]);
@@ -68,7 +71,7 @@ const Discover = () => {
                 <p className="discover-page__eyebrow">{activeRole.portalLabel}</p>
                 <h1>Discover Classes</h1>
                 <p className="discover-page__subtitle">
-                    {filteredSessions.length} sessions available this week
+                    {filteredSessions.length} sessions found
                 </p>
             </header>
 

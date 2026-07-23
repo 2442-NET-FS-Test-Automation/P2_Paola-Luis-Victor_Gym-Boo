@@ -7,7 +7,7 @@ public interface ISessionService
 {
     Task<IReadOnlyList<Session>> AllAsync();
     Task<Session?> ByIdAsync(int id);
-    Task<IReadOnlyList<ClassSessionDto>> GetFilteredSessionsAsync(string? discipline, DateTime? date);
+    Task<IReadOnlyList<ClassSessionDto>> GetFilteredSessionsAsync(string? discipline, DateTime? date, bool past);
 }
 
 
