@@ -8,7 +8,7 @@ public interface IAdminServices
     Task<List<Discipline>> GetAllDisciplines(CancellationToken ct);
     Task<bool> NewDisciplineAsync(string discipline, CancellationToken ct);
     Task<bool> DeleteDiscipline(string discipline, CancellationToken ct);
-    Task<bool> DisableDiscipline(int id, CancellationToken ct);
+    Task<bool> ToggleDiscipline(int id, CancellationToken ct);
     Task<bool> UpdateDiscipline(int id, string newName, CancellationToken ct);
     
     //Instructor related functions

@@ -49,7 +49,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
     [HttpPatch("disciplines/{id:int}/toggle-status")]
     public async Task<IActionResult> ToggleDisciplineStatus(int id, CancellationToken ct)
     {
-        var result = await adminServices.DisableDiscipline(id, ct);
+        var result = await adminServices.ToggleDiscipline(id, ct);
         if (!result) 
             return NotFound($"Discipline with ID {id} not found.");
 

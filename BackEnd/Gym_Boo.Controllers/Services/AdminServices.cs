@@ -63,7 +63,7 @@ public class AdminServices : IAdminServices
         return true;
     }
 
-    public async Task<bool> DisableDiscipline(int id, CancellationToken ct)
+    public async Task<bool> ToggleDiscipline(int id, CancellationToken ct)
     {
         var target = await _db.Disciplines.FirstOrDefaultAsync(d => d.Id == id, ct);
 
@@ -71,10 +71,9 @@ public class AdminServices : IAdminServices
         {
             return false;
         }
-
-        if()
         
-        target.Available = false; // Explicitly set to false for a disable method
+        target.Available = !target.Available; // Explicitly set to false for a disable method
+        
         await _db.SaveChangesAsync(ct);
 
         return true;
