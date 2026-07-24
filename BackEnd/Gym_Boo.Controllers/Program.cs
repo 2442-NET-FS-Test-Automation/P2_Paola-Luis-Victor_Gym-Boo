@@ -1,7 +1,8 @@
 using System.Diagnostics;
-using Gym_Boo.Controllers.Administration;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
+using Gym_Boo.Controllers.Services;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Serilog;
 using Scalar.AspNetCore;
 using Gym_Boo.Controllers.Services;
@@ -49,6 +50,7 @@ try
     builder.Services.AddControllers();
 
     builder.Services.AddScoped<IAdminServices, AdminServices>();
+    builder.Services.AddScoped<IInstructorServices, InstructorServices>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IPasswordHasher<User>,PasswordHasher<User>>();
@@ -59,7 +61,7 @@ try
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
     // For concurrent operations (if applies)
     builder.Services.AddPersistence(builder.Configuration);
-
+   
     // Application Services
     builder.Services.AddApplicationServices();
 
