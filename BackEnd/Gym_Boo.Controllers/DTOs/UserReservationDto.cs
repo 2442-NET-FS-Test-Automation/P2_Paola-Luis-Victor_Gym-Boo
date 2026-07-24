@@ -10,7 +10,8 @@ public record ReservationItemDto(
     DateTime EndTime,
     string Location,
     string Status, // Enrolled, Cancelled
-    bool HasPenalty
+    bool HasPenalty,
+    decimal Penalty
 );
 
 public record UserReservationsResponseDto(

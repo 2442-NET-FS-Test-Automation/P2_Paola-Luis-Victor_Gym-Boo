@@ -85,7 +85,8 @@ public class ReservationService : IReservationService
             EndTime: e.Session?.End ?? DateTime.MinValue,
             Location: e.Session?.Place?.Name ?? "Location not specified",
             Status: e.Status.ToString(),
-            HasPenalty: e.CancellationFeeApplied
+            HasPenalty: e.Session != null && (e.Session.Start - DateTime.UtcNow) <= TimeSpan.FromHours(2),
+            Penalty: e.Session?.CancellationFee ?? 0.0M
         )).ToList();
 
         // Classify Past and On Next

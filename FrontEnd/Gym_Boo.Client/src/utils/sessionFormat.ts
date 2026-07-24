@@ -21,3 +21,18 @@ export const getInitials = (name: string): string =>
         .slice(0, 2)
         .map((part) => part[0]?.toUpperCase() ?? "")
         .join("");
+
+export const formatSessionDateTime = (iso: string): string => {
+    const date = new Date(iso);
+    const datePart = date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+    const timePart = date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+    });
+    return `${datePart} · ${timePart}`;
+};

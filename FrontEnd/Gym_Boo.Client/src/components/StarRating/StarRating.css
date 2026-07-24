@@ -1,0 +1,24 @@
+.star-rating {
+    display: flex;
+    gap: 6px;
+}
+
+.star-rating__btn {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--color-text-subtle);
+}
+
+.star-rating.is-readonly .star-rating__btn {
+    cursor: default;
+}
+
+.star-rating__btn .is-filled {
+    color: var(--color-warning);
+}
+
+.star-rating__btn .is-empty {
+    color: var(--color-text-subtle);
+}

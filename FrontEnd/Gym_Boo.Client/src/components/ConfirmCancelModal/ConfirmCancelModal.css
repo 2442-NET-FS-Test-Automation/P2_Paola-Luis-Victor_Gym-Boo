@@ -1,0 +1,107 @@
+.confirm-cancel-modal__overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.confirm-cancel-modal {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px 24px;
+    text-align: center;
+}
+
+.confirm-cancel-modal__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+}
+
+.confirm-cancel-modal__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+.confirm-cancel-modal__icon--warning {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.confirm-cancel-modal__icon--success {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.confirm-cancel-modal h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.confirm-cancel-modal__class {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: var(--color-text-subtle);
+}
+
+.confirm-cancel-modal__message {
+    margin: 0 0 22px;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.confirm-cancel-modal__message--penalty strong {
+    color: var(--color-warning);
+}
+
+.confirm-cancel-modal__actions {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-cancel-modal__keep,
+.confirm-cancel-modal__confirm {
+    flex: 1;
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.confirm-cancel-modal__keep {
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+}
+
+.confirm-cancel-modal__confirm {
+    border: none;
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+}
+
+.confirm-cancel-modal__confirm:disabled,
+.confirm-cancel-modal__keep:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
