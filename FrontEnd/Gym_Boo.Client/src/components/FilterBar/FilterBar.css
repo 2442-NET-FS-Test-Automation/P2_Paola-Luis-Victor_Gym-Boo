@@ -1,0 +1,90 @@
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-bar select {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.filter-bar__toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.filter-bar__toggle input {
+    display: none;
+}
+
+.filter-bar__switch {
+    width: 34px;
+    height: 18px;
+    border-radius: 999px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    position: relative;
+    transition: background-color 0.15s;
+}
+
+.filter-bar__switch::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--color-text-subtle);
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.15s, background-color 0.15s;
+}
+
+.filter-bar__toggle input:checked+.filter-bar__switch {
+    background-color: var(--color-accent-soft);
+    border-color: var(--color-accent);
+}
+
+.filter-bar__toggle input:checked+.filter-bar__switch::after {
+    transform: translateX(16px);
+    background-color: var(--color-accent);
+}
+
+.filter-bar__view {
+    display: flex;
+    gap: 4px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    margin-left: auto;
+}
+
+.filter-bar__view button {
+    border: none;
+    background: transparent;
+    color: var(--color-text-subtle);
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.filter-bar__view button.is-active {
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.filter-bar__view button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}

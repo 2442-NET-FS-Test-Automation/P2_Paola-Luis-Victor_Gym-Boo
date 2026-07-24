@@ -47,7 +47,8 @@ public class UserService : IUserService
         member.PasswordHash =
             _passwordHasher.HashPassword(member, password);
 
-        _db.Users.Add(member);
+        _db.Members.Add(member);
+
         await _db.SaveChangesAsync();
 
         return null;

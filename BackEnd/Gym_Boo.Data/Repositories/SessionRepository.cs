@@ -45,7 +45,7 @@ public class SessionRepository : ISessionRepository
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Session>> GetAvailableClassesAsync(string? discipline, DateTime? date)
+    public async Task<IReadOnlyList<Session>> GetAvailableClassesAsync(string? discipline, DateTime? date, bool past = false)
     {
         var query = _context.Sessions
         .Include(s => s.Class)
@@ -53,6 +53,7 @@ public class SessionRepository : ISessionRepository
         .Include(s => s.Instructor)
         .Include(s => s.Enrollments)
         .Include(s => s.Place)
+        .Include(s => s.Reviews)
         .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(discipline))
@@ -64,6 +65,13 @@ public class SessionRepository : ISessionRepository
         {
             var targetDate = date.Value.Date;
             query = query.Where(s => s.Start.Date == targetDate);
+        }
+
+        else if (!past)
+        {
+            var now = DateTime.UtcNow;
+            var nextWeek = now.AddDays(7);
+            query = query.Where(s => s.Start >= now && s.Start <= nextWeek);
         }
 
         return await query.ToListAsync();
