@@ -5,7 +5,6 @@ using Gym_Boo.Controllers.Services;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Serilog;
 using Scalar.AspNetCore;
-using Gym_Boo.Controllers.Services;
 using Gym_Boo.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -186,10 +185,10 @@ try
         app.MapScalarApiReference();
     }
 
+    app.UseCors(SpaCorsPolicy);
+
     app.UseAuthentication();
     app.UseAuthorization();
-  
-    app.UseCors(SpaCorsPolicy);
 
     app.MapControllers();
 

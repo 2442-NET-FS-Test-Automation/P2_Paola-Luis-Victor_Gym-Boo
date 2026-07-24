@@ -1,9 +1,28 @@
+import { getStoredUser } from "../../api/auth";
 import type { CurrentUser } from "../../types";
 
-// TODO: reemplazar por un hook conectado a auth real (context/store)
-// cuando el backend de autenticación esté disponible.
-export const useCurrentUser = (): CurrentUser => ({
-    name: "Jordan Martinez",
-    role: "MEMBER",
-    initials: "JM",
-});
+export const useCurrentUser = (): CurrentUser => {
+  const user = getStoredUser();
+
+  if (!user) {
+    return {
+      id: 0,
+      name: "",
+      lastName: "",
+      email: "",
+      role: "Member",
+      initials: "",
+    };
+  }
+
+  const firstInitial =
+    user.name.trim().charAt(0);
+
+  const lastInitial =
+    user.lastName.trim().charAt(0);
+
+  return {
+    ...user,
+    initials: `${firstInitial}${lastInitial}`.toUpperCase(),
+  };
+};

@@ -1,0 +1,57 @@
+.instructor-dashboard__header button,
+.agenda-session button {
+  padding: 12px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.agenda-session {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 26px;
+  border-top: 1px solid var(--color-border);
+}
+
+.agenda-session h3,
+.agenda-session p {
+  margin: 0;
+}
+
+.agenda-session p {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+}
+
+.instructor-dashboard__header button,
+.agenda-session button {
+  padding: 12px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.agenda-session {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 26px;
+  border-top: 1px solid var(--color-border);
+}
+
+.agenda-session h3,
+.agenda-session p {
+  margin: 0;
+}
+
+.agenda-session p {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+}
