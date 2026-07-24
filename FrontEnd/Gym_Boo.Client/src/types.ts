@@ -80,3 +80,30 @@ export interface SubmittedReview {
     comment: string | null;
     createdAt: string;
 }
+
+export interface MemberReport {
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
+  userType: string;
+  isActive: boolean;
+  idSubscription: number | null;
+  planId: number | null;
+  startTime: string | null;
+  endTime: string | null;
+  classesAttended: number;
+  avgReviews: number;
+}
+
+export interface Plan {
+  id: number;
+  name: string;
+  price: number;
+  recurrence: string;
+}
+
+export interface SubscriptionActionResponse {
+  result: boolean;
+  resultMessage: string;
+}

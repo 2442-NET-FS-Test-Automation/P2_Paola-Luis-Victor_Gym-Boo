@@ -56,7 +56,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
                     {formatSessionTime(session.startTime)} · {duration}min
                 </span>
                 <span className="session-card__spots">
-                    <Users size={13} /> {session.availableSpots} spots
+                    <Users size={13} /> {session.totalSpots} spots
                 </span>
             </div>
         </>
