@@ -1,11 +1,9 @@
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
 using Gym_Boo.Controllers.Services;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Serilog;
 using Scalar.AspNetCore;
-using Gym_Boo.Controllers.Services;
 using Gym_Boo.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

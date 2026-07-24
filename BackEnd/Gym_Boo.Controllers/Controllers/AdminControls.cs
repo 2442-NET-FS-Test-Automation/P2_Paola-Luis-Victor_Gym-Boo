@@ -2,6 +2,7 @@ using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Controllers;
@@ -9,9 +10,10 @@ namespace Gym_Boo.Controllers.Controllers;
 [ApiController]
 [Route("api/admin")]
 //[Authorize(Roles = "Admin")]
-public class AdminController(IAdminServices adminServices) : ControllerBase
+public class AdminController(
+    IAdminServices adminServices, 
+    IPasswordHasher<User> passwordHasher) : ControllerBase
 {
-    
     // --- DISCIPLINES MANAGEMENT ---
 
     [HttpGet("disciplines/list")]
@@ -20,7 +22,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         var result = await adminServices.GetAllDisciplines(ct);
         if (result is null)
         {
-            return NotFound($"Disciplines not found.");
+            return NotFound("Disciplines not found.");
         }
         
         return Ok(result);
@@ -75,7 +77,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         var instructorList = await adminServices.GetAllInstructors(ct);
         if (instructorList is null)
         {
-            return NotFound($"Instructors not found.");
+            return NotFound("Instructors not found.");
         }
         return Ok(instructorList);
     }
@@ -93,23 +95,23 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
     [HttpPost("instructors/create")]
     public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto dto, CancellationToken ct)
     {
-        string hashedPass = dto.Password;
-        // Map DTO to User entity
+        // 1. Instantiating entity
         var instructor = new User 
         { 
             Email = dto.Email, 
             Name = dto.FirstName,
             LastName = dto.LastName,
             Role = Role.Instructor,
-            IsActive = true,
-            
+            IsActive = true
         };
-
+        
+        instructor.PasswordHash = passwordHasher.HashPassword(instructor, dto.Password);
+        
         var result = await adminServices.NewInstructor(instructor, ct);
         if (!result) 
             return BadRequest("Could not add instructor. A user with that email already exists.");
 
-        return CreatedAtAction(nameof(GetInstructor), new { id = instructor.Id }, instructor);
+        return Ok(new { message = "Instructor created successfully." });
     }
 
     [HttpPut("instructors/{id:int}")]
