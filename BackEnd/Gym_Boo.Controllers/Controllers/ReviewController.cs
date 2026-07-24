@@ -1,6 +1,7 @@
 using Gym_Boo.ControllerApi.Dtos;
 using Gym_Boo.ControllerApi.Exceptions;
 using Gym_Boo.ControllerApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.ControllerApi.Controllers;
@@ -20,6 +21,7 @@ public class ReviewsController : ControllerBase
     // POST /api/reviews/session
     // POST /api/reviews/facility
     [HttpPost("{reviewType}")]
+    //[Authorize(Roles = "Member")]
     public async Task<IActionResult> CreateReview(string reviewType, [FromBody] CreateReviewDto reviewDto)
     {
         try
@@ -52,6 +54,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("submitted/{enrollmentId}")]
+    //[Authorize(Roles = "Member")]
     public async Task<ActionResult<IReadOnlyList<ReviewDto>>> GetSubmittedReviewsByEnrollment(int enrollmentId)
     {
         if (enrollmentId <= 0)

@@ -1,5 +1,6 @@
 using Gym_Boo.ControllerApi.Dtos;
 using Gym_Boo.ControllerApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.ControllerApi.Controllers;
@@ -17,6 +18,7 @@ public class ReservationsController : ControllerBase
 
     // GET /api/reservations?userId=1
     [HttpGet]
+    //[Authorize(Roles = "Member")]
     public async Task<ActionResult<UserReservationsResponseDto>> GetMyReservations([FromQuery] int userId)
     {
         if (userId <= 0)
@@ -29,6 +31,7 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost]
+    //[Authorize(Roles = "Member")]
     public async Task<IActionResult> Create([FromBody] CreateReservationDto dto)
     {
         try
@@ -55,6 +58,7 @@ public class ReservationsController : ControllerBase
     // DELETE /api/reservations/15?userId=3
     // (OR DELETE /api/reservations/15 obtaining userId from JWT token)
     [HttpDelete("{id:int}")]
+    //[Authorize(Roles = "Member")]
     public async Task<ActionResult<CancelReservationResultDto>> Cancel(int id, [FromQuery] int userId)
     {
         try

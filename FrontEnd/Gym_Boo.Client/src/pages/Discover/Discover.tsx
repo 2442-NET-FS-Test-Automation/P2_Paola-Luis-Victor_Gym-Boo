@@ -6,6 +6,7 @@ import SearchBar from "../../components/SearchBar/SearchBar";
 import FilterBar from "../../components/FilterBar/FilterBar";
 import SessionCard from "../../components/SessionCard/SessionCard";
 import { getUpcomingDateOptions } from "../../utils/dateOptions";
+import { localDateStringToUtcIso } from "../../utils/timeZone";
 import "./Discover.css";
 
 const Discover = () => {
@@ -29,7 +30,7 @@ const Discover = () => {
 
         getClasses({
             discipline: discipline || undefined,
-            date: date ? `${date}T00:00:00` : undefined,
+            date: date ? localDateStringToUtcIso(date) : undefined,
             past: !availableOnly, // checked -> past=false (only upcoming); unchecked -> past=true (includes expired)
         })
             .then((data) => {

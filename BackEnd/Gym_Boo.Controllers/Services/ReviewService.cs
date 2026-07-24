@@ -71,7 +71,7 @@ class ReviewService : IReviewService
             ReviewType: e.ReviewType,
             Rating: e.Rating,
             Comment: e.Comment,
-            CreatedAt: e.CreatedAt
+            CreatedAt: DateTime.SpecifyKind(e.CreatedAt, DateTimeKind.Utc)
         )).ToList();
 
         return mappedItems;

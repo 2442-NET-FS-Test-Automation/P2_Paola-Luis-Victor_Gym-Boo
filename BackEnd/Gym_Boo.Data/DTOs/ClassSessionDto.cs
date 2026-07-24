@@ -6,8 +6,8 @@ public record ClassSessionDto(
     string Discipline,
     string InstructorName,
     decimal InstructorRating,
-    DateTime StartTime,
-    DateTime EndTime,
+    DateTimeOffset StartTime,
+    DateTimeOffset EndTime,
     string Location,
     int AvailableSpots,
     int TotalSpots

@@ -8,5 +8,5 @@ public record ReviewDto(
     ReviewType ReviewType,
     int Rating,
     string? Comment,
-    DateTime CreatedAt
+    DateTimeOffset CreatedAt
 );

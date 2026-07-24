@@ -38,8 +38,8 @@ class SessionService : ISessionService
                     .SelectMany(sess => sess.Reviews)
                     .Where(r => r.ReviewType == ReviewType.Instructor)
                     .Average(r => (decimal?)r.Rating) ?? 0.0m,
-            StartTime: s.Start,
-            EndTime: s.End,
+            StartTime: DateTime.SpecifyKind(s.Start, DateTimeKind.Utc),
+            EndTime: DateTime.SpecifyKind(s.End,DateTimeKind.Utc),
             Location: s.Place.Name,
             AvailableSpots: s.Slots - s.Enrollments.Count(e => e.Status == EnrollmentStatus.Enrolled),
             TotalSpots: s.Slots
