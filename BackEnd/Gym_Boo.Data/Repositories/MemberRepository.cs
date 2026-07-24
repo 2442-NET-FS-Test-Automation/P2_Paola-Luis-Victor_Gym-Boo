@@ -19,4 +19,14 @@ public class MemberRepository : IMemberRepository
         .AsNoTracking()
         .FirstOrDefaultAsync(m => m.Id == memberId);
     }
+
+    public async Task<Member?> GetByIdWithReportDataAsync(int memberId)
+    {
+        return await _context.Members
+            .Include(m => m.MemberSubscription)
+            .Include(m => m.Enrollments)
+                .ThenInclude(e => e.Reviews)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == memberId);
+    }
 }

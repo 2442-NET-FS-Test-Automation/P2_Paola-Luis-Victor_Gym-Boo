@@ -40,3 +40,10 @@ export const getInitials = (name: string): string =>
         .slice(0, 2)
         .map((part) => part[0]?.toUpperCase() ?? "")
         .join("");
+
+export const formatMonthYear = (iso: string): string =>
+    utcIsoToLocalDate(iso).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });

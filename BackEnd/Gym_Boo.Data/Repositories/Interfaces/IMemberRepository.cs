@@ -5,4 +5,5 @@ namespace Gym_Boo.Data.Repositories;
 public interface IMemberRepository
 {
     Task<Member?> GetByIdWithSubscriptionAsync(int memberId);
+    Task<Member?> GetByIdWithReportDataAsync(int memberId);
 }

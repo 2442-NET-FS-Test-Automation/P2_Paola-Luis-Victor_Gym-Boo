@@ -5,6 +5,7 @@ import Discover from "./pages/Discover/Discover";
 import ClassDetail from "./pages/ClassDetail/ClassDetail";
 import MyBookings from "./pages/MyBookings/MyBookings";
 import LeaveReview from "./components/LeaveReview/LeaveReview";
+import MyProfile from "./pages/MyProfile/MyProfile";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/member/discover" element={<Discover />} />
           <Route path="/member/bookings" element={<MyBookings />} />
-          <Route path="/member/profile" element={<div>Profile — coming soon</div>} />
+          <Route path="/member/profile" element={<MyProfile />} />
           <Route path="/member/review" element={<div>Leave a Review — coming soon</div>} />
 
           <Route path="/coach/dashboard" element={<div>Coach Dashboard — coming soon</div>} />

@@ -1,0 +1,157 @@
+.plans-modal__overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 100;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+.plans-modal {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+}
+
+.plans-modal__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.plans-modal__eyebrow {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.plans-modal h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.plans-modal__subtitle {
+    margin: 0 0 28px;
+    color: var(--color-text-subtle);
+    font-size: 14px;
+}
+
+.plans-modal__status {
+    color: var(--color-text-muted);
+    padding: 30px 0;
+    text-align: center;
+}
+
+.plans-modal__status--error {
+    color: var(--color-danger);
+}
+
+.plans-modal__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.plan-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    background-color: var(--color-bg-elevated);
+}
+
+.plan-card--popular {
+    border-color: var(--color-accent);
+}
+
+.plan-card--elite {
+    border-color: var(--color-purple);
+}
+
+.plan-card__badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+.plan-card__name {
+    margin: 6px 0 0;
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.plan-card__price {
+    margin: 0 0 12px;
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.plan-card__price span {
+    font-size: 14px;
+    color: var(--color-text-subtle);
+    font-weight: 400;
+}
+
+.plan-card__cta {
+    margin-top: auto;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.plan-card--popular .plan-card__cta {
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    border: none;
+}
+
+.plan-card--elite .plan-card__cta {
+    background-color: var(--color-purple);
+    color: #1a0d29;
+    border: none;
+}
+
+.plan-card__cta:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.plans-modal__footer {
+    margin: 24px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-subtle);
+}
