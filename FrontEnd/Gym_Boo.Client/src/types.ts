@@ -102,3 +102,8 @@ export interface Plan {
   price: number;
   recurrence: string;
 }
+
+export interface SubscriptionActionResponse {
+  result: boolean;
+  resultMessage: string;
+}

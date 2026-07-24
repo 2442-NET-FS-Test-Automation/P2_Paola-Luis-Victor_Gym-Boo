@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
-import { getPlans } from "../../api/plans";
+import { X, Check } from "lucide-react";
+import { getPlans, subscribeToPlan, updatePlanSubscription } from "../../api/plans";
 import type { Plan } from "../../types";
 import "./PlansModal.css";
 
-interface PlansModalProps {
-    onClose: () => void;
-    currentPlanId: number | null;
-}
-
 type Tier = "plain" | "popular" | "elite";
+type PlanStatus = "idle" | "loading" | "success" | "error";
+
+interface PlansModalProps {
+    mode: "new" | "upgrade";
+    memberId: number;
+    currentPlanId: number | null;
+    onClose: () => void;
+    onSuccess: () => void;
+}
 
 const getTier = (plans: Plan[], index: number): Tier => {
     if (plans.length !== 3) return "plain";
@@ -18,41 +22,73 @@ const getTier = (plans: Plan[], index: number): Tier => {
     return "plain";
 };
 
-const PlansModal = ({ onClose, currentPlanId }: PlansModalProps) => {
+const PlansModal = ({ mode, memberId, currentPlanId, onClose, onSuccess }: PlansModalProps) => {
     const [plans, setPlans] = useState<Plan[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [planStatus, setPlanStatus] = useState<Record<number, PlanStatus>>({});
+    const [planErrorMessage, setPlanErrorMessage] = useState<Record<number, string>>({});
+    const [succeededMessage, setSucceededMessage] = useState<string | null>(null);
+
     useEffect(() => {
         getPlans()
-            .then((data) =>
-                setPlans([...data].sort((a, b) => a.price - b.price))
-            )
-            .catch(() => setError("We couldn't load plans"))
+            .then((data) => setPlans([...data].sort((a, b) => a.price - b.price)))
+            .catch(() => setError("No pudimos cargar los planes."))
             .finally(() => setLoading(false));
     }, []);
 
-    const handleChoose = (plan: Plan) => {
-        // TODO: conectar al endpoint de suscripción cuando exista
-        // (elegir plan / upgrade). Por ahora solo UI.
-        console.log("TODO: subscribe to plan", plan.id);
+    const anyLoading = Object.values(planStatus).some((s) => s === "loading");
+    const anySucceeded = Object.values(planStatus).some((s) => s === "success");
+
+    const handleChoose = async (plan: Plan) => {
+        if (anyLoading || anySucceeded) return;
+        setPlanStatus((prev) => ({ ...prev, [plan.id]: "loading" }));
+        setPlanErrorMessage((prev) => ({ ...prev, [plan.id]: "" }));
+
+        try {
+            const response =
+                mode === "new"
+                    ? await subscribeToPlan(memberId, plan.id)
+                    : await updatePlanSubscription(memberId, currentPlanId as number, plan.id);
+
+            if (!response.result) {
+                throw new Error(response.resultMessage);
+            }
+
+            setPlanStatus((prev) => ({ ...prev, [plan.id]: "success" }));
+            setSucceededMessage(response.resultMessage);
+            onSuccess();
+        } catch (err: any) {
+            const message =
+                err?.response?.data?.message ?? err?.message ?? "Could not process this plan.";
+            setPlanStatus((prev) => ({ ...prev, [plan.id]: "error" }));
+            setPlanErrorMessage((prev) => ({ ...prev, [plan.id]: message }));
+        }
     };
 
     return (
-        <div className="plans-modal__overlay" onClick={onClose}>
+        <div className="plans-modal__overlay" onClick={anyLoading ? undefined : onClose}>
             <div className="plans-modal" onClick={(e) => e.stopPropagation()}>
                 <button
                     type="button"
                     className="plans-modal__close"
                     onClick={onClose}
+                    disabled={anyLoading}
                     aria-label="Close"
                 >
                     <X size={18} />
                 </button>
 
-                <p className="plans-modal__eyebrow">MEMBERSHIP CATALOG</p>
-                <h1>Choose Your Plan</h1>
+                <p className="plans-modal__eyebrow">GYMBOO MEMBERSHIP</p>
+                <h1>{mode === "new" ? "Choose Your Plan" : "Upgrade Your Plan"}</h1>
                 <p className="plans-modal__subtitle">Cancel anytime. No hidden fees.</p>
+
+                {succeededMessage && (
+                    <p className="plans-modal__success-banner">
+                        <Check size={16} /> {succeededMessage} You can close this window.
+                    </p>
+                )}
 
                 {loading && <p className="plans-modal__status">Loading plans…</p>}
                 {error && <p className="plans-modal__status plans-modal__status--error">{error}</p>}
@@ -64,7 +100,10 @@ const PlansModal = ({ onClose, currentPlanId }: PlansModalProps) => {
                     <div className="plans-modal__grid">
                         {plans.map((plan, index) => {
                             const tier = getTier(plans, index);
-                            const isCurrent = plan.id === currentPlanId;
+                            const isCurrent = mode === "upgrade" && plan.id === currentPlanId;
+                            const status = planStatus[plan.id] ?? "idle";
+                            const disabled = isCurrent || anyLoading || anySucceeded;
+
                             return (
                                 <div key={plan.id} className={`plan-card plan-card--${tier}`}>
                                     {tier === "popular" && (
@@ -75,14 +114,27 @@ const PlansModal = ({ onClose, currentPlanId }: PlansModalProps) => {
                                         ${plan.price}
                                         <span>/{plan.recurrence}</span>
                                     </p>
+
                                     <button
                                         type="button"
                                         className="plan-card__cta"
-                                        disabled={isCurrent}
+                                        disabled={disabled}
                                         onClick={() => handleChoose(plan)}
                                     >
-                                        {isCurrent ? "Current Plan" : `Choose ${plan.name}`}
+                                        {isCurrent
+                                            ? "Current Plan"
+                                            : status === "loading"
+                                                ? "Processing…"
+                                                : status === "success"
+                                                    ? "Confirmed ✓"
+                                                    : mode === "new"
+                                                        ? `Choose ${plan.name}`
+                                                        : `Switch to ${plan.name}`}
                                     </button>
+
+                                    {status === "error" && (
+                                        <p className="plan-card__error">{planErrorMessage[plan.id]}</p>
+                                    )}
                                 </div>
                             );
                         })}

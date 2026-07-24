@@ -7,6 +7,7 @@ import { getInitials } from "../../utils/sessionFormat";
 import { formatMonthYear } from "../../utils/sessionFormat";
 import StatCard from "../../components/StatCard/StatCard";
 import PlansModal from "../../components/PlansModal/PlansModal";
+import ConfirmCancelSubscriptionModal from "../../components/ConfirmCancelSubscriptionModal/ConfirmCancelSubscriptionModal";
 import "./MyProfile.css";
 
 const MyProfile = () => {
@@ -17,6 +18,12 @@ const MyProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showPlansModal, setShowPlansModal] = useState(false);
+    const [plansModalMode, setPlansModalMode] = useState<"new" | "upgrade" | null>(null);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const refetchReport = () => {
+        getMemberReport(user.id).then(setReport).catch(() => { });
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -30,7 +37,7 @@ const MyProfile = () => {
                 setPlans(plansData);
             })
             .catch(() => {
-                if (!cancelled) setError("No pudimos cargar tu perfil.");
+                if (!cancelled) setError("We couldn't load your profile.");
             })
             .finally(() => {
                 if (!cancelled) setLoading(false);
@@ -140,17 +147,14 @@ const MyProfile = () => {
                                 <button
                                     type="button"
                                     className="my-profile__upgrade-btn"
-                                    onClick={() => setShowPlansModal(true)}
+                                    onClick={() => setPlansModalMode("upgrade")}
                                 >
                                     Upgrade Plan
                                 </button>
                                 <button
                                     type="button"
                                     className="my-profile__cancel-btn"
-                                    onClick={() => {
-                                        // TODO: conectar al endpoint de cancelación de suscripción cuando exista
-                                        console.log("TODO: cancel subscription");
-                                    }}
+                                    onClick={() => setShowCancelModal(true)}
                                 >
                                     Cancel Plan
                                 </button>
@@ -166,7 +170,7 @@ const MyProfile = () => {
                             <button
                                 type="button"
                                 className="my-profile__choose-btn"
-                                onClick={() => setShowPlansModal(true)}
+                                onClick={() => setPlansModalMode("new")}
                             >
                                 Choose a Plan →
                             </button>
@@ -186,10 +190,22 @@ const MyProfile = () => {
                 </div>
             </div>
 
-            {showPlansModal && (
+            {plansModalMode && (
                 <PlansModal
-                    onClose={() => setShowPlansModal(false)}
+                    mode={plansModalMode}
+                    memberId={user.id}
                     currentPlanId={report.planId}
+                    onClose={() => setPlansModalMode(null)}
+                    onSuccess={refetchReport}
+                />
+            )}
+
+            {showCancelModal && (
+                <ConfirmCancelSubscriptionModal
+                    memberId={user.id}
+                    planName={currentPlan?.name ?? "current plan"}
+                    onClose={() => setShowCancelModal(false)}
+                    onCancelled={refetchReport}
                 />
             )}
         </div>
