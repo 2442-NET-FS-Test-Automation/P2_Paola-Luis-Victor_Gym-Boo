@@ -17,9 +17,9 @@ public class ClassesController : ControllerBase
 
     // GET /api/classes?discipline=yoga&date=2026-07-15
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<ClassSessionDto>>> Get([FromQuery] string? discipline, [FromQuery] DateTime? date)
+    public async Task<ActionResult<IReadOnlyList<ClassSessionDto>>> Get([FromQuery] string? discipline, [FromQuery] DateTime? date, [FromQuery] bool past = false)
     {
-        var classes = await _sessionService.GetFilteredSessionsAsync(discipline, date);
+        var classes = await _sessionService.GetFilteredSessionsAsync(discipline, date, past);
         return Ok(classes);
     }
 

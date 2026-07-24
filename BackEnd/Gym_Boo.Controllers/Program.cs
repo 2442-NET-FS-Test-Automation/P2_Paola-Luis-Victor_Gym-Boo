@@ -35,6 +35,16 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
+    // Adding CORS 
+    const string SpaCorsPolicy = "spa"; // string name for our policy 
+
+    // Configuring our CORS policy
+    builder.Services.AddCors(o => o.AddPolicy(SpaCorsPolicy, p => p
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+    ));
+
     builder.Services.AddOpenApi();
     builder.Services.AddControllers();
 
@@ -175,7 +185,9 @@ try
     }
 
     app.UseAuthentication();
-    app.UseAuthorization(); 
+    app.UseAuthorization();
+  
+    app.UseCors(SpaCorsPolicy);
 
     app.MapControllers();
 

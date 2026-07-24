@@ -1,0 +1,97 @@
+.session-card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.session-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.session-card__badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.session-card__availability {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-warning);
+}
+
+.session-card__availability.is-full {
+    color: var(--color-danger);
+}
+
+.session-card__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.session-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-warning);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.session-card__instructor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.session-card__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.session-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-text-subtle);
+    border-top: 1px solid var(--color-border-soft);
+    padding-top: 12px;
+    margin-top: 4px;
+}
+
+.session-card__spots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-success);
+    font-weight: 700;
+}
+
+.session-card.is-disabled {
+    opacity: 0.5;
+    filter: grayscale(0.3);
+    cursor: not-allowed;
+    pointer-events: none;
+}
