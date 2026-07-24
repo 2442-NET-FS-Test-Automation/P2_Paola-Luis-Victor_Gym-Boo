@@ -1,17 +1,31 @@
+using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gym_Boo.Controllers.Administration;
+namespace Gym_Boo.Controllers.Controllers;
 
 [ApiController]
 [Route("api/admin")]
 //[Authorize(Roles = "Admin")]
 public class AdminController(IAdminServices adminServices) : ControllerBase
 {
+    
     // --- DISCIPLINES MANAGEMENT ---
 
+    [HttpGet("disciplines/list")]
+    public async Task<IActionResult> GetDisciplinesList(CancellationToken ct)
+    {
+        var result = await adminServices.GetAllDisciplines(ct);
+        if (result is null)
+        {
+            return NotFound($"Disciplines not found.");
+        }
+        
+        return Ok(result);
+    }
+    
     [HttpPost("disciplines/create")]
     public async Task<IActionResult> CreateDiscipline([FromBody] DisciplineDto dto, CancellationToken ct)
     {
@@ -42,7 +56,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         return Ok(new { message = "Discipline availability status toggled successfully." });
     }
 
-    [HttpDelete("disciplines")]
+    [HttpDelete("disciplines/delete")]
     public async Task<IActionResult> DeleteDiscipline([FromQuery] string name, CancellationToken ct)
     {
         var result = await adminServices.DeleteDiscipline(name, ct);
@@ -55,6 +69,17 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
 
     // --- INSTRUCTORS MANAGEMENT ---
 
+    [HttpGet("instructors/list")]
+    public async Task<IActionResult> Getinstructors(CancellationToken ct)
+    {
+        var instructorList = await adminServices.GetAllInstructors(ct);
+        if (instructorList is null)
+        {
+            return NotFound($"Instructors not found.");
+        }
+        return Ok(instructorList);
+    }
+    
     [HttpGet("instructors/{id:int}")]
     public async Task<IActionResult> GetInstructor(int id, CancellationToken ct)
     {
@@ -65,14 +90,19 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         return Ok(instructor);
     }
 
-    [HttpPost("instructors")]
+    [HttpPost("instructors/create")]
     public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto dto, CancellationToken ct)
     {
+        string hashedPass = dto.Password;
         // Map DTO to User entity
         var instructor = new User 
         { 
             Email = dto.Email, 
-            Role = Role.Instructor 
+            Name = dto.FirstName,
+            LastName = dto.LastName,
+            Role = Role.Instructor,
+            IsActive = true,
+            
         };
 
         var result = await adminServices.NewInstructor(instructor, ct);

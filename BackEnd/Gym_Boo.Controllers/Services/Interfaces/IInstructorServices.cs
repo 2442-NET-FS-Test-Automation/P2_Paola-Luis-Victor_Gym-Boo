@@ -1,6 +1,7 @@
-﻿using Gym_Boo.Data.Entities;
+﻿using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Data.Entities;
 
-namespace Gym_Boo.Controllers.Instructor;
+namespace Gym_Boo.Controllers.Services.Interfaces;
 
 public interface IInstructorServices
 {

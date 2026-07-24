@@ -1,4 +1,4 @@
-﻿namespace Gym_Boo.Controllers.Administration;
+﻿namespace Gym_Boo.Controllers.DTOs;
 
 //Controlls DTO
 public record DisciplineDto(string Name);

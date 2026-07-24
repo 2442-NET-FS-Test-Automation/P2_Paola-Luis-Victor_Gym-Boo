@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Gym_Boo.Controllers.Administration;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
-using Gym_Boo.Controllers.Instructor;
+using Gym_Boo.Controllers.Services;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -32,13 +32,13 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddControllers();
 
-    builder.Services.AddScoped<IAdminServices, AdminServices>();
-    builder.Services.AddScoped<IInstructorServices, InstructorServices>();
-
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
     // For concurrent operations (if applies)
     builder.Services.AddPersistence(builder.Configuration);
+    
+    builder.Services.AddScoped<IAdminServices, AdminServices>();
+    builder.Services.AddScoped<IInstructorServices, InstructorServices>();
 
     // Application Services
     builder.Services.AddApplicationServices();

@@ -1,8 +1,10 @@
-﻿using Gym_Boo.Data.Entities;
+﻿using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Controllers.Services.Interfaces;
+using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gym_Boo.Controllers.Instructor;
+namespace Gym_Boo.Controllers.Services;
 
 public class InstructorServices : IInstructorServices
 {

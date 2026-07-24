@@ -1,8 +1,9 @@
-﻿using Gym_Boo.Data.Entities;
+﻿using Gym_Boo.Controllers.Services.Interfaces;
+using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gym_Boo.Controllers.Administration;
+namespace Gym_Boo.Controllers.Services;
 
 public class AdminServices : IAdminServices
 {
@@ -15,6 +16,17 @@ public class AdminServices : IAdminServices
 
     //Disciplines
 
+    public async Task<List<Discipline>> GetAllDisciplines(CancellationToken ct)
+    {
+        var res = _db.Disciplines.ToListAsync(ct);
+        if (!res.Result.Any())
+        {
+            return null;
+        }
+
+        return await res;
+    }
+    
     public async Task<bool> NewDisciplineAsync(string discipline, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(discipline)) return false;
@@ -60,6 +72,8 @@ public class AdminServices : IAdminServices
             return false;
         }
 
+        if()
+        
         target.Available = false; // Explicitly set to false for a disable method
         await _db.SaveChangesAsync(ct);
 
@@ -85,6 +99,17 @@ public class AdminServices : IAdminServices
 
     //Instructors
 
+    public async Task<List<User>> GetAllInstructors(CancellationToken ct)
+    {
+        var res = _db.Users.Where(i => i.Role == Role.Instructor).ToListAsync(ct);
+        if (!res.Result.Any())
+        {
+            return null;
+        }
+
+        return await res;
+    }
+    
     public async Task<bool> GetInstructor(int id, CancellationToken ct)
     {
         return await _db.Users.AnyAsync(i => i.Id == id, ct);

@@ -1,8 +1,9 @@
-﻿using Gym_Boo.Data.Entities;
-using Microsoft.AspNetCore.Authorization;
+﻿using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Controllers.Services.Interfaces;
+using Gym_Boo.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gym_Boo.Controllers.Instructor;
+namespace Gym_Boo.Controllers.Controllers;
 
 [ApiController]
 [Route("api/instructor")]

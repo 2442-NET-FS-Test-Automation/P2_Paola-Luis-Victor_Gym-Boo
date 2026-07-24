@@ -1,4 +1,4 @@
-namespace Gym_Boo.Controllers.Instructor;
+namespace Gym_Boo.Controllers.DTOs;
 
 public record SessionAttendanceResponseDto(int SessionId, int TotalEnrolled, List<SubscriberDto> Subscribers);
 public record SubscriberDto(int Id, string Email);
