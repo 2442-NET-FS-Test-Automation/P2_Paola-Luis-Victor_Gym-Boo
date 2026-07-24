@@ -1,7 +1,7 @@
 ﻿using Gym_Boo.Data.Entities;
 
 namespace Gym_Boo.Controllers.Services.Interfaces;
-
+//
 public interface IAdminServices
 {
     //Discipline related functions
