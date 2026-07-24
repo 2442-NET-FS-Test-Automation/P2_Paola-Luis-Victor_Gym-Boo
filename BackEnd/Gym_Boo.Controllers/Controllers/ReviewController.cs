@@ -1,4 +1,4 @@
-using Gym_Boo.ControllerApi.Dtos;
+using Gym_Boo.ControllerApi.DTOs;
 using Gym_Boo.ControllerApi.Exceptions;
 using Gym_Boo.ControllerApi.Services;
 using Microsoft.AspNetCore.Authorization;

@@ -1,6 +1,6 @@
 using Gym_Boo.Data.Enums;
 
-namespace Gym_Boo.ControllerApi.Dtos;
+namespace Gym_Boo.ControllerApi.DTOs;
 
 public record ReviewDto(
     int ReviewId,
