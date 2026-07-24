@@ -1,4 +1,5 @@
-import { Star, Clock, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Star, Users } from "lucide-react";
 import type { ApiClassSession } from "../../types";
 import { getDisciplineStyle } from "../../utils/disciplineColors";
 import {
@@ -18,8 +19,8 @@ const SessionCard = ({ session }: SessionCardProps) => {
     const isFull = session.availableSpots <= 0;
     const duration = getDurationMinutes(session.startTime, session.endTime);
 
-    return (
-        <article className="session-card">
+    const content = (
+        <>
             <div className="session-card__top">
                 <span
                     className="session-card__badge"
@@ -30,10 +31,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
                 >
                     {session.discipline}
                 </span>
-                <span
-                    className={`session-card__availability ${isFull ? "is-full" : ""
-                        }`}
-                >
+                <span className={`session-card__availability ${isFull ? "is-full" : ""}`}>
                     {isFull ? "FULL" : `${session.availableSpots} left`}
                 </span>
             </div>
@@ -42,7 +40,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
 
             <div className="session-card__rating">
                 <Star size={14} fill="currentColor" />
-                <span>{ session.instructorRating }</span>
+                <span>{session.instructorRating.toFixed(1)}</span>
             </div>
 
             <div className="session-card__instructor">
@@ -58,10 +56,24 @@ const SessionCard = ({ session }: SessionCardProps) => {
                     {formatSessionTime(session.startTime)} · {duration}min
                 </span>
                 <span className="session-card__spots">
-                    <Users size={13} /> {session.totalSpots} spots
+                    <Users size={13} /> {session.availableSpots} spots
                 </span>
             </div>
-        </article>
+        </>
+    );
+
+    if (isFull) {
+        return (
+            <article className="session-card is-disabled" aria-disabled="true">
+                {content}
+            </article>
+        );
+    }
+
+    return (
+        <Link to={`/member/discover/${session.id}`} className="session-card">
+            {content}
+        </Link>
     );
 };
 

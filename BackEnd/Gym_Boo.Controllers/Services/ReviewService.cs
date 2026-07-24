@@ -1,4 +1,5 @@
 using Gym_Boo.ControllerApi.Dtos;
+using Gym_Boo.ControllerApi.Exceptions;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories;
@@ -27,6 +28,15 @@ class ReviewService : IReviewService
             throw new ArgumentException($"The review type '{reviewTypeRaw}' is not valid.");
         }
 
+        // 2. Duplicate Validation: Check if a review of the same type already exists for this enrollment
+        bool exists = await _reviewRepo.ExistAsync(dto.EnrollmentId, reviewType);
+
+        if (exists)
+        {
+            throw new DuplicateReviewException(
+                $"There is already a review of type '{reviewType}' for the registration {dto.EnrollmentId}.");
+        }
+
         // 2. Acceptance Criteria: Validate attendance (Status == Attended)
         bool hasAttended = await _enrollmentRepo.EnrollmentHasBeenAttendedAsync(dto.EnrollmentId);
         if (!hasAttended)
@@ -49,5 +59,21 @@ class ReviewService : IReviewService
         await _context.SaveChangesAsync();
 
         return review;
+    }
+
+    public async Task<IReadOnlyList<ReviewDto>> GetReviewsByEnrollmentIdAsync(int enrollmentId)
+    {
+        var reviews = await _reviewRepo.GetReviewsByEnrollment(enrollmentId);
+
+        var mappedItems = reviews.Select(e => new ReviewDto(
+            ReviewId: e.Id,
+            EnrollmentId: e.EnrollmentId,
+            ReviewType: e.ReviewType,
+            Rating: e.Rating,
+            Comment: e.Comment,
+            CreatedAt: DateTime.SpecifyKind(e.CreatedAt, DateTimeKind.Utc)
+        )).ToList();
+
+        return mappedItems;
     }
 }
