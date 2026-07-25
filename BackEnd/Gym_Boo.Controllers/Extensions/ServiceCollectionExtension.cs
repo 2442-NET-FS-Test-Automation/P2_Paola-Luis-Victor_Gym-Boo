@@ -52,8 +52,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<IReservationService, ReservationService>();
         services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IPlanRepository, PlanRepository>();
+        services.AddScoped<IPlanService, PlanService>();
 
         return services;
     }

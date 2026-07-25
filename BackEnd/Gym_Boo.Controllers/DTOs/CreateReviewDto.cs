@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Gym_Boo.ControllerApi.Dtos;
+namespace Gym_Boo.ControllerApi.DTOs;
 
 public record CreateReviewDto(
     [Required] int EnrollmentId,
