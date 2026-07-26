@@ -2,13 +2,14 @@ using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Controllers;
 
 [ApiController]
 [Route("api/admin")]
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class AdminController(IAdminServices adminServices) : ControllerBase
 {
     

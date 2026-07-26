@@ -1,13 +1,14 @@
 ﻿using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Controllers;
 
 [ApiController]
 [Route("api/instructor")]
-//[Authorize(Roles = "Instructor")]
+[Authorize(Roles = "Instructor")]
 public class InstructorControls(IInstructorServices instructorServices) : ControllerBase
 {
     [HttpGet("{id:int}")]
