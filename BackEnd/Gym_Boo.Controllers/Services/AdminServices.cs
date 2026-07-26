@@ -64,15 +64,11 @@ public class AdminServices : IAdminServices
     }
 
     public async Task<bool> ToggleDiscipline(int id, CancellationToken ct)
-    {
-        var target = await _db.Disciplines.FirstOrDefaultAsync(d => d.Id == id, ct);
-
-        if (target == null)
-        {
-            return false;
-        }
+    { 
         
-        target.Available = !target.Available; // Explicitly set to false for a disable method
+        await _db.Disciplines
+            .Where(d => d.Id == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.Available, d => !d.Available), ct);
         
         await _db.SaveChangesAsync(ct);
 

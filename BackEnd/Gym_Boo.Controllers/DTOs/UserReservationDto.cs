@@ -6,11 +6,12 @@ public record ReservationItemDto(
     string ClassName,
     string Discipline,
     string InstructorName,
-    DateTime StartTime,
-    DateTime EndTime,
+    DateTimeOffset StartTime,
+    DateTimeOffset EndTime,
     string Location,
     string Status, // Enrolled, Cancelled
-    bool HasPenalty
+    bool HasPenalty,
+    decimal Penalty
 );
 
 public record UserReservationsResponseDto(

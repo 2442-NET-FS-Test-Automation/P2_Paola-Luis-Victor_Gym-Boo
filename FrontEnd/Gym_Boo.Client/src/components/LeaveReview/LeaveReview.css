@@ -1,0 +1,125 @@
+.leave-review {
+    max-width: 720px;
+}
+
+.leave-review__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+.leave-review__back:hover {
+    color: var(--color-text);
+}
+
+.leave-review__eyebrow {
+    margin: 0 0 4px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--color-text-subtle);
+}
+
+.leave-review h1 {
+    margin: 0 0 20px;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.leave-review__status {
+    color: var(--color-text-muted);
+}
+
+.leave-review__summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+
+.leave-review__discipline {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+.leave-review__summary-main {
+    flex: 1;
+}
+
+.leave-review__summary-main h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.leave-review__summary-main p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.leave-review__duration {
+    text-align: right;
+    font-size: 11px;
+    color: var(--color-text-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.leave-review__duration strong {
+    color: var(--color-text);
+    font-size: 14px;
+}
+
+.leave-review__sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.leave-review__actions {
+    display: flex;
+    gap: 12px;
+}
+
+.leave-review__skip {
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.leave-review__submit {
+    flex: 1;
+    border: none;
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.leave-review__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Gym_Boo.ControllerApi.Extensions;
 using Gym_Boo.Controllers.Services;

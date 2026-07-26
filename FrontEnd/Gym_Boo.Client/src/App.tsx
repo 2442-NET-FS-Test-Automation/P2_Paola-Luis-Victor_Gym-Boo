@@ -9,6 +9,10 @@ import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 import Discover from "./pages/Discover/Discover";
+import ClassDetail from "./pages/ClassDetail/ClassDetail";
+import MyBookings from "./pages/MyBookings/MyBookings";
+import LeaveReview from "./components/LeaveReview/LeaveReview";
+import MyProfile from "./pages/MyProfile/MyProfile";
 
 import InstructorDashboard from "./pages/Instructor/Dashboard/InstructorDashboard";
 import InstructorSchedule from "./pages/Instructor/Schedule/InstructorSchedule";
@@ -64,19 +68,24 @@ function App() {
         }
       >
         <Route element={<Layout />}>
-          <Route
-            path="/coach/dashboard"
-            element={<InstructorDashboard />}
-          />
+          <Route path="/member/discover" element={<Discover />} />
+          <Route path="/member/bookings" element={<MyBookings />} />
+          <Route path="/member/profile" element={<MyProfile />} />
+          <Route path="/member/review" element={<div>Leave a Review — coming soon</div>} />
 
-          <Route
-            path="/coach/schedule"
-            element={<InstructorSchedule />}
-          />
+          <Route path="/coach/dashboard" element={<div>Coach Dashboard — coming soon</div>} />
+          <Route path="/coach/schedule" element={<div>My Schedule — coming soon</div>} />
+          <Route path="/coach/attendance" element={<div>Attendance — coming soon</div>} />
 
+          <Route path="/admin/analytics" element={<div>Analytics — coming soon</div>} />
+          <Route path="/admin/catalog" element={<div>Class Catalog — coming soon</div>} />
+          <Route path="/admin/sessions" element={<div>Sessions — coming soon</div>} />
+          <Route path="/admin/instructors" element={<div>Instructors — coming soon</div>} />
+
+          <Route path="/member/discover/:id" element={<ClassDetail />} />
           <Route
-            path="/coach/attendance"
-            element={<InstructorAttendance />}
+            path="/member/review/:enrollmentId/:sessionId"
+            element={<LeaveReview />}
           />
         </Route>
       </Route>
