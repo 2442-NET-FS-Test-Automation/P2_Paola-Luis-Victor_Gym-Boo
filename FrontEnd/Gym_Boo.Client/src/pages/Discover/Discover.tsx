@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getClasses } from "../../api/sessions";
 import type { ApiClassSession } from "../../types";
-import { useActiveRole } from "../../components/SideBar/roleConfig";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import FilterBar from "../../components/FilterBar/FilterBar";
 import SessionCard from "../../components/SessionCard/SessionCard";
@@ -10,7 +9,6 @@ import { localDateStringToUtcIso } from "../../utils/timeZone";
 import "./Discover.css";
 
 const Discover = () => {
-    const activeRole = useActiveRole();
     const dateOptions = useMemo(() => getUpcomingDateOptions(), []);
 
     const [allSessions, setAllSessions] = useState<ApiClassSession[]>([]);
@@ -69,7 +67,7 @@ const Discover = () => {
     return (
         <div className="discover-page">
             <header className="discover-page__header">
-                <p className="discover-page__eyebrow">{activeRole.portalLabel}</p>
+                <p className="discover-page__eyebrow">MEMBER PORTAL</p>
                 <h1>Discover Classes</h1>
                 <p className="discover-page__subtitle">
                     {filteredSessions.length} sessions found
