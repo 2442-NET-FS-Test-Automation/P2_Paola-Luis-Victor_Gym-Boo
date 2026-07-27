@@ -1,4 +1,5 @@
-﻿using Gym_Boo.Controllers.Services.Interfaces;
+﻿using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -171,15 +172,48 @@ public class AdminServices : IAdminServices
             .ToListAsync(ct);
     }
 
-    public Task ReseravtionReports(CancellationToken ct)
+    public async Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var report = await _db.Sessions
+            .Select(s => new SessionRegistrationDto(
+                s.Id,
+                s.ClassId,
+                s.Start,
+                s.Slots,
+                s.Enrollments.Count
+            ))
+            .OrderByDescending(s => s.EnrollmentCount) // Ordenamos de mayor a menor
+            .ToListAsync(ct);
+
+        return report;
     }
 
-    public Task ClassRevenue(CancellationToken ct)
+    public async Task<double[]> TotalRevenue(CancellationToken ct)
     {
-        throw new NotImplementedException();
+        // Calculamos la fecha y hora de hace exactamente 30 días
+        var limitDate = DateTime.UtcNow.AddDays(-30);
+
+        // 1. Ingreso por cancelaciones de sesiones de los últimos 3 días
+        var cancellationRev = await _db.Enrollments
+            .Where(e => e.CancellationFeeApplied && e.Session.Start >= limitDate)
+            .Select(e => e.Session.CancellationFee)
+            .SumAsync(ct);
+
+        // 2. Ingreso por suscripciones creadas/iniciadas en los últimos 3 días
+        var subscriptionRev = await _db.MemberSubscriptions
+            .Where(ms => ms.StartDate >= limitDate)
+            .Select(ms => ms.Plan.Price)
+            .SumAsync(ct);
+
+        // 3. Suma de ambos
+        var totalRev = cancellationRev + subscriptionRev;
+
+        // Retornamos el array con los 3 valores casteados a double
+        return new double[] 
+        { 
+            (double)cancellationRev, 
+            (double)subscriptionRev, 
+            (double)totalRev 
+        };
     }
-
-
 }
