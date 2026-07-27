@@ -31,7 +31,7 @@
     color: var(--color-warning);
 }
 
-.session-card__availability.is-full {
+.session-card__availability.is-unavailable {
     color: var(--color-danger);
 }
 
