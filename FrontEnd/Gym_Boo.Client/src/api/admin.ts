@@ -4,28 +4,11 @@ export interface Discipline {
   id: number;
   name: string;
   isActive?: boolean;
+  isAvailable?: boolean;
   available?: boolean;
 }
 
-export interface AdminInstructor {
-  id: number;
-  name: string;
-  firstName?: string;
-  lastName: string;
-  email: string;
-  isActive: boolean;
-}
-
-export interface CreateInstructorRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
-export const getDisciplines = async (): Promise<
-  Discipline[]
-> => {
+export const getDisciplines = async (): Promise<Discipline[]> => {
   const { data } = await api.get<Discipline[]>(
     "/api/admin/disciplines/list"
   );
@@ -36,23 +19,21 @@ export const getDisciplines = async (): Promise<
 export const createDiscipline = async (
   name: string
 ): Promise<void> => {
-  await api.post(
-    "/api/admin/disciplines/create",
-    { name }
-  );
+  await api.post("/api/admin/disciplines/create", {
+    name,
+  });
 };
 
 export const updateDiscipline = async (
   id: number,
   name: string
 ): Promise<void> => {
-  await api.put(
-    `/api/admin/disciplines/${id}`,
-    { name }
-  );
+  await api.put(`/api/admin/disciplines/${id}`, {
+    name,
+  });
 };
 
-export const toggleDiscipline = async (
+export const toggleDisciplineStatus = async (
   id: number
 ): Promise<void> => {
   await api.patch(
@@ -63,13 +44,37 @@ export const toggleDiscipline = async (
 export const deleteDiscipline = async (
   name: string
 ): Promise<void> => {
-  await api.delete(
-    "/api/admin/disciplines/delete",
-    {
-      params: { name },
-    }
-  );
+  await api.delete("/api/admin/disciplines/delete", {
+    params: {
+      name,
+    },
+  });
 };
+
+export interface AdminInstructor {
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
+  role?: string;
+  isActive: boolean;
+}
+
+export interface CreateInstructorRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateInstructorRequest {
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
+  role: number;
+  isActive: boolean;
+}
 
 export const getInstructors = async (): Promise<
   AdminInstructor[]
@@ -81,21 +86,51 @@ export const getInstructors = async (): Promise<
   return data;
 };
 
-export const createInstructor = async (
-  instructor: CreateInstructorRequest
+export const getInstructor = async (
+  id: number
 ): Promise<AdminInstructor> => {
-  const { data } = await api.post<AdminInstructor>(
-    "/api/admin/instructors/create",
-    instructor
+  const { data } = await api.get<AdminInstructor>(
+    `/api/admin/instructors/${id}`
   );
 
   return data;
 };
 
-export const removeInstructor = async (
+export const createInstructor = async (
+  request: CreateInstructorRequest
+): Promise<void> => {
+  await api.post(
+    "/api/admin/instructors/create",
+    request
+  );
+};
+
+export const updateInstructor = async (
+  instructor: UpdateInstructorRequest
+): Promise<void> => {
+  await api.put(
+    `/api/admin/instructors/${instructor.id}`,
+    instructor
+  );
+};
+
+export const deleteInstructor = async (
   id: number
 ): Promise<void> => {
   await api.delete(
     `/api/admin/instructors/${id}`
   );
+};
+
+export const toggleInstructorStatus = async (
+  instructor: AdminInstructor
+): Promise<void> => {
+  await updateInstructor({
+    id: instructor.id,
+    name: instructor.name,
+    lastName: instructor.lastName,
+    email: instructor.email,
+    role: 2,
+    isActive: !instructor.isActive,
+  });
 };

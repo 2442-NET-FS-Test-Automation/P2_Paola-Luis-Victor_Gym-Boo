@@ -45,6 +45,11 @@ function App() {
           />
 
           <Route
+            path="/member/discover/:id"
+            element={<ClassDetail />}
+          />
+
+          <Route
             path="/member/bookings"
             element={<MyBookings />}
           />
@@ -75,10 +80,20 @@ function App() {
         }
       >
         <Route element={<Layout />}>
+          <Route
+            path="/coach/dashboard"
+            element={<InstructorDashboard />}
+          />
 
-          <Route path="/coach/dashboard" element={<div>Coach Dashboard — coming soon</div>} />
-          <Route path="/coach/schedule" element={<div>My Schedule — coming soon</div>} />
-          <Route path="/coach/attendance" element={<div>Attendance — coming soon</div>} />
+          <Route
+            path="/coach/schedule"
+            element={<InstructorSchedule />}
+          />
+
+          <Route
+            path="/coach/attendance"
+            element={<InstructorAttendance />}
+          />
         </Route>
       </Route>
 

@@ -1,11 +1,17 @@
 import { api } from "./client";
-import type { ApiClassSession, ClassFilters } from "../types";
+import type {
+  ApiClassSession,
+  ClassFilters,
+} from "../types";
 
 export const getClasses = async (
-    filters?: ClassFilters
+  filters?: ClassFilters
 ): Promise<ApiClassSession[]> => {
-    const { data } = await api.get<ApiClassSession[]>("/api/Classes", {
-        params: filters,
-    });
-    return data;
+  const { data } = await api.get<
+    ApiClassSession[]
+  >("/api/Classes", {
+    params: filters,
+  });
+
+  return data;
 };

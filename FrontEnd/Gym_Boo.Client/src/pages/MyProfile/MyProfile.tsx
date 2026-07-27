@@ -17,7 +17,6 @@ const MyProfile = () => {
     const [plans, setPlans] = useState<Plan[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [showPlansModal, setShowPlansModal] = useState(false);
     const [plansModalMode, setPlansModalMode] = useState<"new" | "upgrade" | null>(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
 
