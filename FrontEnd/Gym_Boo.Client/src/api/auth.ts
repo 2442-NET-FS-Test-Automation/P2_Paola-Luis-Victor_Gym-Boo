@@ -64,3 +64,26 @@ export const getRoleHome = (role: UserRole): string => {
       return "/member/discover";
   }
 };
+
+export interface RegisterRequest {
+  name: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+}
+
+export const register = async (
+  request: RegisterRequest
+): Promise<RegisterResponse> => {
+  const { data } =
+    await api.post<RegisterResponse>(
+      "/api/auth/register",
+      request
+    );
+
+  return data;
+};
