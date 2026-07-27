@@ -1,4 +1,5 @@
-﻿using Gym_Boo.Data.Entities;
+﻿using Gym_Boo.Controllers.DTOs;
+using Gym_Boo.Data.Entities;
 
 namespace Gym_Boo.Controllers.Services.Interfaces;
 
@@ -20,7 +21,7 @@ public interface IAdminServices
     
     //Revenue Related functions
     Task<List<Session>> MostPopularClass(CancellationToken ct);
-    Task ReseravtionReports(CancellationToken ct);
-    Task ClassRevenue(CancellationToken ct);
-    
+    Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct);
+    Task<double[]> TotalRevenue(CancellationToken ct);
+
 }
