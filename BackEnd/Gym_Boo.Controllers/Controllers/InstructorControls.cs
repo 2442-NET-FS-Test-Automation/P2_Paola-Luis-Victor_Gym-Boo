@@ -59,9 +59,22 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         
         if (attendance is null)
         {
-            return NotFound($"Session with ID {id} not found.");
+            return NotFound($"No sessions found.");
         }
 
         return Ok(attendance);
+    }
+
+    [HttpGet("sessions/list")]
+    public async Task<IActionResult> GetNextSessions(int insId, CancellationToken ct)
+    {
+        var next = await instructorServices.GetUpcomingSessionsForInstructor(insId, ct);
+        
+        if (next is null || !next.Any())
+        {
+            return NotFound("No upcoming sessions.");
+        }
+    
+        return Ok(next);
     }
 }
