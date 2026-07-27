@@ -131,11 +131,22 @@ function Login() {
               ? "Signing In..."
               : "Sign In"}
           </button>
-          
+
+          <div className="login-form__signup">
+            <span>Don't have an account?</span>
+
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+            >
+              Sign up free
+            </button>
+          </div>
         </form>
       </section>
     </main>
   );
+  
 }
 
 export default Login;

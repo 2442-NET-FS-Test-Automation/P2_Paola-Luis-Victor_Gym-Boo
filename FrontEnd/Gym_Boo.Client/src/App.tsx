@@ -7,6 +7,7 @@ import {
 import Login from "./pages/Login/Login";
 import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import Register from "./pages/Register/Register";
 
 import Discover from "./pages/Discover/Discover";
 import ClassDetail from "./pages/ClassDetail/ClassDetail";
@@ -28,6 +29,11 @@ function App() {
       <Route
         path="/login"
         element={<Login />}
+      />
+
+      <Route
+        path="/register"
+        element={<Register />}
       />
 
       <Route
