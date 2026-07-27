@@ -1,13 +1,14 @@
 using Gym_Boo.ControllerApi.DTOs;
 using Gym_Boo.ControllerApi.Exceptions;
 using Gym_Boo.ControllerApi.Services;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Member")]
 public class PlansController : ControllerBase
 {
     private readonly IPlanService _planService;
