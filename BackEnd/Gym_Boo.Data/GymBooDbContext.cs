@@ -178,71 +178,7 @@ public class GymBooDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade); //ON deleting instructor, also its availability
         });
 
-
         // --- SEEDING DATA ---
-
-        // Hash estático precalculado de "Password123!" usando PasswordHasher<User>
-        const string DEFAULT_PASSWORD_HASH = "AQAAAAIAAYagAAAAEBX4M2T5G6b9zQ8J7y/1v8K9R0P1Q2R3S4T5U6V7W8X9Y0Z==";
-
-        // 1. USUARIOS (TPH)
-        var adminUser = new User
-        {
-            Id = 1,
-            Name = "Juan",
-            LastName = "Admin",
-            Email = "admin@gymboo.com",
-            PasswordHash = DEFAULT_PASSWORD_HASH,
-            Role = Role.Admin,
-            IsActive = true
-        };
-
-        var instructor1 = new Instructor
-        {
-            Id = 2,
-            Name = "Carlos",
-            LastName = "Mendoza",
-            Email = "carlos.mendoza@gymboo.com",
-            PasswordHash = DEFAULT_PASSWORD_HASH,
-            Role = Role.Instructor,
-            IsActive = true
-        };
-
-        var instructor2 = new Instructor
-        {
-            Id = 3,
-            Name = "Valeria",
-            LastName = "Ríos",
-            Email = "valeria.rios@gymboo.com",
-            PasswordHash = DEFAULT_PASSWORD_HASH,
-            Role = Role.Instructor,
-            IsActive = true
-        };
-
-        var member1 = new Member
-        {
-            Id = 4,
-            Name = "Sofía",
-            LastName = "Gómez",
-            Email = "sofia.gomez@gmail.com",
-            PasswordHash = DEFAULT_PASSWORD_HASH,
-            Role = Role.Member,
-            IsActive = true
-        };
-
-        var member2 = new Member
-        {
-            Id = 5,
-            Name = "Diego",
-            LastName = "Torres",
-            Email = "diego.torres@gmail.com",
-            PasswordHash = DEFAULT_PASSWORD_HASH,
-            Role = Role.Member,
-            IsActive = true
-        };
-
-        modelBuilder.Entity<User>().HasData(adminUser);
-        modelBuilder.Entity<Instructor>().HasData(instructor1, instructor2);
-        modelBuilder.Entity<Member>().HasData(member1, member2);
 
         // 2. DISPONIBILIDADES DE INSTRUCTORES
         modelBuilder.Entity<Availability>().HasData(
@@ -268,16 +204,16 @@ public class GymBooDbContext : DbContext
         var monthlyPlan = new SubscriptionPlan
         {
             Id = 1,
-            Name = "Plan Mensual Estándar",
-            Price = 799.00m,
+            Name = "Standard Monthly Plan",
+            Price = 49.99m,
             Recurrence = Recurrence.Monthly
         };
 
         var yearlyPlan = new SubscriptionPlan
         {
             Id = 2,
-            Name = "Plan Anual VIP",
-            Price = 7999.00m,
+            Name = "Premium Annual Plan",
+            Price = 499.99m,
             Recurrence = Recurrence.Yearly
         };
 
@@ -303,33 +239,52 @@ public class GymBooDbContext : DbContext
         );
 
         // 4. LUGARES (PLACES)
-        var mainHall = new Place { Id = 1, Name = "Salón Principal", MaxCapacity = 25 };
-        var yogaStudio = new Place { Id = 2, Name = "Estudio Mind & Body", MaxCapacity = 15 };
+        var mainHall = new Place
+        {
+            Id = 1,
+            Name = "Main Training Hall",
+            MaxCapacity = 25
+        };
 
+        var yogaStudio = new Place
+        {
+            Id = 2,
+            Name = "Mind & Body Studio",
+            MaxCapacity = 15
+        };
         modelBuilder.Entity<Place>().HasData(mainHall, yogaStudio);
 
         // 5. DISCIPLINAS Y CLASES
-        var crossfitDisc = new Discipline { Id = 1, Name = "CrossFit", Available = true };
-        var yogaDisc = new Discipline { Id = 2, Name = "Yoga", Available = true };
+        var crossfit = new Discipline
+        {
+            Id = 1,
+            Name = "CrossFit",
+            Available = true
+        };
 
-        modelBuilder.Entity<Discipline>().HasData(crossfitDisc, yogaDisc);
+        var yoga = new Discipline
+        {
+            Id = 2,
+            Name = "Yoga",
+            Available = true
+        };
+        modelBuilder.Entity<Discipline>().HasData(crossfit, yoga);
 
         var crossfitBasic = new Class
         {
             Id = 1,
-            Name = "CrossFit WOD Principiantes",
-            Description = "Entrenamiento funcional de alta intensidad adaptado a nivel inicial.",
+            Name = "CrossFit Fundamentals",
+            Description = "High-intensity functional training designed for beginners.",
             DisciplineId = 1
         };
 
         var vinyasaYoga = new Class
         {
             Id = 2,
-            Name = "Vinyasa Flow Yoga",
-            Description = "Secuencia dinámica de posturas coordinadas con la respiración.",
+            Name = "Vinyasa Flow",
+            Description = "Dynamic yoga practice focused on movement synchronized with breathing.",
             DisciplineId = 2
         };
-
         modelBuilder.Entity<Class>().HasData(crossfitBasic, vinyasaYoga);
 
         // 6. SESIONES
@@ -391,9 +346,10 @@ public class GymBooDbContext : DbContext
                 SessionId = 1,
                 ReviewType = ReviewType.Class,
                 Rating = 5,
-                Comment = "Excelente clase de CrossFit, muy dinámica y bien guiada.",
+                Comment = "Great CrossFit class! Challenging, fun, and well organized.",
                 CreatedAt = new DateTime(2026, 7, 21, 9, 15, 0, DateTimeKind.Utc)
             },
+
             new Review
             {
                 Id = 2,
@@ -401,9 +357,10 @@ public class GymBooDbContext : DbContext
                 SessionId = 2,
                 ReviewType = ReviewType.Instructor,
                 Rating = 5,
-                Comment = "Valeria explica los movimientos con mucha paciencia.",
+                Comment = "Emily explains every movement clearly and keeps everyone motivated.",
                 CreatedAt = new DateTime(2026, 7, 22, 18, 10, 0, DateTimeKind.Utc)
             }
         );
+
     }
 }

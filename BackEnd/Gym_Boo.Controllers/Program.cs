@@ -107,77 +107,82 @@ try
 
     using (var scope = app.Services.CreateScope())
     {
-        var db = scope.ServiceProvider
-            .GetRequiredService<GymBooDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<GymBooDbContext>();
+        var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
 
-        var hasher = scope.ServiceProvider
-            .GetRequiredService<IPasswordHasher<User>>();
+        const string password = "Password123!";
 
-        const string defaultPassword = "Password123!";
-
-        // NEW ADMIN
-        const string adminEmail = "mariana.lopez@gymboo.com";
-
-        if (!await db.Users.AnyAsync(u => u.Email == adminEmail))
+        async Task EnsureUserAsync(User user)
         {
-            var admin = new User
+            if (await db.Users.AnyAsync(x => x.Email == user.Email))
+                return;
+
+            user.PasswordHash = hasher.HashPassword(user, password);
+
+            switch (user)
             {
-                Name = "Mariana",
-                LastName = "López",
-                Email = adminEmail,
-                Role = Role.Admin,
-                IsActive = true
-            };
+                case Instructor instructor:
+                    db.Instructors.Add(instructor);
+                    break;
 
-            admin.PasswordHash =
-                hasher.HashPassword(admin, defaultPassword);
+                case Member member:
+                    db.Members.Add(member);
+                    break;
 
-            db.Users.Add(admin);
+                default:
+                    db.Users.Add(user);
+                    break;
+            }
         }
 
-        // NEW INSTRUCTOR
-        const string instructorEmail = "andres.ramirez@gymboo.com";
-
-        if (!await db.Users.AnyAsync(u => u.Email == instructorEmail))
+        await EnsureUserAsync(new User
         {
-            var instructor = new Instructor
-            {
-                Name = "Andrés",
-                LastName = "Ramírez",
-                Email = instructorEmail,
-                Role = Role.Instructor,
-                IsActive = true
-            };
+            Name = "Michael",
+            LastName = "Johnson",
+            Email = "admin@gymboo.com",
+            Role = Role.Admin,
+            IsActive = true
+        });
 
-            instructor.PasswordHash =
-                hasher.HashPassword(instructor, defaultPassword);
-
-            db.Instructors.Add(instructor);
-        }
-
-        // NEW MEMBER
-        const string memberEmail = "camila.hernandez@gmail.com";
-
-        if (!await db.Users.AnyAsync(u => u.Email == memberEmail))
+        await EnsureUserAsync(new Instructor
         {
-            var member = new Member
-            {
-                Name = "Camila",
-                LastName = "Hernández",
-                Email = memberEmail,
-                Role = Role.Member,
-                IsActive = true
-            };
+            Name = "James",
+            LastName = "Wilson",
+            Email = "james.wilson@gymboo.com",
+            Role = Role.Instructor,
+            IsActive = true
+        });
 
-            member.PasswordHash =
-                hasher.HashPassword(member, defaultPassword);
+        await EnsureUserAsync(new Instructor
+        {
+            Name = "Emily",
+            LastName = "Davis",
+            Email = "emily.davis@gymboo.com",
+            Role = Role.Instructor,
+            IsActive = true
+        });
 
-            db.Members.Add(member);
-        }
+        await EnsureUserAsync(new Member
+        {
+            Name = "Sarah",
+            LastName = "Brown",
+            Email = "sarah.brown@gmail.com",
+            Role = Role.Member,
+            IsActive = true
+        });
+
+        await EnsureUserAsync(new Member
+        {
+            Name = "Daniel",
+            LastName = "Miller",
+            Email = "daniel.miller@gmail.com",
+            Role = Role.Member,
+            IsActive = true
+        });
 
         await db.SaveChangesAsync();
     }
-
+    
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
