@@ -50,9 +50,6 @@ public class GymBooDbContext : DbContext
             entity.Property(e => e.PasswordHash).IsRequired();
 
             entity.HasIndex(e => e.Email).IsUnique();
-
-            //Global filter, EF will exclude inactive users automatically
-            //entity.HasQueryFilter(u => u.IsActive);
         });
 
         modelBuilder.Entity<SubscriptionPlan>(entity =>
@@ -87,8 +84,7 @@ public class GymBooDbContext : DbContext
             entity.HasKey(d => d.Id);
             entity.Property(p => p.Name).IsRequired().HasMaxLength(30);
             entity.Property(p => p.Available).IsRequired().HasDefaultValue(true);
-
-            //entity.HasQueryFilter(d => d.Available);
+            
         });
 
 

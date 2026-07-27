@@ -96,7 +96,6 @@ public class AdminController(
     [HttpPost("instructors/create")]
     public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto dto, CancellationToken ct)
     {
-        // 1. Instantiating entity
         var instructor = new User 
         { 
             Email = dto.Email, 
@@ -136,5 +135,35 @@ public class AdminController(
             return NotFound($"Instructor with ID {id} not found.");
 
         return Ok(new { message = "Instructor removed successfully." });
+    }
+    
+    //Reports
+
+    [HttpGet("reports/sessions")]
+    public async Task<IActionResult> GetSessions(CancellationToken ct)
+    {
+        var sessions = await adminServices.RegistrationReports(ct);
+
+        if (sessions is null || !sessions.Any())
+        {
+            return NotFound("No sessions found to generate the report.");
+        }
+    
+        return Ok(sessions);
+    }
+    
+    [HttpGet("reports/revenue")]
+    public async Task<IActionResult> GetRevenue(CancellationToken ct)
+    {
+        var report = await adminServices.TotalRevenue(ct);
+        
+        var response = new 
+        {
+            CancellationRevenue = report[0],
+            SubscriptionRevenue = report[1],
+            TotalRevenue = report[2]
+        };
+
+        return Ok(response);
     }
 }
