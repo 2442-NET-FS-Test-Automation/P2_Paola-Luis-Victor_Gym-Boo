@@ -1,0 +1,35 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  background-color: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+
+  padding: 32px;
+
+  border: 1px solid #303036;
+  border-radius: 18px;
+
+  background-color: #141416;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
+}
+
+.modal-card h2 {
+  margin: 0 0 28px;
+
+  font-size: 28px;
+  font-weight: 900;
+  text-transform: uppercase;
+}

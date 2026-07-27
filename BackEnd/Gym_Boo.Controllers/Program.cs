@@ -184,10 +184,10 @@ try
         app.MapScalarApiReference();
     }
 
+    app.UseCors(SpaCorsPolicy);
+
     app.UseAuthentication();
     app.UseAuthorization();
-  
-    app.UseCors(SpaCorsPolicy);
 
     app.MapControllers();
 

@@ -22,9 +22,32 @@ export interface DateOption {
     value: string; // "YYYY-MM-DD"
 }
 
+export type UserRole = "Member" | "Instructor" | "Admin";
+
+export interface AuthUser {
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  token: string;
+  user: AuthUser;
+}
+
 export interface CurrentUser {
     id: number;
     name: string;
+    lastName: string;
+    email: string;
     role: string;
     initials: string;
 }
@@ -86,6 +109,8 @@ export interface MemberReport {
   name: string;
   lastName: string;
   email: string;
+  role: UserRole;
+  initials: string;
   userType: string;
   isActive: boolean;
   idSubscription: number | null;

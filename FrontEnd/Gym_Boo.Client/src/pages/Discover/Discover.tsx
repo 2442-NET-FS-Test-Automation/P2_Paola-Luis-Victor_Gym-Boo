@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { getClasses } from "../../api/sessions";
 import type { ApiClassSession } from "../../types";
-import { useActiveRole } from "../../components/SideBar/roleConfig";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import FilterBar from "../../components/FilterBar/FilterBar";
 import SessionCard from "../../components/SessionCard/SessionCard";
 import { getUpcomingDateOptions } from "../../utils/dateOptions";
 import { localDateStringToUtcIso } from "../../utils/timeZone";
+import { isSessionUnavailable } from "../../utils/sessionAvailability";
 import "./Discover.css";
 
 const Discover = () => {
-    const activeRole = useActiveRole();
     const dateOptions = useMemo(() => getUpcomingDateOptions(), []);
 
     const [allSessions, setAllSessions] = useState<ApiClassSession[]>([]);
@@ -53,23 +52,27 @@ const Discover = () => {
     }, [discipline, date, availableOnly]);
 
     const filteredSessions = useMemo(() => {
-        return allSessions.filter((s) => {
+        const filtered = allSessions.filter((s) => {
             const term = search.trim().toLowerCase();
             const matchesSearch =
                 !term ||
                 s.className.toLowerCase().includes(term) ||
                 s.instructorName.toLowerCase().includes(term);
-
             const matchesAvailability = !availableOnly || s.availableSpots > 0;
-
             return matchesSearch && matchesAvailability;
+        });
+
+        return [...filtered].sort((a, b) => {
+            const aUnavailable = isSessionUnavailable(a.startTime, a.availableSpots);
+            const bUnavailable = isSessionUnavailable(b.startTime, b.availableSpots);
+            return Number(aUnavailable) - Number(bUnavailable);
         });
     }, [allSessions, search, availableOnly]);
 
     return (
         <div className="discover-page">
             <header className="discover-page__header">
-                <p className="discover-page__eyebrow">{activeRole.portalLabel}</p>
+                <p className="discover-page__eyebrow">MEMBER PORTAL</p>
                 <h1>Discover Classes</h1>
                 <p className="discover-page__subtitle">
                     {filteredSessions.length} sessions found
