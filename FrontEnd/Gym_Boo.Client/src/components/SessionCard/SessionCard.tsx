@@ -8,6 +8,7 @@ import {
     getDurationMinutes,
     getInitials,
 } from "../../utils/sessionFormat";
+import { isSessionFull, isSessionPast, isSessionUnavailable } from "../../utils/sessionAvailability";
 import "./SessionCard.css";
 
 interface SessionCardProps {
@@ -16,8 +17,12 @@ interface SessionCardProps {
 
 const SessionCard = ({ session }: SessionCardProps) => {
     const disciplineStyle = getDisciplineStyle(session.discipline);
-    const isFull = session.availableSpots <= 0;
+    const past = isSessionPast(session.startTime);
+    const full = isSessionFull(session.availableSpots);
+    const unavailable = isSessionUnavailable(session.startTime, session.availableSpots);
     const duration = getDurationMinutes(session.startTime, session.endTime);
+
+    const availabilityLabel = past ? "Past" : full ? "FULL" : `${session.totalSpots} left`;
 
     const content = (
         <>
@@ -31,8 +36,8 @@ const SessionCard = ({ session }: SessionCardProps) => {
                 >
                     {session.discipline}
                 </span>
-                <span className={`session-card__availability ${isFull ? "is-full" : ""}`}>
-                    {isFull ? "FULL" : `${session.availableSpots} left`}
+                <span className={`session-card__availability ${unavailable ? "is-unavailable" : ""}`}>
+                    {availabilityLabel}
                 </span>
             </div>
 
@@ -56,13 +61,13 @@ const SessionCard = ({ session }: SessionCardProps) => {
                     {formatSessionTime(session.startTime)} · {duration}min
                 </span>
                 <span className="session-card__spots">
-                    <Users size={13} /> {session.totalSpots} spots
+                    <Users size={13} /> {session.availableSpots} spots
                 </span>
             </div>
         </>
     );
 
-    if (isFull) {
+    if (unavailable) {
         return (
             <article className="session-card is-disabled" aria-disabled="true">
                 {content}

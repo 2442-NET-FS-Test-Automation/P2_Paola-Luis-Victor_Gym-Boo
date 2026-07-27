@@ -22,6 +22,7 @@ import InstructorAttendance from "./pages/Instructor/Attendance/InstructorAttend
 import AdminCatalog from "./pages/Admin/Catalog/AdminCatalog";
 import AdminSessions from "./pages/Admin/Sessions/AdminSessions";
 import AdminInstructors from "./pages/Admin/Instructors/AdminInstructors";
+import ReviewLanding from "./pages/ReviewLanding/ReviewLanding";
 
 function App() {
   return (
@@ -66,9 +67,10 @@ function App() {
 
           <Route
             path="/member/review"
-            element={<LeaveReview />}
+            element={<ReviewLanding />}
           />
 
+          <Route path="/member/discover/:id" element={<ClassDetail />} />
           <Route
             path="/member/review/:enrollmentId/:sessionId"
             element={<LeaveReview />}

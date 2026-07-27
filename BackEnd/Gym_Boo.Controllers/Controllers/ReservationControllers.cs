@@ -7,6 +7,7 @@ namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] // Maps to /api/reservations
+[Authorize(Roles = "Member")]
 public class ReservationsController : ControllerBase
 {
     private readonly IReservationService _reservationService;

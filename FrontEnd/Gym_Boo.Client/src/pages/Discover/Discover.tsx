@@ -6,6 +6,7 @@ import FilterBar from "../../components/FilterBar/FilterBar";
 import SessionCard from "../../components/SessionCard/SessionCard";
 import { getUpcomingDateOptions } from "../../utils/dateOptions";
 import { localDateStringToUtcIso } from "../../utils/timeZone";
+import { isSessionUnavailable } from "../../utils/sessionAvailability";
 import "./Discover.css";
 
 const Discover = () => {
@@ -51,16 +52,20 @@ const Discover = () => {
     }, [discipline, date, availableOnly]);
 
     const filteredSessions = useMemo(() => {
-        return allSessions.filter((s) => {
+        const filtered = allSessions.filter((s) => {
             const term = search.trim().toLowerCase();
             const matchesSearch =
                 !term ||
                 s.className.toLowerCase().includes(term) ||
                 s.instructorName.toLowerCase().includes(term);
-
             const matchesAvailability = !availableOnly || s.availableSpots > 0;
-
             return matchesSearch && matchesAvailability;
+        });
+
+        return [...filtered].sort((a, b) => {
+            const aUnavailable = isSessionUnavailable(a.startTime, a.availableSpots);
+            const bUnavailable = isSessionUnavailable(b.startTime, b.availableSpots);
+            return Number(aUnavailable) - Number(bUnavailable);
         });
     }, [allSessions, search, availableOnly]);
 
