@@ -13,4 +13,6 @@ public interface IInstructorServices
     
     //Class
     Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct);
+    
+    Task<List<UpcomingSessionDto>> GetUpcomingSessionsForInstructor(int instructorId, CancellationToken ct);
 }

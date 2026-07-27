@@ -24,14 +24,28 @@ public class InstructorServices : IInstructorServices
 
     public async Task<bool> NewSession(Session session, CancellationToken ct)
     {
-        if (session.Id != 0 && await _db.Sessions.AnyAsync(s => s.Id == session.Id, ct))
+        bool isPlaceOccupied = await _db.Sessions.AnyAsync(s => 
+                s.PlaceId == session.PlaceId && // Mismo lugar
+                session.Start < s.End &&        // La nueva sesión empieza antes de que termine la existente
+                session.End > s.Start,          // La nueva sesión termina después de que empiece la existente
+            ct);
+
+        if (isPlaceOccupied)
+        {
+            return false; 
+        }
+        
+        try
+        {
+            _db.Sessions.Add(session);
+            await _db.SaveChangesAsync(ct);
+        
+            return true;
+        }
+        catch (DbUpdateException)
         {
             return false;
         }
-
-        await _db.Sessions.AddAsync(session, ct);
-        await _db.SaveChangesAsync(ct);
-        return true;
     }
 
     public async Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct)
@@ -50,5 +64,27 @@ public class InstructorServices : IInstructorServices
             TotalEnrolled: subscribers.Count,
             Subscribers: subscribers
         );
+    }
+    
+    public async Task<List<UpcomingSessionDto>> GetUpcomingSessionsForInstructor(int instructorId, CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+
+        var upcomingSessions = await _db.Sessions
+            // Filtramos por el instructor y solo clases en el futuro
+            .Where(s => s.InstructorId == instructorId && s.Start >= now)
+            // Ordenamos para que la clase más pronta aparezca primero
+            .OrderBy(s => s.Start) 
+            .Select(s => new UpcomingSessionDto(
+                s.Id,
+                s.Class.Name, // Asumiendo que tu entidad Class tiene una propiedad Name
+                s.Place.Name, // Propiedad Name de la entidad Place que compartiste antes
+                s.Start,
+                s.End,
+                s.Slots - s.Enrollments.Count // Calculamos cuántos lugares quedan disponibles
+            ))
+            .ToListAsync(ct);
+
+        return upcomingSessions;
     }
 }
