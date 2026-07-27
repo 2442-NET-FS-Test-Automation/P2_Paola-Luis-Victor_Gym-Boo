@@ -1,49 +1,110 @@
 import {
   useEffect,
+  useMemo,
   useState,
   type FormEvent,
 } from "react";
+
 import axios from "axios";
+
+import {
+  Archive,
+  Edit3,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+
 import {
   createDiscipline,
   deleteDiscipline,
   getDisciplines,
-  toggleDiscipline,
+  toggleDisciplineStatus,
   updateDiscipline,
   type Discipline,
 } from "../../../api/admin";
 
+import Modal from "../../../components/Modal/Modal";
 import "./AdminCatalog.css";
 
+type StatusFilter =
+  | "all"
+  | "active"
+  | "inactive";
+
+const getDisciplineStatus = (
+  discipline: Discipline
+): boolean => {
+  return (
+    discipline.isActive ??
+    discipline.isAvailable ??
+    discipline.available ??
+    true
+  );
+};
+
+const getApiError = (
+  error: unknown,
+  fallback: string
+): string => {
+  if (!axios.isAxiosError(error)) {
+    return fallback;
+  }
+
+  const data = error.response?.data;
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  return data?.message ?? fallback;
+};
+
 const AdminCatalog = () => {
-  const [disciplines, setDisciplines] = useState<
-    Discipline[]
-  >([]);
+  const [disciplines, setDisciplines] =
+    useState<Discipline[]>([]);
 
-  const [newName, setNewName] = useState("");
-  const [editingId, setEditingId] = useState<
-    number | null
-  >(null);
+  const [search, setSearch] = useState("");
 
-  const [editingName, setEditingName] =
-    useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>("all");
 
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
-  const [error, setError] = useState<
-    string | null
-  >(null);
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [pageError, setPageError] =
+    useState<string | null>(null);
+
+  const [modalError, setModalError] =
+    useState<string | null>(null);
+
+  const [isCreateOpen, setIsCreateOpen] =
+    useState(false);
+
+  const [
+    editingDiscipline,
+    setEditingDiscipline,
+  ] = useState<Discipline | null>(null);
+
+  const [disciplineName, setDisciplineName] =
+    useState("");
 
   const loadDisciplines = async () => {
     setLoading(true);
-    setError(null);
+    setPageError(null);
 
     try {
-      const data = await getDisciplines();
-      setDisciplines(data);
-    } catch {
-      setError("Unable to load disciplines.");
+      const result = await getDisciplines();
+      setDisciplines(result);
+    } catch (error: unknown) {
+      setPageError(
+        getApiError(
+          error,
+          "The class catalog could not be loaded."
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -53,55 +114,156 @@ const AdminCatalog = () => {
     void loadDisciplines();
   }, []);
 
+  const statistics = useMemo(() => {
+    const active = disciplines.filter(
+      getDisciplineStatus
+    ).length;
+
+    return {
+      total: disciplines.length,
+      active,
+      inactive: disciplines.length - active,
+    };
+  }, [disciplines]);
+
+  const filteredDisciplines = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    return disciplines.filter((discipline) => {
+      const isActive =
+        getDisciplineStatus(discipline);
+
+      const matchesSearch =
+        !term ||
+        discipline.name
+          .toLowerCase()
+          .includes(term);
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" &&
+          isActive) ||
+        (statusFilter === "inactive" &&
+          !isActive);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [disciplines, search, statusFilter]);
+
+  const openCreateModal = () => {
+    setDisciplineName("");
+    setModalError(null);
+    setIsCreateOpen(true);
+  };
+
+  const openEditModal = (
+    discipline: Discipline
+  ) => {
+    setDisciplineName(discipline.name);
+    setModalError(null);
+    setEditingDiscipline(discipline);
+  };
+
+  const closeModals = () => {
+    setIsCreateOpen(false);
+    setEditingDiscipline(null);
+    setDisciplineName("");
+    setModalError(null);
+  };
+
   const handleCreate = async (
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
-    const normalizedName = newName.trim();
+    const name = disciplineName.trim();
 
-    if (!normalizedName) {
+    if (!name) {
+      setModalError(
+        "The discipline name is required."
+      );
       return;
     }
 
-    setSaving(true);
-    setError(null);
+    setSubmitting(true);
+    setModalError(null);
 
     try {
-      await createDiscipline(normalizedName);
-      setNewName("");
+      await createDiscipline(name);
+
+      closeModals();
       await loadDisciplines();
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data?.message ??
-            error.response?.data ??
-            "Unable to create discipline."
-        );
-      } else {
-        setError("Unable to create discipline.");
-      }
+      setModalError(
+        getApiError(
+          error,
+          "The discipline could not be created."
+        )
+      );
     } finally {
-      setSaving(false);
+      setSubmitting(false);
     }
   };
 
   const handleUpdate = async (
-    id: number
+    event: FormEvent<HTMLFormElement>
   ) => {
-    const normalizedName = editingName.trim();
+    event.preventDefault();
 
-    if (!normalizedName) {
+    if (!editingDiscipline) {
       return;
     }
 
+    const name = disciplineName.trim();
+
+    if (!name) {
+      setModalError(
+        "The discipline name is required."
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    setModalError(null);
+
     try {
-      await updateDiscipline(id, normalizedName);
-      setEditingId(null);
-      setEditingName("");
+      await updateDiscipline(
+        editingDiscipline.id,
+        name
+      );
+
+      closeModals();
       await loadDisciplines();
-    } catch {
-      setError("Unable to update discipline.");
+    } catch (error: unknown) {
+      setModalError(
+        getApiError(
+          error,
+          "The discipline could not be updated."
+        )
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggle = async (
+    discipline: Discipline
+  ) => {
+    setPageError(null);
+
+    try {
+      await toggleDisciplineStatus(
+        discipline.id
+      );
+
+      await loadDisciplines();
+    } catch (error: unknown) {
+      setPageError(
+        getApiError(
+          error,
+          "The discipline status could not be changed."
+        )
+      );
     }
   };
 
@@ -116,171 +278,347 @@ const AdminCatalog = () => {
       return;
     }
 
+    setPageError(null);
+
     try {
-      await deleteDiscipline(discipline.name);
+      await deleteDiscipline(
+        discipline.name
+      );
+
       await loadDisciplines();
-    } catch {
-      setError(
-        "Unable to delete the discipline. It may be used by existing classes."
+    } catch (error: unknown) {
+      setPageError(
+        getApiError(
+          error,
+          "The discipline could not be deleted."
+        )
       );
     }
   };
 
   return (
-    <div className="admin-page">
-      <header className="admin-page__header">
-        <p>ADMIN PORTAL</p>
-        <h1>CLASS CATALOG</h1>
-        <span>
-          Manage the disciplines available at
-          GymBoo.
-        </span>
-      </header>
+    <div className="catalog-page">
+      <header className="catalog-header">
+        <div>
+          <p className="admin-eyebrow">
+            ADMIN PANEL
+          </p>
 
-      <form
-        className="admin-create-form"
-        onSubmit={handleCreate}
-      >
-        <input
-          type="text"
-          value={newName}
-          placeholder="New discipline name"
-          onChange={(event) =>
-            setNewName(event.target.value)
-          }
-        />
+          <h1>CLASS CATALOG</h1>
+
+          <p className="admin-subtitle">
+            {statistics.active} active disciplines
+            · {statistics.inactive} archived
+          </p>
+        </div>
 
         <button
-          type="submit"
-          disabled={saving}
+          type="button"
+          className="admin-primary-button"
+          onClick={openCreateModal}
         >
-          {saving
-            ? "Adding..."
-            : "Add Discipline"}
+          <Plus size={19} />
+          New discipline
         </button>
-      </form>
+      </header>
 
-      {error && (
-        <p className="admin-page__error">
-          {error}
+      <section className="catalog-stats">
+        <article className="catalog-stat-card">
+          <strong>{statistics.total}</strong>
+          <span>Total disciplines</span>
+        </article>
+
+        <article className="catalog-stat-card catalog-stat-card--active">
+          <strong>{statistics.active}</strong>
+          <span>Active disciplines</span>
+        </article>
+
+        <article className="catalog-stat-card catalog-stat-card--inactive">
+          <strong>{statistics.inactive}</strong>
+          <span>Archived disciplines</span>
+        </article>
+      </section>
+
+      <section className="catalog-toolbar">
+        <label className="admin-search">
+          <Search size={18} />
+
+          <input
+            value={search}
+            placeholder="Search disciplines..."
+            onChange={(event) =>
+              setSearch(event.target.value)
+            }
+          />
+        </label>
+
+        <div className="admin-segmented-control">
+          <button
+            type="button"
+            className={
+              statusFilter === "all"
+                ? "is-active"
+                : ""
+            }
+            onClick={() =>
+              setStatusFilter("all")
+            }
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            className={
+              statusFilter === "active"
+                ? "is-active"
+                : ""
+            }
+            onClick={() =>
+              setStatusFilter("active")
+            }
+          >
+            Active
+          </button>
+
+          <button
+            type="button"
+            className={
+              statusFilter === "inactive"
+                ? "is-active"
+                : ""
+            }
+            onClick={() =>
+              setStatusFilter("inactive")
+            }
+          >
+            Archived
+          </button>
+        </div>
+      </section>
+
+      {pageError && (
+        <p className="admin-error">
+          {pageError}
         </p>
       )}
 
-      {loading ? (
-        <p>Loading disciplines...</p>
-      ) : (
-        <section className="admin-table">
-          <div className="admin-table__header">
-            <span>ID</span>
-            <span>Name</span>
-            <span>Status</span>
-            <span>Actions</span>
-          </div>
+      <section className="admin-data-panel">
+        <div className="catalog-table catalog-table--header">
+          <span>ID</span>
+          <span>Discipline</span>
+          <span>Status</span>
+          <span>Actions</span>
+        </div>
 
-          {disciplines.map((discipline) => {
-            const isActive =
-              discipline.isActive ??
-              discipline.available ??
-              true;
+        {loading && (
+          <p className="admin-state">
+            Loading catalog...
+          </p>
+        )}
 
-            return (
-              <div
-                className="admin-table__row"
-                key={discipline.id}
-              >
-                <span>{discipline.id}</span>
+        {!loading &&
+          filteredDisciplines.length === 0 && (
+            <p className="admin-state">
+              No disciplines match the selected
+              filters.
+            </p>
+          )}
 
-                {editingId === discipline.id ? (
-                  <input
-                    value={editingName}
-                    onChange={(event) =>
-                      setEditingName(
-                        event.target.value
-                      )
-                    }
-                  />
-                ) : (
-                  <strong>{discipline.name}</strong>
-                )}
+        {!loading &&
+          filteredDisciplines.map(
+            (discipline) => {
+              const isActive =
+                getDisciplineStatus(
+                  discipline
+                );
 
-                <span>
-                  {isActive
-                    ? "Active"
-                    : "Inactive"}
-                </span>
+              return (
+                <div
+                  key={discipline.id}
+                  className="catalog-table catalog-table--row"
+                >
+                  <span className="catalog-id">
+                    #{discipline.id}
+                  </span>
 
-                <div className="admin-table__actions">
-                  {editingId === discipline.id ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          void handleUpdate(
-                            discipline.id
-                          )
-                        }
-                      >
-                        Save
-                      </button>
+                  <div className="catalog-name">
+                    <span className="catalog-name__icon">
+                      {discipline.name
+                        .charAt(0)
+                        .toUpperCase()}
+                    </span>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setEditingId(null)
-                        }
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingId(
-                          discipline.id
-                        );
+                    <strong>
+                      {discipline.name}
+                    </strong>
+                  </div>
 
-                        setEditingName(
-                          discipline.name
-                        );
-                      }}
-                    >
-                      Edit
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      await toggleDiscipline(
-                        discipline.id
-                      );
-
-                      await loadDisciplines();
-                    }}
+                  <span
+                    className={`status-pill ${
+                      isActive
+                        ? "status-pill--active"
+                        : "status-pill--inactive"
+                    }`}
                   >
                     {isActive
-                      ? "Disable"
-                      : "Enable"}
-                  </button>
+                      ? "Active"
+                      : "Archived"}
+                  </span>
 
-                  <button
-                    type="button"
-                    className="danger-button"
-                    onClick={() =>
-                      void handleDelete(
-                        discipline
-                      )
-                    }
-                  >
-                    Delete
-                  </button>
+                  <div className="catalog-actions">
+                    <button
+                      type="button"
+                      className="admin-secondary-button"
+                      onClick={() =>
+                        openEditModal(
+                          discipline
+                        )
+                      }
+                    >
+                      <Edit3 size={15} />
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="admin-secondary-button"
+                      onClick={() =>
+                        void handleToggle(
+                          discipline
+                        )
+                      }
+                    >
+                      <Archive size={15} />
+
+                      {isActive
+                        ? "Archive"
+                        : "Activate"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="admin-icon-danger"
+                      aria-label={`Delete ${discipline.name}`}
+                      onClick={() =>
+                        void handleDelete(
+                          discipline
+                        )
+                      }
+                    >
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </section>
-      )}
+              );
+            }
+          )}
+      </section>
+
+      <Modal
+        isOpen={isCreateOpen}
+        title="Add new discipline"
+        onClose={closeModals}
+      >
+        <form
+          className="admin-modal-form"
+          onSubmit={handleCreate}
+        >
+          <label htmlFor="new-discipline">
+            Discipline name
+          </label>
+
+          <input
+            id="new-discipline"
+            value={disciplineName}
+            placeholder="e.g. Yoga"
+            onChange={(event) =>
+              setDisciplineName(
+                event.target.value
+              )
+            }
+            autoFocus
+          />
+
+          {modalError && (
+            <p className="admin-modal-error">
+              {modalError}
+            </p>
+          )}
+
+          <div className="admin-modal-actions">
+            <button
+              type="button"
+              className="admin-modal-cancel"
+              onClick={closeModals}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="admin-modal-submit"
+              disabled={submitting}
+            >
+              {submitting
+                ? "Creating..."
+                : "Create"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={editingDiscipline !== null}
+        title="Edit discipline"
+        onClose={closeModals}
+      >
+        <form
+          className="admin-modal-form"
+          onSubmit={handleUpdate}
+        >
+          <label htmlFor="edit-discipline">
+            Discipline name
+          </label>
+
+          <input
+            id="edit-discipline"
+            value={disciplineName}
+            onChange={(event) =>
+              setDisciplineName(
+                event.target.value
+              )
+            }
+            autoFocus
+          />
+
+          {modalError && (
+            <p className="admin-modal-error">
+              {modalError}
+            </p>
+          )}
+
+          <div className="admin-modal-actions">
+            <button
+              type="button"
+              className="admin-modal-cancel"
+              onClick={closeModals}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="admin-modal-submit"
+              disabled={submitting}
+            >
+              {submitting
+                ? "Saving..."
+                : "Save changes"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

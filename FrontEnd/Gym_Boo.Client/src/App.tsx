@@ -44,18 +44,28 @@ function App() {
           />
 
           <Route
+            path="/member/discover/:id"
+            element={<ClassDetail />}
+          />
+
+          <Route
             path="/member/bookings"
-            element={<div>My Bookings</div>}
+            element={<MyBookings />}
           />
 
           <Route
             path="/member/profile"
-            element={<div>Profile</div>}
+            element={<MyProfile />}
           />
 
           <Route
             path="/member/review"
-            element={<div>Leave a Review</div>}
+            element={<LeaveReview />}
+          />
+
+          <Route
+            path="/member/review/:enrollmentId/:sessionId"
+            element={<LeaveReview />}
           />
         </Route>
       </Route>
@@ -68,24 +78,19 @@ function App() {
         }
       >
         <Route element={<Layout />}>
-          <Route path="/member/discover" element={<Discover />} />
-          <Route path="/member/bookings" element={<MyBookings />} />
-          <Route path="/member/profile" element={<MyProfile />} />
-          <Route path="/member/review" element={<div>Leave a Review — coming soon</div>} />
-
-          <Route path="/coach/dashboard" element={<div>Coach Dashboard — coming soon</div>} />
-          <Route path="/coach/schedule" element={<div>My Schedule — coming soon</div>} />
-          <Route path="/coach/attendance" element={<div>Attendance — coming soon</div>} />
-
-          <Route path="/admin/analytics" element={<div>Analytics — coming soon</div>} />
-          <Route path="/admin/catalog" element={<div>Class Catalog — coming soon</div>} />
-          <Route path="/admin/sessions" element={<div>Sessions — coming soon</div>} />
-          <Route path="/admin/instructors" element={<div>Instructors — coming soon</div>} />
-
-          <Route path="/member/discover/:id" element={<ClassDetail />} />
           <Route
-            path="/member/review/:enrollmentId/:sessionId"
-            element={<LeaveReview />}
+            path="/coach/dashboard"
+            element={<InstructorDashboard />}
+          />
+
+          <Route
+            path="/coach/schedule"
+            element={<InstructorSchedule />}
+          />
+
+          <Route
+            path="/coach/attendance"
+            element={<InstructorAttendance />}
           />
         </Route>
       </Route>

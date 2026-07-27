@@ -15,7 +15,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const user = useCurrentUser();
 
-  const config = ROLE_CONFIGS[user.role];
+  const config = ROLE_CONFIGS[user.role as keyof typeof ROLE_CONFIGS];
 
   const handleLogout = () => {
     logout();

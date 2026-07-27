@@ -1,0 +1,267 @@
+.admin-eyebrow {
+  margin: 0 0 10px;
+
+  color: var(--color-text-subtle);
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+}
+
+.admin-subtitle {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+}
+
+.admin-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 54px;
+  padding: 0 24px;
+
+  border: none;
+  border-radius: 13px;
+
+  background-color: #c7ff00;
+  color: #080909;
+
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-primary-button:hover {
+  filter: brightness(1.06);
+}
+
+.admin-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-search {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  min-height: 48px;
+  padding: 0 15px;
+
+  border: 1px solid #29292f;
+  border-radius: 13px;
+
+  background-color: #141416;
+  color: #656570;
+}
+
+.admin-search input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background-color: transparent;
+  color: white;
+}
+
+.admin-segmented-control {
+  display: flex;
+  padding: 3px;
+
+  border: 1px solid #29292f;
+  border-radius: 13px;
+
+  background-color: #141416;
+}
+
+.admin-segmented-control button {
+  min-width: 86px;
+  padding: 12px 15px;
+
+  border: none;
+  border-radius: 10px;
+
+  background-color: transparent;
+  color: #777783;
+
+  font-family: monospace;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-segmented-control button.is-active {
+  background-color: rgba(199, 255, 0, 0.16);
+  color: #c7ff00;
+}
+
+.admin-data-panel {
+  overflow: hidden;
+
+  border: 1px solid #29292f;
+  border-radius: 16px;
+
+  background-color: #111113;
+}
+
+.admin-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #313137;
+  border-radius: 9px;
+
+  background-color: transparent;
+  color: #c0c0c7;
+
+  cursor: pointer;
+}
+
+.admin-secondary-button:hover {
+  border-color: #51515b;
+  color: white;
+}
+
+.admin-icon-danger {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 9px;
+
+  background-color: rgba(248, 113, 113, 0.08);
+  color: #f87171;
+
+  cursor: pointer;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.status-pill--active {
+  border: 1px solid rgba(52, 211, 153, 0.38);
+  background-color: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+
+.status-pill--inactive {
+  border: 1px solid #323238;
+  background-color: #1a1a1e;
+  color: #73737d;
+}
+
+.admin-state {
+  margin: 0;
+  padding: 46px 24px;
+
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.admin-error {
+  margin: 0 0 18px;
+  padding: 13px 16px;
+
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 11px;
+
+  background-color: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+}
+
+.admin-modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-modal-form label {
+  margin-bottom: 8px;
+
+  color: #80808a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-modal-form input,
+.admin-modal-form select {
+  min-height: 54px;
+  margin-bottom: 19px;
+  padding: 0 16px;
+
+  border: 1px solid #303036;
+  border-radius: 12px;
+
+  outline: none;
+  background-color: #09090b;
+  color: white;
+}
+
+.admin-modal-form input:focus,
+.admin-modal-form select:focus {
+  border-color: rgba(199, 255, 0, 0.65);
+}
+
+.admin-modal-error {
+  margin: -3px 0 18px;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 10px;
+
+  background-color: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+
+  font-size: 13px;
+}
+
+.admin-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  margin-top: 8px;
+}
+
+.admin-modal-actions button {
+  min-height: 55px;
+  border-radius: 12px;
+
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-modal-cancel {
+  border: 1px solid #303036;
+  background-color: transparent;
+  color: #a2a2aa;
+}
+
+.admin-modal-submit {
+  border: none;
+  background-color: #c7ff00;
+  color: #090909;
+}
+
+.admin-modal-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
