@@ -1,0 +1,127 @@
+.review-landing {
+    max-width: 720px;
+}
+
+.review-landing__hero {
+    text-align: center;
+    padding: 32px 20px 36px;
+    border-bottom: 1px solid var(--color-border-soft);
+    margin-bottom: 28px;
+}
+
+.review-landing__hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    margin-bottom: 14px;
+}
+
+.review-landing__eyebrow {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--color-text-subtle);
+}
+
+.review-landing__hero h1 {
+    margin: 0 0 12px;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.review-landing__subtitle {
+    margin: 0 auto;
+    max-width: 520px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.review-landing__status {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 30px 0;
+}
+
+.review-landing__status--error {
+    color: var(--color-danger);
+}
+
+.review-landing__empty {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--color-text-muted);
+}
+
+.review-landing__empty-hint {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--color-text-subtle);
+}
+
+.review-landing__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-landing__item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+}
+
+.review-landing__discipline {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+.review-landing__item-main {
+    flex: 1;
+}
+
+.review-landing__item-main h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.review-landing__item-main p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.review-landing__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.review-landing__cta:hover {
+    background-color: var(--color-accent-soft);
+}

@@ -1,11 +1,13 @@
 using Gym_Boo.Data.DTOs;
 using Gym_Boo.ControllerApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] // /api/classes
+[Authorize(Roles = "Member")]
 public class ClassesController : ControllerBase
 {
     private readonly ISessionService _sessionService;

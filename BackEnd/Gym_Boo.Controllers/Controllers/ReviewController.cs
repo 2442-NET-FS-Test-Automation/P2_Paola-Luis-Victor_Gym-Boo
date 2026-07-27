@@ -8,6 +8,7 @@ namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Member")]
 public class ReviewsController : ControllerBase
 {
     private readonly IReviewService _reviewService;
