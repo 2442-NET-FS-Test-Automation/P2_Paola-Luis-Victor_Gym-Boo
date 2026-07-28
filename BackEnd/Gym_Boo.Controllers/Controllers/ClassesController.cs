@@ -7,7 +7,7 @@ namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] // /api/classes
-[Authorize]
+//[Authorize]
 public class ClassesController : ControllerBase
 {
     private readonly ISessionService _sessionService;
@@ -19,7 +19,7 @@ public class ClassesController : ControllerBase
 
     // GET /api/classes?discipline=yoga&date=2026-07-15
     [HttpGet]
-    [Authorize(Roles = "Admin,Member")]
+    //[Authorize(Roles = "Admin,Member")]
     public async Task<ActionResult<IReadOnlyList<ClassSessionDto>>> Get([FromQuery] string? discipline, [FromQuery] DateTime? date, [FromQuery] bool past = false)
     {
         var classes = await _sessionService.GetFilteredSessionsAsync(discipline, date, past);
