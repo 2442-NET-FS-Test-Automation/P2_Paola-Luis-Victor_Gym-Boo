@@ -498,7 +498,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 2,
                 ClassId = 3,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 5, 5, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 5, 5, 18, 0, 0, DateTimeKind.Utc),
@@ -510,7 +510,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 3,
                 ClassId = 5,
-                InstructorId = 2,
+                InstructorId = 1,
                 PlaceId = 3,
                 Start = new DateTime(2026, 5, 20, 13, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 5, 20, 14, 0, 0, DateTimeKind.Utc),
@@ -522,7 +522,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 4,
                 ClassId = 7,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 6, 2, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 6, 2, 18, 0, 0, DateTimeKind.Utc),
@@ -546,7 +546,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 6,
                 ClassId = 11,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 4,
                 Start = new DateTime(2026, 6, 13, 19, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 6, 13, 20, 0, 0, DateTimeKind.Utc),
@@ -570,7 +570,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 8,
                 ClassId = 4,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 7, 2, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 7, 2, 18, 0, 0, DateTimeKind.Utc),
@@ -596,7 +596,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 10,
                 ClassId = 8,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 7, 18, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 7, 18, 18, 0, 0, DateTimeKind.Utc),
@@ -622,7 +622,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 12,
                 ClassId = 3,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 7, 30, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 7, 30, 18, 0, 0, DateTimeKind.Utc),
@@ -634,7 +634,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 13,
                 ClassId = 10,
-                InstructorId = 2,
+                InstructorId = 1,
                 PlaceId = 5,
                 Start = new DateTime(2026, 8, 3, 21, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 8, 3, 22, 0, 0, DateTimeKind.Utc),
@@ -646,7 +646,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 14,
                 ClassId = 12,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 4,
                 Start = new DateTime(2026, 8, 4, 18, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 8, 4, 19, 0, 0, DateTimeKind.Utc),
@@ -670,7 +670,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 16,
                 ClassId = 7,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 8, 13, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 8, 13, 18, 0, 0, DateTimeKind.Utc),
@@ -696,7 +696,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 18,
                 ClassId = 4,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 2,
                 Start = new DateTime(2026, 9, 10, 17, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 9, 10, 18, 0, 0, DateTimeKind.Utc),
@@ -720,7 +720,7 @@ public class GymBooDbContext : DbContext
             {
                 Id = 20,
                 ClassId = 11,
-                InstructorId = 3,
+                InstructorId = 1,
                 PlaceId = 4,
                 Start = new DateTime(2026, 10, 6, 18, 0, 0, DateTimeKind.Utc),
                 End = new DateTime(2026, 10, 6, 19, 0, 0, DateTimeKind.Utc),
