@@ -54,6 +54,7 @@ public class SessionRepository : ISessionRepository
         .Include(s => s.Enrollments)
         .Include(s => s.Place)
         .Include(s => s.Reviews)
+        .AsSplitQuery()
         .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(discipline))
@@ -70,8 +71,7 @@ public class SessionRepository : ISessionRepository
         else if (!past)
         {
             var now = DateTime.UtcNow;
-            var nextWeek = now.AddDays(7);
-            query = query.Where(s => s.Start >= now && s.Start <= nextWeek);
+            query = query.Where(s => s.Start >= now);
         }
 
         return await query.ToListAsync();

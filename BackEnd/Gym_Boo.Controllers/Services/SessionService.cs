@@ -2,16 +2,19 @@ using Gym_Boo.Data.DTOs;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.ControllerApi.Services;
 
 class SessionService : ISessionService
 {
     private readonly ISessionRepository _repo;
+    private readonly GymBooDbContext _db;
 
-    public SessionService(ISessionRepository repo)
+    public SessionService(ISessionRepository repo, GymBooDbContext db)
     {
         _repo = repo;
+        _db = db;
     }
 
     public Task<IReadOnlyList<Session>> AllAsync()
@@ -28,16 +31,27 @@ class SessionService : ISessionService
     {
         var sessions = await _repo.GetAvailableClassesAsync(discipline, date, past);
 
+        var instructorRatingPair = (await _db.Instructors
+        .Select(i => new
+        {
+            FullName = i.Name + " " + i.LastName,
+
+            AverageRating = i.Sessions
+                .SelectMany(s => s.Reviews)
+                .Where(r => r.ReviewType == ReviewType.Instructor)
+                .Average(r => (decimal?)r.Rating) ?? 0.0m
+        })
+        .ToListAsync())
+        .ToDictionary(x => x.FullName, x => x.AverageRating);
+
+
         // Mapeamos las entidades al DTO requerido
         return sessions.Select(s => new ClassSessionDto(
             Id: s.Id,
             ClassName: s.Class?.Name ?? "No name",
             Discipline: s.Class?.Discipline?.Name ?? "General",
             InstructorName: s.Instructor.Name + " " + s.Instructor.LastName,
-            InstructorRating: s.Instructor.Sessions
-                    .SelectMany(sess => sess.Reviews)
-                    .Where(r => r.ReviewType == ReviewType.Instructor)
-                    .Average(r => (decimal?)r.Rating) ?? 0.0m,
+            InstructorRating: instructorRatingPair.GetValueOrDefault($"{s.Instructor.Name} {s.Instructor.LastName}"),
             StartTime: DateTime.SpecifyKind(s.Start, DateTimeKind.Utc),
             EndTime: DateTime.SpecifyKind(s.End,DateTimeKind.Utc),
             Location: s.Place.Name,

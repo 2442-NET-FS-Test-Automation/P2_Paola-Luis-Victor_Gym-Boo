@@ -22,7 +22,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
     const unavailable = isSessionUnavailable(session.startTime, session.availableSpots);
     const duration = getDurationMinutes(session.startTime, session.endTime);
 
-    const availabilityLabel = past ? "Past" : full ? "FULL" : `${session.totalSpots} left`;
+    const availabilityLabel = past ? "Past" : full ? "FULL" : `${session.availableSpots} left`;
 
     const content = (
         <>
@@ -61,7 +61,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
                     {formatSessionTime(session.startTime)} · {duration}min
                 </span>
                 <span className="session-card__spots">
-                    <Users size={13} /> {session.availableSpots} spots
+                    <Users size={13} /> {session.totalSpots} spots
                 </span>
             </div>
         </>
