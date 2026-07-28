@@ -52,7 +52,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         // 3. Return 201 Created with the generated entity
         return CreatedAtAction(nameof(ShowInstructor), new { id = session.InstructorId }, session);
     }
-    
+
     [HttpGet("sessions/{id:int}/attendance")]
     public async Task<IActionResult> GetAttendance(int id, CancellationToken ct)
     {
@@ -77,5 +77,23 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         }
     
         return Ok(next);
+    }
+
+    [HttpGet("options/classes")]
+    public async Task<IActionResult> GetClassOptions(CancellationToken ct)
+    {
+        var classes =
+            await instructorServices.GetClassOptions(ct);
+
+        return Ok(classes);
+    }
+
+    [HttpGet("options/places")]
+    public async Task<IActionResult> GetPlaceOptions(CancellationToken ct)
+    {
+        var places =
+            await instructorServices.GetPlaceOptions(ct);
+
+        return Ok(places);
     }
 }

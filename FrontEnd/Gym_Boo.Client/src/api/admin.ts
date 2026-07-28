@@ -134,3 +134,21 @@ export const toggleInstructorStatus = async (
     isActive: !instructor.isActive,
   });
 };
+
+export interface AdminSessionReport {
+  sessionId: number;
+  classId: number;
+  startTime: string;
+  totalSlots: number;
+  enrollmentCount: number;
+}
+
+export const getSessionReports = async (): Promise<
+  AdminSessionReport[]
+> => {
+  const { data } = await api.get<AdminSessionReport[]>(
+    "/api/admin/reports/sessions"
+  );
+
+  return data;
+};
