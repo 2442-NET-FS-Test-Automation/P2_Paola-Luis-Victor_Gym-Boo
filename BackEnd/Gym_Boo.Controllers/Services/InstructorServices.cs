@@ -87,4 +87,51 @@ public class InstructorServices : IInstructorServices
 
         return upcomingSessions;
     }
+
+
+    public async Task<List<ClassOptionDto>> GetClassOptions(CancellationToken ct)
+    {
+        return await _db.Classes
+            .AsNoTracking()
+            .OrderBy(c => c.Name)
+            .Select(c => new ClassOptionDto(
+                c.Id,
+                c.Name
+            ))
+            .ToListAsync(ct);
+    }
+
+    public async Task<List<PlaceOptionDto>> GetPlaceOptions(CancellationToken ct)
+    {
+        return await _db.Places
+            .AsNoTracking()
+            .OrderBy(p => p.Name)
+            .Select(p => new PlaceOptionDto(
+                p.Id,
+                p.Name
+            ))
+            .ToListAsync(ct);
+    }
+
+    public async Task<bool> DeleteSession(int id, CancellationToken ct)
+    {
+        try
+        {
+            var session = await _db.Sessions.FindAsync(new object[] { id }, cancellationToken: ct);
+            
+            if (session == null)
+            {
+                return false;
+            }
+
+            _db.Sessions.Remove(session);
+            await _db.SaveChangesAsync(ct);
+            
+            return true;
+        }
+        catch (DbUpdateException)
+        {
+            return false;
+        }
+    }
 }

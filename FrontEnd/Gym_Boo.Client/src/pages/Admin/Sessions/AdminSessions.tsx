@@ -11,7 +11,10 @@ import {
   List,
 } from "lucide-react";
 
-import { getClasses } from "../../../api/sessions";
+import {
+  getSessionReports,
+  type AdminSessionReport,
+} from "../../../api/admin";
 import type { ApiClassSession } from "../../../types";
 
 import "./AdminSessions.css";
@@ -55,6 +58,19 @@ const addDays = (
   return result;
 };
 
+const addHours = (
+  value: string,
+  amount: number
+): string => {
+  const result = parseSessionDate(value);
+
+  result.setHours(
+    result.getHours() + amount
+  );
+
+  return result.toISOString();
+};
+
 const parseSessionDate = (
   value: string
 ): Date => {
@@ -84,6 +100,35 @@ const parseSessionDate = (
     Number(minute),
     Number(second)
   );
+};
+
+const mapReportToSession = (
+  report: AdminSessionReport
+): ApiClassSession => {
+  const totalSpots =
+    report.totalSlots ?? 0;
+
+  const enrolled =
+    report.enrollmentCount ?? 0;
+
+  return {
+    id: report.sessionId,
+    className: `Class #${report.classId}`,
+    discipline: "General",
+    instructorName: "Instructor",
+    instructorRating: 0,
+    startTime: report.startTime,
+    endTime: addHours(
+      report.startTime,
+      1
+    ),
+    location: "GymBoo",
+    availableSpots: Math.max(
+      totalSpots - enrolled,
+      0
+    ),
+    totalSpots,
+  };
 };
 
 const isSameDay = (
@@ -206,12 +251,12 @@ const AdminSessions = () => {
     setLoading(true);
     setError(null);
 
-    getClasses({
-      past: true,
-    })
+    getSessionReports()
       .then((result) => {
         if (!cancelled) {
-          setAllSessions(result);
+          setAllSessions(
+            result.map(mapReportToSession)
+          );
         }
       })
       .catch(() => {
