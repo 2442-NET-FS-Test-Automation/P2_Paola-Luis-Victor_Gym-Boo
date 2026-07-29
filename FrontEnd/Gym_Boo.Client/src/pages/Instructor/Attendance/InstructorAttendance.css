@@ -292,3 +292,18 @@
     min-width: 950px;
   }
 }
+
+.attendance-checkbox {
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.attendance-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.attendance-checkbox.is-loading {
+  opacity: 0.6;
+  font-size: 14px;
+  color: #73737d;
+}

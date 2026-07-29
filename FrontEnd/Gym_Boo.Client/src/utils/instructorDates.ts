@@ -18,17 +18,6 @@ export const addDays = (
   return result;
 };
 
-export const isSameLocalDay = (
-  first: Date,
-  second: Date
-): boolean => {
-  return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate()
-  );
-};
-
 export const formatFullDate = (
   date: Date
 ): string => {
@@ -103,4 +92,13 @@ export const getCountdown = (
   }
 
   return `${hours}h ${minutes}m`;
+};
+
+export const isSameLocalDay = (isoDate: string, reference: Date): boolean => {
+  const d = new Date(isoDate);
+  return (
+    d.getFullYear() === reference.getFullYear() &&
+    d.getMonth() === reference.getMonth() &&
+    d.getDate() === reference.getDate()
+  );
 };
