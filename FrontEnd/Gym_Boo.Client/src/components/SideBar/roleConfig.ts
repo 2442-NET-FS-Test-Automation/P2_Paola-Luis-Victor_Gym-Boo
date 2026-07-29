@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   BookOpen,
   Users,
+  ChartPie
 } from "lucide-react";
 
 import type { ComponentType } from "react";
@@ -76,6 +77,11 @@ export const ROLE_CONFIGS: Record<
   Admin: {
     portalLabel: "ADMIN PORTAL",
     links: [
+      {
+        label: "Analytics",
+        to: "admin/analytics",
+        icon: ChartPie
+      },
       {
         label: "Class Catalog",
         to: "/admin/catalog",
