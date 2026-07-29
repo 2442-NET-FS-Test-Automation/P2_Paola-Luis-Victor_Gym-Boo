@@ -172,21 +172,21 @@ public class AdminServices : IAdminServices
             .ToListAsync(ct);
     }
 
-    public async Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct)
-    {
-        var report = await _db.Sessions
-            .Select(s => new SessionRegistrationDto(
-                s.Id,
-                s.ClassId,
-                s.Start,
-                s.Slots,
-                s.Enrollments.Count
-            ))
-            .OrderByDescending(s => s.EnrollmentCount) // Ordenamos de mayor a menor
-            .ToListAsync(ct);
+    // public async Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct)
+    // {
+    //     var report = await _db.Sessions
+    //         .Select(s => new SessionRegistrationDto(
+    //             s.Id,
+    //             s.ClassId,
+    //             s.Start,
+    //             s.Slots,
+    //             s.Enrollments.Count
+    //         ))
+    //         .OrderByDescending(s => s.EnrollmentCount) // Ordenamos de mayor a menor
+    //         .ToListAsync(ct);
 
-        return report;
-    }
+    //     return report;
+    // }
 
     public async Task<double[]> TotalRevenue(CancellationToken ct)
     {

@@ -139,18 +139,18 @@ public class AdminController(
     
     //Reports
 
-    [HttpGet("reports/sessions")]
-    public async Task<IActionResult> GetSessions(CancellationToken ct)
-    {
-        var sessions = await adminServices.RegistrationReports(ct);
+    // [HttpGet("reports/sessions")]
+    // public async Task<IActionResult> GetSessions(CancellationToken ct)
+    // {
+    //     var sessions = await adminServices.RegistrationReports(ct);
 
-        if (sessions is null || !sessions.Any())
-        {
-            return NotFound("No sessions found to generate the report.");
-        }
+    //     if (sessions is null || !sessions.Any())
+    //     {
+    //         return NotFound("No sessions found to generate the report.");
+    //     }
     
-        return Ok(sessions);
-    }
+    //     return Ok(sessions);
+    // }
     
     [HttpGet("reports/revenue")]
     public async Task<IActionResult> GetRevenue(CancellationToken ct)

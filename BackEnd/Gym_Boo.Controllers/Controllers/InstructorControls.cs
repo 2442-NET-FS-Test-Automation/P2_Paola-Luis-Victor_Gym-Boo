@@ -8,7 +8,7 @@ namespace Gym_Boo.Controllers.Controllers;
 
 [ApiController]
 [Route("api/instructor")]
-[Authorize(Roles = "Instructor")]
+//[Authorize(Roles = "Instructor")]
 public class InstructorControls(IInstructorServices instructorServices) : ControllerBase
 {
     [HttpGet("{id:int}")]
@@ -95,5 +95,18 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
             await instructorServices.GetPlaceOptions(ct);
 
         return Ok(places);
+    }
+
+    [HttpDelete("sessions/delete")]
+    public async Task<IActionResult> DeleteSession(int id, CancellationToken ct)
+    {
+        var res = await instructorServices.DeleteSession(id, ct);
+
+        if (res is false)
+        {
+            return null;
+        }
+
+        return Ok(res);
     }
 }

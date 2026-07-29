@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import {
+  deleteInstructorSession,
   getInstructorSessions,
   type InstructorSession,
 } from "../../../api/instructor";
@@ -62,6 +63,9 @@ const InstructorSchedule = () => {
   const [success, setSuccess] = useState<
     string | null
   >(null);
+
+  const [deletingSession, setDeletingSession] =
+    useState(false);
 
   const [
     selectedSession,
@@ -123,11 +127,7 @@ const InstructorSchedule = () => {
     const students = weekSessions.reduce(
       (total, session) =>
         total +
-        Math.max(
-          0,
-          session.totalSpots -
-            session.availableSpots
-        ),
+        session.enrolledSpots,
       0
     );
 
@@ -152,6 +152,32 @@ const InstructorSchedule = () => {
   const handleSessionCreated = async () => {
     await loadSessions();
     setSuccess("Session created successfully.");
+  };
+
+  const handleDeleteSession = async () => {
+    if (!selectedSession) {
+      return;
+    }
+
+    setDeletingSession(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await deleteInstructorSession(
+        selectedSession.id
+      );
+
+      setSelectedSession(null);
+      await loadSessions();
+      setSuccess("Session deleted successfully.");
+    } catch {
+      setError(
+        "The session could not be deleted."
+      );
+    } finally {
+      setDeletingSession(false);
+    }
   };
 
   return (
@@ -411,8 +437,7 @@ const InstructorSchedule = () => {
                         );
 
                       const enrolled =
-                        session.totalSpots -
-                        session.availableSpots;
+                        session.enrolledSpots;
 
                       return (
                         <article
@@ -520,26 +545,15 @@ const InstructorSchedule = () => {
             <div className="admin-modal-actions">
               <button
                 type="button"
-                className="admin-modal-cancel"
-                disabled
-              >
-                Edit session
-              </button>
-
-              <button
-                type="button"
                 className="admin-modal-delete"
-                disabled
+                disabled={deletingSession}
+                onClick={handleDeleteSession}
               >
-                Delete session
+                {deletingSession
+                  ? "Deleting..."
+                  : "Delete session"}
               </button>
             </div>
-
-            <p className="session-detail-modal__note">
-              Edit and delete need backend
-              endpoints before these actions can
-              work.
-            </p>
           </div>
         )}
       </Modal>
