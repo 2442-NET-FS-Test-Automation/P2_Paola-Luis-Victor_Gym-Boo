@@ -43,6 +43,19 @@ const getSessionError = (
   );
 };
 
+const formatDateTimeLocal = (
+  date: Date
+): string => {
+  const offsetDate = new Date(
+    date.getTime() -
+      date.getTimezoneOffset() * 60000
+  );
+
+  return offsetDate
+    .toISOString()
+    .slice(0, 16);
+};
+
 const AddSessionModal = ({
   isOpen,
   instructorId,
@@ -75,6 +88,9 @@ const AddSessionModal = ({
   const [error, setError] = useState<
     string | null
   >(null);
+
+  const minSessionDateTime =
+    formatDateTimeLocal(new Date());
 
   useEffect(() => {
     if (!isOpen) {
@@ -170,9 +186,19 @@ const AddSessionModal = ({
       return;
     }
 
+    const selectedStart = new Date(startTime);
+    const selectedEnd = new Date(endTime);
+
+    if (selectedStart < new Date()) {
+      setError(
+        "Session start time cannot be in the past."
+      );
+
+      return;
+    }
+
     if (
-      new Date(endTime) <=
-      new Date(startTime)
+      selectedEnd <= selectedStart
     ) {
       setError(
         "Session end time must be after the start time."
@@ -182,12 +208,8 @@ const AddSessionModal = ({
     }
 
     const request: CreateSessionRequest = {
-      startTime: new Date(
-        startTime
-      ).toISOString(),
-      endTime: new Date(
-        endTime
-      ).toISOString(),
+      startTime: selectedStart.toISOString(),
+      endTime: selectedEnd.toISOString(),
 
       slots: numericSlots,
       cancellationFee: numericFee,
@@ -280,6 +302,7 @@ const AddSessionModal = ({
         <input
           id="session-start"
           type="datetime-local"
+          min={minSessionDateTime}
           value={startTime}
           onChange={(event) =>
             setStartTime(event.target.value)
@@ -294,6 +317,9 @@ const AddSessionModal = ({
         <input
           id="session-end"
           type="datetime-local"
+          min={
+            startTime || minSessionDateTime
+          }
           value={endTime}
           onChange={(event) =>
             setEndTime(event.target.value)

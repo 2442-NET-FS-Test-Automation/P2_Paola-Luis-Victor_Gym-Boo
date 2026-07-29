@@ -32,19 +32,25 @@ export interface InstructorSession {
   endTime: string;
   totalSpots: number;
   availableSpots: number;
+  enrolledSpots: number;
   placeName?: string;
   location?: string;
 }
 
 export interface SubscriberDto {
   id: number;
+  Id?: number;
   email: string;
+  Email?: string;
 }
 
 export interface SessionAttendanceResponseDto {
   sessionId: number;
+  SessionId?: number;
   totalEnrolled: number;
+  TotalEnrolled?: number;
   subscribers: SubscriberDto[];
+  Subscribers?: SubscriberDto[];
 }
 
 export interface CreateSessionRequest {
@@ -105,16 +111,33 @@ export const getInstructorSessions = async (
       }
     );
 
-    return data.map((session) => ({
-      id: session.sessionId,
-      className: session.className,
-      startTime: parseBackendDate(session.startTime),
-      endTime: parseBackendDate(session.endTime),
-      availableSpots: session.availableSlots,
-      totalSpots: session.availableSlots,
-      placeName: session.placeName,
-      location: session.placeName,
-    }));
+    return Promise.all(
+      data.map(async (session) => {
+        const enrolledSpots =
+          await getSessionEnrolledCount(
+            session.sessionId
+          );
+
+        return {
+          id: session.sessionId,
+          className: session.className,
+          startTime: parseBackendDate(
+            session.startTime
+          ),
+          endTime: parseBackendDate(
+            session.endTime
+          ),
+          availableSpots:
+            session.availableSlots,
+          totalSpots:
+            session.availableSlots +
+            enrolledSpots,
+          enrolledSpots,
+          placeName: session.placeName,
+          location: session.placeName,
+        };
+      })
+    );
   } catch (error: unknown) {
     if (
       axios.isAxiosError(error) &&
@@ -127,12 +150,46 @@ export const getInstructorSessions = async (
   }
 };
 
+const getSessionEnrolledCount = async (
+  sessionId: number
+): Promise<number> => {
+  try {
+    const { data } =
+      await api.get<SessionAttendanceResponseDto>(
+        `/api/instructor/sessions/${sessionId}/attendance`
+      );
+
+    return (
+      data.totalEnrolled ??
+      data.TotalEnrolled ??
+      data.subscribers?.length ??
+      data.Subscribers?.length ??
+      0
+    );
+  } catch {
+    return 0;
+  }
+};
+
 export const createInstructorSession = async (
   request: CreateSessionRequest
 ): Promise<void> => {
   await api.post(
     "/api/instructor/sessions",
     request
+  );
+};
+
+export const deleteInstructorSession = async (
+  sessionId: number
+): Promise<void> => {
+  await api.delete(
+    "/api/instructor/sessions/delete",
+    {
+      params: {
+        id: sessionId,
+      },
+    }
   );
 };
 
@@ -145,13 +202,21 @@ export const getSessionAttendance = async (
         `/api/instructor/sessions/${sessionId}/attendance`
       );
 
-    return data.subscribers.map((subscriber) => ({
-      id: subscriber.id,
-      enrollmentId: subscriber.id,
-      memberId: subscriber.id,
-      memberEmail: subscriber.email,
-      email: subscriber.email,
-      memberName: subscriber.email,
+    const subscribers =
+      data.subscribers ?? data.Subscribers ?? [];
+
+    return subscribers.map((subscriber) => ({
+      id: subscriber.id ?? subscriber.Id,
+      enrollmentId:
+        subscriber.id ?? subscriber.Id,
+      memberId: subscriber.id ?? subscriber.Id,
+      memberEmail:
+        subscriber.email ?? subscriber.Email,
+      email: subscriber.email ?? subscriber.Email,
+      memberName:
+        subscriber.email ??
+        subscriber.Email ??
+        "Member",
       isPresent: true,
     }));
   } catch (error: unknown) {

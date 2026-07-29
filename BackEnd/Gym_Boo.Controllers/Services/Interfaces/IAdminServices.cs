@@ -21,7 +21,7 @@ public interface IAdminServices
     
     //Revenue Related functions
     Task<List<Session>> MostPopularClass(CancellationToken ct);
-    Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct);
+    // Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct);
     Task<double[]> TotalRevenue(CancellationToken ct);
 
 }

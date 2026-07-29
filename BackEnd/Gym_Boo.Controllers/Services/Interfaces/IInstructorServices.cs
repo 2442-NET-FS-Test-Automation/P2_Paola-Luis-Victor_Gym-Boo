@@ -21,4 +21,6 @@ public interface IInstructorServices
 
     Task<List<PlaceOptionDto>> GetPlaceOptions(CancellationToken ct);
     
+    Task<bool> DeleteSession(int id, CancellationToken ct);
+    
 }

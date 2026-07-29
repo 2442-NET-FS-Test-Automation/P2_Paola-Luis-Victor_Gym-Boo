@@ -7,7 +7,7 @@ namespace Gym_Boo.ControllerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] // /api/classes
-[Authorize]
+[Authorize (Roles = "Member, Admin")]
 public class ClassesController : ControllerBase
 {
     private readonly ISessionService _sessionService;

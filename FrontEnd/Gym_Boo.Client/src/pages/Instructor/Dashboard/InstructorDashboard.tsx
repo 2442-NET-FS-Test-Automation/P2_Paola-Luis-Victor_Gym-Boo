@@ -156,8 +156,7 @@ const InstructorDashboard = () => {
           total +
           Math.max(
             0,
-            session.totalSpots -
-              session.availableSpots
+            session.enrolledSpots
           ),
         0
       );
@@ -328,8 +327,7 @@ const InstructorDashboard = () => {
               (session) => {
                 const enrolled = Math.max(
                   0,
-                  session.totalSpots -
-                    session.availableSpots
+                  session.enrolledSpots
                 );
 
                 const occupancy =

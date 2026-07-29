@@ -25,6 +25,7 @@ public class InstructorServices : IInstructorServices
     public async Task<bool> NewSession(Session session, CancellationToken ct)
     {
         bool isPlaceOccupied = await _db.Sessions.AnyAsync(s => 
+                s.InstructorId == session.InstructorId &&
                 s.PlaceId == session.PlaceId && // Mismo lugar
                 session.Start < s.End &&        // La nueva sesión empieza antes de que termine la existente
                 session.End > s.Start,          // La nueva sesión termina después de que empiece la existente
