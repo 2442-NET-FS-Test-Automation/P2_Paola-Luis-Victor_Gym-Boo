@@ -9,10 +9,14 @@ public record CreateInstructorDto(
     string Password
     );
 
-public record SessionRegistrationDto(
-    int SessionId,
-    int ClassId,
-    DateTime StartTime,
-    int TotalSlots,
-    int EnrollmentCount
+public record DisciplineReportDto(
+    string DisciplineName,
+    int TotalEnrollments
 );
+
+public record MostRatedDto (
+    int Id,
+    string ClassName,
+    string InstructorName,
+    double AverageRating
+    );
