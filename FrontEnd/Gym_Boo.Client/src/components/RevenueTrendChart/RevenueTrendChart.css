@@ -1,0 +1,53 @@
+.revenue-trend-chart {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+}
+
+.revenue-trend-chart__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.revenue-trend-chart__header h2 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.revenue-trend-chart__header p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-text-subtle);
+}
+
+.revenue-trend-chart__legend {
+    display: flex;
+    gap: 16px;
+}
+
+.revenue-trend-chart__legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.revenue-trend-chart__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.revenue-trend-chart__dot--revenue {
+    background-color: var(--color-info);
+}
+
+.revenue-trend-chart__dot--members {
+    background-color: var(--color-accent);
+}

@@ -54,7 +54,7 @@ export const isAuthenticated = (): boolean => {
 export const getRoleHome = (role: UserRole): string => {
   switch (role) {
     case "Admin":
-      return "/admin/catalog";
+      return "/admin/analytics";
 
     case "Instructor":
       return "/coach/dashboard";
