@@ -68,8 +68,7 @@ public class AdminController(
 
         return Ok(new { message = "Discipline deleted completely from database." });
     }
-
-
+    
     // --- INSTRUCTORS MANAGEMENT ---
 
     [HttpGet("instructors/list")]
@@ -138,19 +137,17 @@ public class AdminController(
     }
     
     //Reports
+    [HttpGet("reports/sessions")]
+    public async Task<IActionResult> GetSessions(CancellationToken ct)
+    {
+        var sessions = await adminServices.RegistrationReports(ct);
 
-    // [HttpGet("reports/sessions")]
-    // public async Task<IActionResult> GetSessions(CancellationToken ct)
-    // {
-    //     var sessions = await adminServices.RegistrationReports(ct);
-
-    //     if (sessions is null || !sessions.Any())
-    //     {
-    //         return NotFound("No sessions found to generate the report.");
-    //     }
-    
-    //     return Ok(sessions);
-    // }
+        if (sessions is null || !sessions.Any())
+        {
+            return NotFound("No sessions found to generate the report.");
+        }
+        return Ok(sessions);
+    }
     
     [HttpGet("reports/revenue")]
     public async Task<IActionResult> GetRevenue(CancellationToken ct)
@@ -165,5 +162,17 @@ public class AdminController(
         };
 
         return Ok(response);
+    }
+
+    [HttpGet("reports/bestrated")]
+    public async Task<IActionResult> GetMostPopular(CancellationToken ct)
+    {
+        var sessions = await adminServices.MostPopularClass(ct);
+        if (!sessions.Any())
+        {
+            return NoContent();
+        }
+        
+        return Ok(sessions);
     }
 }

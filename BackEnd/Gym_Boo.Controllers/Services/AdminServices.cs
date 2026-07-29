@@ -162,31 +162,37 @@ public class AdminServices : IAdminServices
     
     //Analytics & Reports
 
-    public async Task<List<Session>> MostPopularClass(CancellationToken ct)
-    {
-        // Safe EF Core translation for calculating average with fallbacks
-        return await _db.Sessions
-            .Include(s => s.Class)
-            .Include(s => s.Instructor)
-            .OrderByDescending(s => s.Reviews.Average(r => (double?)r.Rating) ?? 0.0)
-            .ToListAsync(ct);
-    }
+public async Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
+{
+    return await _db.Sessions
+        .OrderByDescending(s => s.Reviews.Average(r => (double?)r.Rating) ?? 0.0)
+        .Select(s => new MostRatedDto(
+            s.Id,
+            s.Class.Name,
+            s.Instructor.Name,
+            s.Reviews.Average(r => (double?)r.Rating) ?? 0.0
+        ))
+        .ToListAsync(ct);
+}
 
-    // public async Task<List<SessionRegistrationDto>> RegistrationReports(CancellationToken ct)
-    // {
-    //     var report = await _db.Sessions
-    //         .Select(s => new SessionRegistrationDto(
-    //             s.Id,
-    //             s.ClassId,
-    //             s.Start,
-    //             s.Slots,
-    //             s.Enrollments.Count
-    //         ))
-    //         .OrderByDescending(s => s.EnrollmentCount) // Ordenamos de mayor a menor
-    //         .ToListAsync(ct);
+public async Task<List<DisciplineReportDto>> RegistrationReports(CancellationToken ct)
+{
+    var report = await _db.Disciplines
+        .OrderByDescending(d => d.Classes
+            .SelectMany(c => c.Sessions)
+            .SelectMany(s => s.Enrollments)
+            .Count())
+        .Select(d => new DisciplineReportDto(
+            d.Name,
+            d.Classes
+                .SelectMany(c => c.Sessions)
+                .SelectMany(s => s.Enrollments)
+                .Count()
+        ))
+        .ToListAsync(ct);
 
-    //     return report;
-    // }
+    return report;
+}
 
     public async Task<double[]> TotalRevenue(CancellationToken ct)
     {
@@ -198,7 +204,7 @@ public class AdminServices : IAdminServices
             .Where(e => e.CancellationFeeApplied && e.Session.Start >= limitDate)
             .Select(e => e.Session.CancellationFee)
             .SumAsync(ct);
-
+        
         // 2. Ingreso por suscripciones creadas/iniciadas en los últimos 3 días
         var subscriptionRev = await _db.MemberSubscriptions
             .Where(ms => ms.StartDate >= limitDate)
