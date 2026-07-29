@@ -4,6 +4,8 @@ namespace Gym_Boo.Data.Repositories;
 
 public interface IEnrollmentRepository
 {
+    Task<Enrollment?> GetById(int enrollmentId);
+
     Task<bool> MemberHasConflictReservationAsync(int userId, DateTime startTime, DateTime endTime);
 
     Task AddEnrollmentAsync(Enrollment enrollment);

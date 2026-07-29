@@ -1,8 +1,10 @@
 ﻿using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
+using GymBoo.ControllerApi.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gym_Boo.Controllers.Controllers;
 
@@ -108,5 +110,24 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         }
 
         return Ok(res);
+    }
+
+    [HttpPatch("enrollments/toggle-attendance")]
+    public async Task<IActionResult> TakeAttendance(TakingAttendanceDTO takingAttendanceDTO)
+    {
+        try
+        {
+            bool result = await instructorServices.TakeAttendance(takingAttendanceDTO);
+
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

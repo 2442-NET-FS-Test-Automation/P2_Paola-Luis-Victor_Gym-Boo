@@ -38,10 +38,11 @@ export interface InstructorSession {
 }
 
 export interface SubscriberDto {
-  id: number;
+  id?: number;
   Id?: number;
-  email: string;
+  email?: string;
   Email?: string;
+  isPresent?: boolean;
 }
 
 export interface SessionAttendanceResponseDto {
@@ -205,20 +206,25 @@ export const getSessionAttendance = async (
     const subscribers =
       data.subscribers ?? data.Subscribers ?? [];
 
-    return subscribers.map((subscriber) => ({
-      id: subscriber.id ?? subscriber.Id,
-      enrollmentId:
-        subscriber.id ?? subscriber.Id,
-      memberId: subscriber.id ?? subscriber.Id,
-      memberEmail:
-        subscriber.email ?? subscriber.Email,
-      email: subscriber.email ?? subscriber.Email,
-      memberName:
-        subscriber.email ??
-        subscriber.Email ??
-        "Member",
-      isPresent: true,
-    }));
+    return subscribers.map((subscriber) => {
+      const enrollmentId =
+        subscriber.id ??
+        subscriber.Id;
+
+      return {
+        id: enrollmentId,
+        enrollmentId,
+        memberId: enrollmentId,
+        memberEmail:
+          subscriber.email ?? subscriber.Email,
+        email: subscriber.email ?? subscriber.Email,
+        memberName:
+          subscriber.email ??
+          subscriber.Email ??
+          "Member",
+        isPresent: subscriber.isPresent,
+      };
+    });
   } catch (error: unknown) {
     if (
       axios.isAxiosError(error) &&
@@ -249,4 +255,45 @@ export const getPlaceOptions = async (): Promise<
   );
 
   return data;
+};
+
+export type AttendanceAction = "attended" | "not attended";
+
+export interface ToggleAttendanceRequest {
+  enrollmentId: number;
+  action: AttendanceAction;
+}
+
+export const toggleAttendance = async (
+  request: ToggleAttendanceRequest
+): Promise<void> => {
+  await api.patch(
+    "/api/instructor/enrollments/toggle-attendance",
+    request
+  );
+};
+
+interface ValidationProblemDetails {
+  title?: string;
+  errors?: Record<string, string[]>;
+}
+
+export const extractAttendanceErrorMessage = (err: unknown): string => {
+  if (axios.isAxiosError(err)) {
+    const data = err.response?.data as ValidationProblemDetails | { message?: string } | undefined;
+
+    if (data && "errors" in data && data.errors) {
+      const firstField = Object.values(data.errors)[0];
+      if (firstField && firstField.length > 0) {
+        return firstField[0];
+      }
+      if (data.title) return data.title;
+    }
+
+    if (data && "message" in data && data.message) {
+      return data.message;
+    }
+  }
+
+  return "Could not update attendance for this member.";
 };
