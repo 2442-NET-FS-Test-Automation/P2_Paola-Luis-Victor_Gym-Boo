@@ -1,4 +1,4 @@
-import type { AdminOverviewStats, ClassOccupancyRate, RevenueSummary, RevenueTrendPoint } from "../types";
+import type { AdminOverviewStats, ClassOccupancyRate, RevenueSummary, RevenueTrendPoint, TopRatedSession, TopSessionEnrollment } from "../types";
 import { api } from "./client";
 
 export interface Discipline {
@@ -138,6 +138,16 @@ export const toggleInstructorStatus = async (
 
 export const getRevenueSummary = async (): Promise<RevenueSummary> => {
   const { data } = await api.get<RevenueSummary>("/api/admin/reports/revenue");
+  return data;
+};
+
+export const getTopSessionsByEnrollment = async (): Promise<TopSessionEnrollment[]> => {
+  const { data } = await api.get<TopSessionEnrollment[]>("/api/admin/reports/sessions");
+  return data;
+};
+
+export const getTopRatedSessions = async (): Promise<TopRatedSession[]> => {
+  const { data } = await api.get<TopRatedSession[]>("/api/admin/reports/bestrated");
   return data;
 };
 

@@ -3,18 +3,23 @@ import {
     getAdminOverviewStats,
     getRevenueTrend,
     getClassOccupancyRates,
-    getRevenueSummary
+    getRevenueSummary,
+    getTopSessionsByEnrollment, getTopRatedSessions
 } from "../../../api/admin";
 import type {
     AdminOverviewStats,
     ClassOccupancyRate,
     RevenueSummary,
     RevenueTrendPoint,
+    RankingItem,
+    TopRatedSession,
+    TopSessionEnrollment
 } from "../../../types";
 import StatCardTrend from "../../../components/StatCardTrend/StatCardTrend";
 import RevenueTrendChart from "../../../components/RevenueTrendChart/RevenueTrendChart";
 import RevenueBreakdownDonut from "../../../components/RevenueBreakdownDonut/RevenueBreakdownDonut";
 import OccupancyBarChart from "../../../components/OccupancyBarChart/OccupancyBarChart";
+import TopRankingChart from "../../../components/TopRankingChart/TopRankingChart";
 import "./Analytics.css";
 
 const AdminAnalytics = () => {
@@ -22,6 +27,30 @@ const AdminAnalytics = () => {
     const [trend, setTrend] = useState<RevenueTrendPoint[]>([]);
     const [occupancy, setOccupancy] = useState<ClassOccupancyRate[]>([]);
     const [revenueSummary, setRevenueSummary] = useState<RevenueSummary | null>(null);
+    const [topEnrollments, setTopEnrollments] = useState<TopSessionEnrollment[]>([]);
+    const [topRated, setTopRated] = useState<TopRatedSession[]>([]);
+
+    const enrollmentRankingData: RankingItem[] = [...topEnrollments]
+        .sort((a, b) => b.totalEnrollments - a.totalEnrollments)
+        .slice(0, 5)
+        .map((item) => ({
+            id: item.disciplineName,
+            label: item.disciplineName,
+            value: item.totalEnrollments,
+            displayValue: `${item.totalEnrollments} enrollments`,
+        }));
+
+    const ratedRankingData: RankingItem[] = [...topRated]
+        .filter((item) => item.averageRating > 0)
+        .sort((a, b) => b.averageRating - a.averageRating)
+        .slice(0, 5)
+        .map((item) => ({
+            id: item.id,
+            label: item.className,
+            subLabel: item.instructorName,
+            value: item.averageRating,
+            displayValue: `${item.averageRating.toFixed(1)} ★`,
+        }));
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,13 +65,17 @@ const AdminAnalytics = () => {
             getRevenueTrend(),
             getClassOccupancyRates(),
             getRevenueSummary(),
+            getTopSessionsByEnrollment(),
+            getTopRatedSessions(),
         ])
-            .then(([overviewData, trendData, occupancyData, revenueData]) => {
+            .then(([overviewData, trendData, occupancyData, revenueData, enrollmentsData, ratedData]) => {
                 if (cancelled) return;
                 setOverview(overviewData);
                 setTrend(trendData);
                 setOccupancy(occupancyData);
                 setRevenueSummary(revenueData);
+                setTopEnrollments(enrollmentsData);
+                setTopRated(ratedData);
             })
             .catch(() => {
                 if (!cancelled) setError("We couldn't load the reports.");
@@ -109,6 +142,21 @@ const AdminAnalytics = () => {
             </div>
 
             <OccupancyBarChart data={occupancy} />
+
+            <div className="admin-analytics__rankings">
+                <TopRankingChart
+                    title="Top Classes by Enrollment"
+                    subtitle="All-time top disciplines by total sign-ups"
+                    data={enrollmentRankingData}
+                    barColor="var(--color-info)"
+                />
+                <TopRankingChart
+                    title="Top Rated Sessions"
+                    subtitle="All-time highest rated sessions"
+                    data={ratedRankingData}
+                    barColor="var(--color-warning)"
+                />
+            </div>
         </div>
     );
 };

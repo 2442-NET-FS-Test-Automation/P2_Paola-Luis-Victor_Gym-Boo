@@ -160,3 +160,23 @@ export interface ClassOccupancyRate {
     discipline: string;
     occupancyPct: number;
 }
+
+export interface TopSessionEnrollment {
+    disciplineName: string;
+    totalEnrollments: number;
+}
+
+export interface TopRatedSession {
+    id: number;
+    className: string;
+    instructorName: string;
+    averageRating: number;
+}
+
+export interface RankingItem {
+    id: string | number;
+    label: string;
+    subLabel?: string;
+    value: number;
+    displayValue: string;
+}
