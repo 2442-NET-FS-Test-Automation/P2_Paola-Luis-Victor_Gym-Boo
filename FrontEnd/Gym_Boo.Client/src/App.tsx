@@ -23,6 +23,7 @@ import AdminCatalog from "./pages/Admin/Catalog/AdminCatalog";
 import AdminSessions from "./pages/Admin/Sessions/AdminSessions";
 import AdminInstructors from "./pages/Admin/Instructors/AdminInstructors";
 import ReviewLanding from "./pages/ReviewLanding/ReviewLanding";
+import AdminAnalytics from "./pages/Admin/Analytics/AdminAnalytics";
 
 function App() {
   return (
@@ -111,6 +112,21 @@ function App() {
         }
       >
         <Route element={<Layout />}>
+          <Route
+            path="/admin"
+            element={
+              <Navigate
+                to="/admin/analytics"
+                replace
+              />
+            }
+          />
+
+          <Route
+            path="/admin/analytics"
+            element={<AdminAnalytics />}
+          />
+
           <Route
             path="/admin/catalog"
             element={<AdminCatalog />}

@@ -134,3 +134,96 @@ export const toggleInstructorStatus = async (
     isActive: !instructor.isActive,
   });
 };
+
+// ==================== REPORTS ====================
+
+export interface SessionReport {
+  disciplineName: string;
+  totalEnrollments: number;
+}
+
+export interface RevenueReport {
+  cancellationRevenue: number;
+  subscriptionRevenue: number;
+  totalRevenue: number;
+}
+
+export interface BestRatedReport {
+  id: number;
+  className: string;
+  instructorName: string;
+  averageRating: number;
+}
+
+interface BackendSessionReport {
+  DisciplineName?: string;
+  disciplineName?: string;
+  TotalEnrollments?: number;
+  totalEnrollments?: number;
+}
+
+interface BackendBestRatedReport {
+  Id?: number;
+  id?: number;
+  ClassName?: string;
+  className?: string;
+  InstructorName?: string;
+  instructorName?: string;
+  AverageRating?: number;
+  averageRating?: number;
+}
+
+// Gets the session registration report.
+export const getSessionReports = async (): Promise<
+  SessionReport[]
+> => {
+  const response = await api.get<BackendSessionReport[]>(
+    "/api/admin/reports/sessions"
+  );
+
+  return response.data.map((report) => ({
+    disciplineName:
+      report.disciplineName ??
+      report.DisciplineName ??
+      "Unknown",
+    totalEnrollments:
+      report.totalEnrollments ??
+      report.TotalEnrollments ??
+      0,
+  }));
+};
+
+// Gets cancellation, subscription, and total revenue.
+export const getRevenueReport =
+  async (): Promise<RevenueReport> => {
+    const response = await api.get<RevenueReport>(
+      "/api/admin/reports/revenue"
+    );
+
+    return response.data;
+  };
+
+// Gets the best-rated or most popular classes.
+export const getBestRatedReport = async (): Promise<
+  BestRatedReport[]
+> => {
+  const response = await api.get<BackendBestRatedReport[]>(
+    "/api/admin/reports/bestrated"
+  );
+
+  return response.data.map((report) => ({
+    id: report.id ?? report.Id ?? 0,
+    className:
+      report.className ??
+      report.ClassName ??
+      "Unknown class",
+    instructorName:
+      report.instructorName ??
+      report.InstructorName ??
+      "Unknown instructor",
+    averageRating:
+      report.averageRating ??
+      report.AverageRating ??
+      0,
+  }));
+};

@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   BookOpen,
   Users,
+  ChartNoAxesCombined,
 } from "lucide-react";
 
 import type { ComponentType } from "react";
@@ -77,9 +78,9 @@ export const ROLE_CONFIGS: Record<
     portalLabel: "ADMIN PORTAL",
     links: [
       {
-        label: "Class Catalog",
-        to: "/admin/catalog",
-        icon: BookOpen,
+        label: "Analytics",
+        to: "/admin/analytics",
+        icon: ChartNoAxesCombined,
       },
       {
         label: "Sessions",
@@ -91,6 +92,11 @@ export const ROLE_CONFIGS: Record<
         to: "/admin/instructors",
         icon: Users,
       },
+      {
+        label: "Class Catalog",
+        to: "/admin/catalog",
+        icon: BookOpen,
+      }
     ],
   },
 };

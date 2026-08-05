@@ -11,6 +11,7 @@ namespace Gym_Boo.Controllers.Controllers;
 //[Authorize(Roles = "Instructor")]
 public class InstructorControls(IInstructorServices instructorServices) : ControllerBase
 {
+    // Gets the profile information for a specific instructor by ID.
     [HttpGet("{id:int}")]
     public async Task<IActionResult> ShowInstructor(int id, CancellationToken ct)
     {
@@ -22,6 +23,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return Ok(instructor);
     }
 
+    // Creates a new class session for an instructor.
     [HttpPost("sessions")]
     public async Task<IActionResult> CreateSession([FromBody] NewSessionDto dto, CancellationToken ct)
     {
@@ -53,6 +55,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return CreatedAtAction(nameof(ShowInstructor), new { id = session.InstructorId }, session);
     }
 
+    // Retrieves the attendance list for a specific session.
     [HttpGet("sessions/{id:int}/attendance")]
     public async Task<IActionResult> GetAttendance(int id, CancellationToken ct)
     {
@@ -66,6 +69,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return Ok(attendance);
     }
 
+    // Retrieves all upcoming sessions assigned to an instructor
     [HttpGet("sessions/list")]
     public async Task<IActionResult> GetNextSessions(int insId, CancellationToken ct)
     {
@@ -79,6 +83,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return Ok(next);
     }
 
+    // Retrieves all available classes for the session creation dropdown.
     [HttpGet("options/classes")]
     public async Task<IActionResult> GetClassOptions(CancellationToken ct)
     {
@@ -88,6 +93,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return Ok(classes);
     }
 
+    // Retrieves all available places for the session creation dropdown.
     [HttpGet("options/places")]
     public async Task<IActionResult> GetPlaceOptions(CancellationToken ct)
     {
@@ -97,6 +103,7 @@ public class InstructorControls(IInstructorServices instructorServices) : Contro
         return Ok(places);
     }
 
+    // Deletes an existing session by its ID.
     [HttpDelete("sessions/delete")]
     public async Task<IActionResult> DeleteSession(int id, CancellationToken ct)
     {
