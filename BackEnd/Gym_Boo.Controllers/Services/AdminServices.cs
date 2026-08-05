@@ -171,7 +171,7 @@ public async Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
             s.Class.Name,
             s.Instructor.Name,
             s.Reviews.Average(r => (double?)r.Rating) ?? 0.0
-        ))
+        )).Take(5)
         .ToListAsync(ct);
 }
 
