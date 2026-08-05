@@ -50,6 +50,11 @@ public class EnrollmentRepository : IEnrollmentRepository
         .ToListAsync();
     }
 
+    public async Task<Enrollment?> GetById(int enrollmentId)
+    {
+        return await _context.Enrollments.FirstOrDefaultAsync(e => e.Id == enrollmentId);
+    }
+
     public async Task<bool> MemberHasConflictReservationAsync(int userId, DateTime startTime, DateTime endTime)
     {
         return await _context.Enrollments

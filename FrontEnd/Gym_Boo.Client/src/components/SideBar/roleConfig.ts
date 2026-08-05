@@ -6,7 +6,7 @@ import {
   ClipboardCheck,
   BookOpen,
   Users,
-  ChartNoAxesCombined,
+  ChartPie
 } from "lucide-react";
 
 import type { ComponentType } from "react";
@@ -79,8 +79,13 @@ export const ROLE_CONFIGS: Record<
     links: [
       {
         label: "Analytics",
-        to: "/admin/analytics",
-        icon: ChartNoAxesCombined,
+        to: "admin/analytics",
+        icon: ChartPie
+      },
+      {
+        label: "Class Catalog",
+        to: "/admin/catalog",
+        icon: BookOpen,
       },
       {
         label: "Sessions",

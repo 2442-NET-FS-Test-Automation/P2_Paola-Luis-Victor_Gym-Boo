@@ -3,6 +3,7 @@ using Gym_Boo.Data.Entities;
 
 namespace Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Controllers.DTOs;
+using GymBoo.ControllerApi.DTOs;
 
 public interface IInstructorServices
 {
@@ -20,7 +21,10 @@ public interface IInstructorServices
     Task<List<ClassOptionDto>> GetClassOptions(CancellationToken ct);
 
     Task<List<PlaceOptionDto>> GetPlaceOptions(CancellationToken ct);
-    
+
     Task<bool> DeleteSession(int id, CancellationToken ct);
-    
+
+    Task<bool> TakeAttendance(TakingAttendanceDTO dto);
+
+
 }

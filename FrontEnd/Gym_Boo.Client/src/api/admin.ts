@@ -1,3 +1,4 @@
+import type { AdminOverviewStats, ClassOccupancyRate, RevenueSummary, RevenueTrendPoint, TopRatedSession, TopSessionEnrollment } from "../types";
 import { api } from "./client";
 
 export interface Discipline {
@@ -135,95 +136,63 @@ export const toggleInstructorStatus = async (
   });
 };
 
-// ==================== REPORTS ====================
-
-export interface SessionReport {
-  disciplineName: string;
-  totalEnrollments: number;
-}
-
-export interface RevenueReport {
-  cancellationRevenue: number;
-  subscriptionRevenue: number;
-  totalRevenue: number;
-}
-
-export interface BestRatedReport {
-  id: number;
-  className: string;
-  instructorName: string;
-  averageRating: number;
-}
-
-interface BackendSessionReport {
-  DisciplineName?: string;
-  disciplineName?: string;
-  TotalEnrollments?: number;
-  totalEnrollments?: number;
-}
-
-interface BackendBestRatedReport {
-  Id?: number;
-  id?: number;
-  ClassName?: string;
-  className?: string;
-  InstructorName?: string;
-  instructorName?: string;
-  AverageRating?: number;
-  averageRating?: number;
-}
-
-// Gets the session registration report.
-export const getSessionReports = async (): Promise<
-  SessionReport[]
-> => {
-  const response = await api.get<BackendSessionReport[]>(
-    "/api/admin/reports/sessions"
-  );
-
-  return response.data.map((report) => ({
-    disciplineName:
-      report.disciplineName ??
-      report.DisciplineName ??
-      "Unknown",
-    totalEnrollments:
-      report.totalEnrollments ??
-      report.TotalEnrollments ??
-      0,
-  }));
+export const getRevenueSummary = async (): Promise<RevenueSummary> => {
+  const { data } = await api.get<RevenueSummary>("/api/admin/reports/revenue");
+  return data;
 };
 
-// Gets cancellation, subscription, and total revenue.
-export const getRevenueReport =
-  async (): Promise<RevenueReport> => {
-    const response = await api.get<RevenueReport>(
-      "/api/admin/reports/revenue"
-    );
-
-    return response.data;
-  };
-
-// Gets the best-rated or most popular classes.
-export const getBestRatedReport = async (): Promise<
-  BestRatedReport[]
-> => {
-  const response = await api.get<BackendBestRatedReport[]>(
-    "/api/admin/reports/bestrated"
-  );
-
-  return response.data.map((report) => ({
-    id: report.id ?? report.Id ?? 0,
-    className:
-      report.className ??
-      report.ClassName ??
-      "Unknown class",
-    instructorName:
-      report.instructorName ??
-      report.InstructorName ??
-      "Unknown instructor",
-    averageRating:
-      report.averageRating ??
-      report.AverageRating ??
-      0,
-  }));
+export const getTopSessionsByEnrollment = async (): Promise<TopSessionEnrollment[]> => {
+  const { data } = await api.get<TopSessionEnrollment[]>("/api/admin/reports/sessions");
+  return data;
 };
+
+export const getTopRatedSessions = async (): Promise<TopRatedSession[]> => {
+  const { data } = await api.get<TopRatedSession[]>("/api/admin/reports/bestrated");
+  return data;
+};
+
+
+// TODO: reemplazar por llamadas reales cuando existan los endpoints.
+// GET /api/admin/reports/overview
+// GET /api/admin/reports/revenue-trend
+// GET /api/admin/reports/occupancy
+
+const MOCK_OVERVIEW: AdminOverviewStats = {
+  totalMembers: 2847,
+  totalMembersChangePct: 7,
+  sessionsThisMonth: 378,
+  sessionsThisMonthChangePct: 6.2,
+  avgOccupancyPct: 82,
+  avgOccupancyChangePct: 3.1,
+  monthlyRevenue: 41800,
+  monthlyRevenueChangePct: 9,
+};
+
+const MOCK_REVENUE_TREND: RevenueTrendPoint[] = [
+  { month: "Feb", revenue: 44000, members: 240 },
+  { month: "Mar", revenue: 46500, members: 260 },
+  { month: "Apr", revenue: 45200, members: 250 },
+  { month: "May", revenue: 49800, members: 280 },
+  { month: "Jun", revenue: 52000, members: 290 },
+  { month: "Jul", revenue: 55500, members: 320 },
+];
+
+const MOCK_OCCUPANCY: ClassOccupancyRate[] = [
+  { discipline: "HIIT", occupancyPct: 78 },
+  { discipline: "CrossFit", occupancyPct: 90 },
+  { discipline: "Cycling", occupancyPct: 96 },
+  { discipline: "Kettlebell", occupancyPct: 88 },
+  { discipline: "Boxing", occupancyPct: 74 },
+  { discipline: "Yoga", occupancyPct: 68 },
+  { discipline: "Pilates", occupancyPct: 55 },
+  { discipline: "Mobility", occupancyPct: 50 },
+];
+
+export const getAdminOverviewStats = async (): Promise<AdminOverviewStats> =>
+  Promise.resolve(MOCK_OVERVIEW);
+
+export const getRevenueTrend = async (): Promise<RevenueTrendPoint[]> =>
+  Promise.resolve(MOCK_REVENUE_TREND);
+
+export const getClassOccupancyRates = async (): Promise<ClassOccupancyRate[]> =>
+  Promise.resolve(MOCK_OCCUPANCY);

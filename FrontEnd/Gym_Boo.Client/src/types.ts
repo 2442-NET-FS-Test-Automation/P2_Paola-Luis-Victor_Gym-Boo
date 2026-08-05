@@ -132,3 +132,51 @@ export interface SubscriptionActionResponse {
   result: boolean;
   resultMessage: string;
 }
+
+export interface AdminOverviewStats {
+    totalMembers: number;
+    totalMembersChangePct: number;
+    sessionsThisMonth: number;
+    sessionsThisMonthChangePct: number;
+    avgOccupancyPct: number;
+    avgOccupancyChangePct: number;
+    monthlyRevenue: number;
+    monthlyRevenueChangePct: number;
+}
+
+export interface RevenueTrendPoint {
+    month: string;
+    revenue: number;
+    members: number;
+}
+
+export interface RevenueSummary {
+    cancellationRevenue: number;
+    subscriptionRevenue: number;
+    totalRevenue: number;
+}
+
+export interface ClassOccupancyRate {
+    discipline: string;
+    occupancyPct: number;
+}
+
+export interface TopSessionEnrollment {
+    disciplineName: string;
+    totalEnrollments: number;
+}
+
+export interface TopRatedSession {
+    id: number;
+    className: string;
+    instructorName: string;
+    averageRating: number;
+}
+
+export interface RankingItem {
+    id: string | number;
+    label: string;
+    subLabel?: string;
+    value: number;
+    displayValue: string;
+}

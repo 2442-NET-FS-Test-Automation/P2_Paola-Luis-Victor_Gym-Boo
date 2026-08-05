@@ -11,6 +11,8 @@ import {
 import {
   getInstructorSessions,
   getSessionAttendance,
+  toggleAttendance,
+  extractAttendanceErrorMessage,
   type AttendanceRecord,
   type InstructorSession,
 } from "../../../api/instructor";
@@ -19,6 +21,7 @@ import { getStoredUser } from "../../../api/auth";
 
 import {
   formatTime,
+  isSameLocalDay,
 } from "../../../utils/instructorDates";
 
 import "./InstructorAttendance.css";
@@ -50,19 +53,23 @@ const isPresent = (
   );
 };
 
+const getRecordEnrollmentId = (
+  record: AttendanceRecord
+): number | undefined => {
+  return record.enrollmentId ?? record.id;
+};
+
 const InstructorAttendance = () => {
   const user = getStoredUser();
 
-  const [sessions, setSessions] = useState<
-    InstructorSession[]
-  >([]);
+  const [sessions, setSessions] = useState
+    <InstructorSession[]>([]);
 
   const [selectedSessionId, setSelectedSessionId] =
     useState("");
 
-  const [attendance, setAttendance] = useState<
-    AttendanceRecord[]
-  >([]);
+  const [attendance, setAttendance] = useState
+    <AttendanceRecord[]>([]);
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] =
@@ -73,6 +80,21 @@ const InstructorAttendance = () => {
   const [error, setError] = useState<
     string | null
   >(null);
+
+
+  const [actionError, setActionError] = useState<
+    string | null>(null);
+
+  const [pendingIds, setPendingIds] = useState<
+    Set<number>>(new Set());
+
+  // Solo sesiones del día de hoy en el selector.
+  const todaySessions = useMemo(() => {
+    const today = new Date();
+    return sessions.filter((session) =>
+      isSameLocalDay(session.startTime, today)
+    );
+  }, [sessions]);
 
   useEffect(() => {
     if (!user) {
@@ -86,14 +108,27 @@ const InstructorAttendance = () => {
 
         setSessions(result);
 
+        const today = new Date();
+        const todayResult = result.filter(
+          (session) =>
+            isSameLocalDay(session.startTime, today)
+        );
+
         const query =
           new URLSearchParams(
             window.location.search
           ).get("sessionId");
 
+        const queryMatchesToday =
+          query &&
+          todayResult.some(
+            (session) =>
+              session.id.toString() === query
+          );
+
         const initialId =
-          query ??
-          result[0]?.id.toString() ??
+          (queryMatchesToday ? query : null) ??
+          todayResult[0]?.id.toString() ??
           "";
 
         setSelectedSessionId(initialId);
@@ -118,6 +153,7 @@ const InstructorAttendance = () => {
     const loadAttendance = async () => {
       setLoading(true);
       setError(null);
+      setActionError(null);
 
       try {
         setAttendance(
@@ -194,6 +230,42 @@ const InstructorAttendance = () => {
             100
         );
 
+  const handleToggleAttendance = async (
+    record: AttendanceRecord
+  ) => {
+    const enrollmentId = getRecordEnrollmentId(record);
+    if (enrollmentId === undefined) return;
+    if (pendingIds.has(enrollmentId)) return;
+
+    setActionError(null);
+
+    const currentlyPresent = isPresent(record);
+    setPendingIds((prev) => new Set(prev).add(enrollmentId));
+
+    try {
+      await toggleAttendance({
+        enrollmentId: enrollmentId,
+        action: currentlyPresent ? "not attended" : "attended",
+      });
+
+      if (selectedSessionId) {
+        const refreshedAttendance = await getSessionAttendance(
+          Number(selectedSessionId)
+        );
+
+        setAttendance(refreshedAttendance);
+      }
+    } catch (err) {
+      setActionError(extractAttendanceErrorMessage(err));
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(enrollmentId);
+        return next;
+      });
+    }
+  };
+
   return (
     <div className="attendance-page">
       <header className="attendance-page__hero">
@@ -221,10 +293,12 @@ const InstructorAttendance = () => {
           }
         >
           <option value="">
-            Select a session
+            {todaySessions.length === 0
+              ? "No sessions today"
+              : "Select a session"}
           </option>
 
-          {sessions.map((session) => (
+          {todaySessions.map((session) => (
             <option
               key={session.id}
               value={session.id}
@@ -371,6 +445,12 @@ const InstructorAttendance = () => {
         </p>
       )}
 
+      {actionError && (
+        <p className="instructor-page-error">
+          {actionError}
+        </p>
+      )}
+
       <section className="attendance-table">
         <div className="attendance-table__header">
           <span>#</span>
@@ -409,6 +489,13 @@ const InstructorAttendance = () => {
 
               const present =
                 isPresent(record);
+
+              const enrollmentId =
+                getRecordEnrollmentId(record);
+
+              const isPending =
+                enrollmentId !== undefined &&
+                pendingIds.has(enrollmentId);
 
               return (
                 <div
@@ -450,15 +537,26 @@ const InstructorAttendance = () => {
                       : "—"}
                   </span>
 
-                  <span
+                  <button
+                    type="button"
                     className={`attendance-checkbox ${
+                      present ? "is-present" : ""
+                    } ${isPending ? "is-loading" : ""}`}
+                    disabled={
+                      enrollmentId === undefined ||
+                      isPending
+                    }
+                    onClick={() =>
+                      handleToggleAttendance(record)
+                    }
+                    aria-label={
                       present
-                        ? "is-present"
-                        : ""
-                    }`}
+                        ? "Mark as absent"
+                        : "Mark as present"
+                    }
                   >
-                    {present ? "✓" : ""}
-                  </span>
+                    {isPending ? "…" : present ? "✓" : ""}
+                  </button>
                 </div>
               );
             }

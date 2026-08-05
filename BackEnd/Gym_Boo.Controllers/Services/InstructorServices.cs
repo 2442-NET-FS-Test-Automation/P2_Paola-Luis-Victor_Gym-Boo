@@ -1,7 +1,10 @@
-﻿using Gym_Boo.Controllers.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
+using Gym_Boo.Data.Repositories;
+using GymBoo.ControllerApi.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Controllers.Services;
@@ -9,10 +12,12 @@ namespace Gym_Boo.Controllers.Services;
 public class InstructorServices : IInstructorServices
 {
     private readonly GymBooDbContext _db;
+    private readonly IEnrollmentRepository _enrollmentRepository;
 
-    public InstructorServices(GymBooDbContext db)
+    public InstructorServices(GymBooDbContext db, IEnrollmentRepository enrollmentRepository)
     {
         _db = db;
+        _enrollmentRepository = enrollmentRepository;
     }
 
     public async Task<User?> GetInstructor(int id, CancellationToken ct)
@@ -53,10 +58,11 @@ public class InstructorServices : IInstructorServices
     {
         var subscribers = await _db.Enrollments
             .AsNoTracking()
-            .Where(e => e.SessionId == id && e.Status == EnrollmentStatus.Enrolled)
+            .Where(e => e.SessionId == id && e.Status != EnrollmentStatus.Cancelled)
             .Select(e => new SubscriberDto(
-                e.MemberId,
-                e.Member.Email
+                e.Id,
+                e.Member.Email,
+                e.Status.Equals(EnrollmentStatus.Attended)
             ))
             .ToListAsync(ct);
 
@@ -73,7 +79,7 @@ public class InstructorServices : IInstructorServices
 
         var upcomingSessions = await _db.Sessions
             // Filtramos por el instructor y solo clases en el futuro
-            .Where(s => s.InstructorId == instructorId && s.Start >= now)
+            .Where(s => s.InstructorId == instructorId)
             // Ordenamos para que la clase más pronta aparezca primero
             .OrderBy(s => s.Start) 
             .Select(s => new UpcomingSessionDto(
@@ -119,7 +125,7 @@ public class InstructorServices : IInstructorServices
         try
         {
             var session = await _db.Sessions.FindAsync(new object[] { id }, cancellationToken: ct);
-            
+
             if (session == null)
             {
                 return false;
@@ -127,12 +133,51 @@ public class InstructorServices : IInstructorServices
 
             _db.Sessions.Remove(session);
             await _db.SaveChangesAsync(ct);
-            
+
             return true;
         }
         catch (DbUpdateException)
         {
             return false;
         }
+    }
+
+    public async Task<bool> TakeAttendance(TakingAttendanceDTO dto)
+    {
+        var enrollment = await _enrollmentRepository.GetByIdWithSessionAsync
+
+        (dto.EnrollmentId) ?? throw new ArgumentException("Invalid enrollment Id");
+
+        var context = new ValidationContext(dto);
+
+        Validator.ValidateObject(dto, context, validateAllProperties: true);
+        
+        var now = DateTime.UtcNow;
+        var timeAfterSession = now - enrollment.Session.Start;
+        if (timeAfterSession.TotalHours < 0)
+        {
+            throw new InvalidOperationException("You cannot check attendance for this session yet.");
+        }
+
+        if (dto.Action.Equals("attended"))
+        {
+            enrollment.Status = EnrollmentStatus.Attended;
+
+            await _enrollmentRepository.UpdateAsync(enrollment);
+            await _db.SaveChangesAsync();
+
+            return true;
+        }
+        else if (dto.Action.Equals("not attended"))
+        {
+            enrollment.Status = EnrollmentStatus.Enrolled;
+
+            await _enrollmentRepository.UpdateAsync(enrollment);
+            await _db.SaveChangesAsync();
+
+            return true;
+        }
+
+        return false;
     }
 }

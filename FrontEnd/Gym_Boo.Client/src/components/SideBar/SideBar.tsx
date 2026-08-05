@@ -8,6 +8,7 @@ import { LogOut } from "lucide-react";
 import { logout } from "../../api/auth";
 import { ROLE_CONFIGS } from "./roleConfig";
 import { useCurrentUser } from "./useCurrentUser";
+import Logo from "../Logo/Logo";
 
 import "./Sidebar.css";
 
@@ -25,13 +26,8 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar__logo">
-        <span className="sidebar__logo-mark">
-          G
-        </span>
-
-        <span className="sidebar__logo-text">
-          GYMBOO
-        </span>
+        <Logo size={28} />
+        <span className="sidebar__logo-text">GYMBOO</span>
       </div>
 
       <p className="sidebar__section-label">

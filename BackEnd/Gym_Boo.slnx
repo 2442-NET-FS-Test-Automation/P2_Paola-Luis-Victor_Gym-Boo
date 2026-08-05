@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Gym_Boo.Tests/">
+    <Project Path="Gym_Boo.Tests/Gym_Boo.Tests.Integration/Gym_Boo.Tests.Integration.csproj" />
+    <Project Path="Gym_Boo.Tests/Gym_Boo.Tests.Unit/Gym_Boo.Tests.Unit.csproj" />
+  </Folder>
   <Project Path="Gym_Boo.Controllers/Gym_Boo.Controllers.csproj" />
   <Project Path="Gym_Boo.Data/Gym_Boo.Data.csproj" />
 </Solution>
