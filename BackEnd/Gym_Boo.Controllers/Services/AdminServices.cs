@@ -19,13 +19,7 @@ public class AdminServices : IAdminServices
 
     public async Task<List<Discipline>> GetAllDisciplines(CancellationToken ct)
     {
-        var res = _db.Disciplines.ToListAsync(ct);
-        if (!res.Result.Any())
-        {
-            return null;
-        }
-
-        return await res;
+        return await _db.Disciplines.ToListAsync(ct);;
     }
     
     public async Task<bool> NewDisciplineAsync(string discipline, CancellationToken ct)
@@ -97,13 +91,13 @@ public class AdminServices : IAdminServices
 
     public async Task<List<User>> GetAllInstructors(CancellationToken ct)
     {
-        var res = _db.Users.Where(i => i.Role == Role.Instructor).ToListAsync(ct);
-        if (!res.Result.Any())
+        var instructors = await _db.Users.Where(i => i.Role == Role.Instructor).ToListAsync(ct);
+        if (!instructors.Any())
         {
             return null;
         }
 
-        return await res;
+        return instructors;
     }
     
     public async Task<bool> GetInstructor(int id, CancellationToken ct)

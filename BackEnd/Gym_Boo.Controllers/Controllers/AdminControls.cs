@@ -21,9 +21,8 @@ public class AdminController(
     public async Task<IActionResult> GetDisciplinesList(CancellationToken ct)
     {
         var result = await adminServices.GetAllDisciplines(ct);
-        if (result is null)
-        {
-            return NotFound("Disciplines not found.");
+        if (result.Count == 0) {
+            return NotFound("No disciplines to show.");
         }
         
         return Ok(result);
