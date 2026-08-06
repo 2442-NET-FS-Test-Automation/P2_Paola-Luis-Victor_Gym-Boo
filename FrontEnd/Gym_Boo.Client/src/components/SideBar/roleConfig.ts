@@ -97,6 +97,11 @@ export const ROLE_CONFIGS: Record<
         to: "/admin/instructors",
         icon: Users,
       },
+      {
+        label: "Class Catalog",
+        to: "/admin/catalog",
+        icon: BookOpen,
+      }
     ],
   },
 };
