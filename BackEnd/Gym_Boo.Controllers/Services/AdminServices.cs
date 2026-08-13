@@ -193,13 +193,13 @@ public async Task<List<DisciplineReportDto>> RegistrationReports(CancellationTok
         // Calculamos la fecha y hora de hace exactamente 30 días
         var limitDate = DateTime.UtcNow.AddDays(-30);
 
-        // 1. Ingreso por cancelaciones de sesiones de los últimos 3 días
+        // 1. Ingreso por cancelaciones de sesiones de los últimos 30 días
         var cancellationRev = await _db.Enrollments
             .Where(e => e.CancellationFeeApplied && e.Session.Start >= limitDate)
             .Select(e => e.Session.CancellationFee)
             .SumAsync(ct);
         
-        // 2. Ingreso por suscripciones creadas/iniciadas en los últimos 3 días
+        // 2. Ingreso por suscripciones creadas/iniciadas en los últimos 30 días
         var subscriptionRev = await _db.MemberSubscriptions
             .Where(ms => ms.StartDate >= limitDate)
             .Select(ms => ms.Plan.Price)
