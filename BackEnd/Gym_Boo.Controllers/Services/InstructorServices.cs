@@ -4,6 +4,7 @@ using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories;
+using Gym_Boo.Data.Repositories.Interfaces;
 using GymBoo.ControllerApi.DTOs;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,41 +12,39 @@ namespace Gym_Boo.Controllers.Services;
 
 public class InstructorServices : IInstructorServices
 {
-    private readonly GymBooDbContext _db;
+    private readonly IInstructorRepository _instructorRepository;
     private readonly IEnrollmentRepository _enrollmentRepository;
 
-    public InstructorServices(GymBooDbContext db, IEnrollmentRepository enrollmentRepository)
+    public InstructorServices(
+        IInstructorRepository instructorRepository,
+        IEnrollmentRepository enrollmentRepository)
     {
-        _db = db;
+        _instructorRepository = instructorRepository;
         _enrollmentRepository = enrollmentRepository;
     }
 
     public async Task<User?> GetInstructor(int id, CancellationToken ct)
     {
-        return await _db.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id, ct);
+        return await _instructorRepository.GetUserByIdAsync(id, ct);
     }
 
     public async Task<bool> NewSession(Session session, CancellationToken ct)
     {
-        bool isPlaceOccupied = await _db.Sessions.AnyAsync(s => 
-                s.InstructorId == session.InstructorId &&
-                s.PlaceId == session.PlaceId && // Mismo lugar
-                session.Start < s.End &&        // La nueva sesión empieza antes de que termine la existente
-                session.End > s.Start,          // La nueva sesión termina después de que empiece la existente
+        if (session.Start >= session.End) return false;
+
+        bool isOccupied = await _instructorRepository.HasSessionOverlapAsync(
+            session.PlaceId,
+            session.InstructorId,
+            session.Start,
+            session.End,
             ct);
 
-        if (isPlaceOccupied)
-        {
-            return false; 
-        }
-        
+        if (isOccupied) return false;
+
         try
         {
-            _db.Sessions.Add(session);
-            await _db.SaveChangesAsync(ct);
-        
+            await _instructorRepository.AddSessionAsync(session, ct);
+            await _instructorRepository.SaveChangesAsync(ct);
             return true;
         }
         catch (DbUpdateException)
@@ -56,15 +55,15 @@ public class InstructorServices : IInstructorServices
 
     public async Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct)
     {
-        var subscribers = await _db.Enrollments
-            .AsNoTracking()
-            .Where(e => e.SessionId == id && e.Status != EnrollmentStatus.Cancelled)
+        var enrollments = await _instructorRepository.GetActiveEnrollmentsForSessionAsync(id, ct);
+
+        var subscribers = enrollments
             .Select(e => new SubscriberDto(
                 e.Id,
                 e.Member.Email,
-                e.Status.Equals(EnrollmentStatus.Attended)
+                e.Status == EnrollmentStatus.Attended
             ))
-            .ToListAsync(ct);
+            .ToList();
 
         return new SessionAttendanceResponseDto(
             SessionId: id,
@@ -72,68 +71,43 @@ public class InstructorServices : IInstructorServices
             Subscribers: subscribers
         );
     }
-    
+
     public async Task<List<UpcomingSessionDto>> GetUpcomingSessionsForInstructor(int instructorId, CancellationToken ct)
     {
-        var now = DateTime.UtcNow;
+        var sessions =
+            await _instructorRepository.GetUpcomingSessionsByInstructorAsync(instructorId, DateTime.UtcNow, ct);
 
-        var upcomingSessions = await _db.Sessions
-            // Filtramos por el instructor y solo clases en el futuro
-            .Where(s => s.InstructorId == instructorId)
-            // Ordenamos para que la clase más pronta aparezca primero
-            .OrderBy(s => s.Start) 
-            .Select(s => new UpcomingSessionDto(
-                s.Id,
-                s.Class.Name, // Asumiendo que tu entidad Class tiene una propiedad Name
-                s.Place.Name, // Propiedad Name de la entidad Place que compartiste antes
-                s.Start,
-                s.End,
-                s.Slots - s.Enrollments.Count // Calculamos cuántos lugares quedan disponibles
-            ))
-            .ToListAsync(ct);
-
-        return upcomingSessions;
+        return sessions.Select(s => new UpcomingSessionDto(
+            s.Id,
+            s.Class.Name,
+            s.Place.Name,
+            s.Start,
+            s.End,
+            s.Slots - s.Enrollments.Count(e => e.Status != EnrollmentStatus.Cancelled)
+        )).ToList();
     }
-
 
     public async Task<List<ClassOptionDto>> GetClassOptions(CancellationToken ct)
     {
-        return await _db.Classes
-            .AsNoTracking()
-            .OrderBy(c => c.Name)
-            .Select(c => new ClassOptionDto(
-                c.Id,
-                c.Name
-            ))
-            .ToListAsync(ct);
+        var classes = await _instructorRepository.GetClassesAsync(ct);
+        return classes.Select(c => new ClassOptionDto(c.Id, c.Name)).ToList();
     }
 
     public async Task<List<PlaceOptionDto>> GetPlaceOptions(CancellationToken ct)
     {
-        return await _db.Places
-            .AsNoTracking()
-            .OrderBy(p => p.Name)
-            .Select(p => new PlaceOptionDto(
-                p.Id,
-                p.Name
-            ))
-            .ToListAsync(ct);
+        var places = await _instructorRepository.GetPlacesAsync(ct);
+        return places.Select(p => new PlaceOptionDto(p.Id, p.Name)).ToList();
     }
 
     public async Task<bool> DeleteSession(int id, CancellationToken ct)
     {
         try
         {
-            var session = await _db.Sessions.FindAsync(new object[] { id }, cancellationToken: ct);
+            var session = await _instructorRepository.GetSessionByIdAsync(id, ct);
+            if (session == null) return false;
 
-            if (session == null)
-            {
-                return false;
-            }
-
-            _db.Sessions.Remove(session);
-            await _db.SaveChangesAsync(ct);
-
+            _instructorRepository.DeleteSession(session);
+            await _instructorRepository.SaveChangesAsync(ct);
             return true;
         }
         catch (DbUpdateException)
@@ -142,42 +116,36 @@ public class InstructorServices : IInstructorServices
         }
     }
 
-    public async Task<bool> TakeAttendance(TakingAttendanceDTO dto)
+    public async Task<bool> TakeAttendance(TakingAttendanceDTO dto, CancellationToken ct = default)
     {
-        var enrollment = await _enrollmentRepository.GetByIdWithSessionAsync
+        if (dto == null) return false;
 
-        (dto.EnrollmentId) ?? throw new ArgumentException("Invalid enrollment Id");
+        var enrollment = await _enrollmentRepository.GetByIdWithSessionAsync(dto.EnrollmentId)
+                         ?? throw new ArgumentException("Invalid enrollment Id");
 
-        var context = new ValidationContext(dto);
+        Validator.ValidateObject(dto, new ValidationContext(dto), validateAllProperties: true);
 
-        Validator.ValidateObject(dto, context, validateAllProperties: true);
-        
-        var now = DateTime.UtcNow;
-        var timeAfterSession = now - enrollment.Session.Start;
-        if (timeAfterSession.TotalHours < 0)
+        if (DateTime.UtcNow < enrollment.Session.Start)
         {
             throw new InvalidOperationException("You cannot check attendance for this session yet.");
         }
 
-        if (dto.Action.Equals("attended"))
+        if (string.Equals(dto.Action, "attended", StringComparison.OrdinalIgnoreCase))
         {
             enrollment.Status = EnrollmentStatus.Attended;
-
-            await _enrollmentRepository.UpdateAsync(enrollment);
-            await _db.SaveChangesAsync();
-
-            return true;
         }
-        else if (dto.Action.Equals("not attended"))
+        else if (string.Equals(dto.Action, "not attended", StringComparison.OrdinalIgnoreCase))
         {
             enrollment.Status = EnrollmentStatus.Enrolled;
-
-            await _enrollmentRepository.UpdateAsync(enrollment);
-            await _db.SaveChangesAsync();
-
-            return true;
+        }
+        else
+        {
+            return false;
         }
 
-        return false;
+        await _enrollmentRepository.UpdateAsync(enrollment);
+        await _instructorRepository.SaveChangesAsync(ct);
+
+        return true;
     }
 }
