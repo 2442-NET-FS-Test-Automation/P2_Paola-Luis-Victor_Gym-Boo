@@ -1,5 +1,8 @@
 using Gym_Boo.ControllerApi.Services;
+using Gym_Boo.Controllers.Services;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Repositories;
+using Gym_Boo.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.ControllerApi.Extensions;
@@ -57,6 +60,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<IPlanService, PlanService>();
+        services.AddScoped<IAdminServices, AdminServices>();
+        services.AddScoped<IAdminRepository,  AdminRepository>();
+        services.AddScoped<IInstructorRepository, InstructorRepository>();
+        services.AddScoped<IInstructorServices, InstructorServices>();
 
         return services;
     }
