@@ -46,15 +46,10 @@ try
 
     builder.Services.AddOpenApi();
     builder.Services.AddControllers();
-
-    builder.Services.AddScoped<IAdminServices, AdminServices>();
-    builder.Services.AddScoped<IInstructorServices, InstructorServices>();
-    builder.Services.AddScoped<IUserService, UserService>();
+    
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IPasswordHasher<User>,PasswordHasher<User>>();
-
     
-
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
     // For concurrent operations (if applies)
