@@ -5,4 +5,5 @@
   </Folder>
   <Project Path="Gym_Boo.Controllers/Gym_Boo.Controllers.csproj" />
   <Project Path="Gym_Boo.Data/Gym_Boo.Data.csproj" />
+  
 </Solution>
