@@ -1,9 +1,7 @@
 using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
-using Gym_Boo.Data.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers.Controllers;
@@ -11,39 +9,36 @@ namespace Gym_Boo.Controllers.Controllers;
 [ApiController]
 [Route("api/admin")]
 [Authorize(Roles = "Admin")]
-public class AdminController(
-    IAdminServices adminServices, 
-    IPasswordHasher<User> passwordHasher) : ControllerBase
+public class AdminController(IAdminServices adminServices) : ControllerBase
 {
-    // --- DISCIPLINES MANAGEMENT ---
+    // ==========================================
+    // DISCIPLINES MANAGEMENT
+    // ==========================================
 
-    [HttpGet("disciplines/list")]
+    [HttpGet("disciplines")]
     public async Task<IActionResult> GetDisciplinesList(CancellationToken ct)
     {
         var result = await adminServices.GetAllDisciplines(ct);
-        if (result.Count == 0) {
-            return NotFound("No disciplines to show.");
-        }
-        
         return Ok(result);
     }
-    
-    [HttpPost("disciplines/create")]
+
+    [HttpPost("disciplines")]
     public async Task<IActionResult> CreateDiscipline([FromBody] DisciplineDto dto, CancellationToken ct)
     {
-        var result = await adminServices.NewDisciplineAsync(dto.Name, ct);
-        if (!result) 
-            return BadRequest("Discipline could not be created. It may already exist or the name is invalid.");
+        var success = await adminServices.NewDisciplineAsync(dto.Name, ct);
+        if (!success)
+            return BadRequest(new
+                { message = "Discipline could not be created. It may already exist or the name is invalid." });
 
-        return Ok(new { message = "Discipline created successfully." });
+        return StatusCode(StatusCodes.Status201Created, new { message = "Discipline created successfully." });
     }
 
     [HttpPut("disciplines/{id:int}")]
     public async Task<IActionResult> UpdateDiscipline(int id, [FromBody] DisciplineDto dto, CancellationToken ct)
     {
-        var result = await adminServices.UpdateDiscipline(id, dto.Name, ct);
-        if (!result) 
-            return NotFound($"Discipline with ID {id} not found or invalid name provided.");
+        var success = await adminServices.UpdateDiscipline(id, dto.Name, ct);
+        if (!success)
+            return NotFound(new { message = $"Discipline with ID {id} not found or invalid name provided." });
 
         return Ok(new { message = "Discipline updated successfully." });
     }
@@ -51,76 +46,81 @@ public class AdminController(
     [HttpPatch("disciplines/{id:int}/toggle-status")]
     public async Task<IActionResult> ToggleDisciplineStatus(int id, CancellationToken ct)
     {
-        var result = await adminServices.ToggleDiscipline(id, ct);
-        if (!result) 
-            return NotFound($"Discipline with ID {id} not found.");
+        var success = await adminServices.ToggleDiscipline(id, ct);
+        if (!success)
+            return NotFound(new { message = $"Discipline with ID {id} not found." });
 
         return Ok(new { message = "Discipline availability status toggled successfully." });
     }
 
-    [HttpDelete("disciplines/delete")]
+    [HttpDelete("disciplines")]
     public async Task<IActionResult> DeleteDiscipline([FromQuery] string name, CancellationToken ct)
     {
-        var result = await adminServices.DeleteDiscipline(name, ct);
-        if (!result) 
-            return NotFound($"Discipline '{name}' not found.");
+        var success = await adminServices.DeleteDiscipline(name, ct);
+        if (!success)
+            return NotFound(new { message = $"Discipline '{name}' not found." });
 
         return Ok(new { message = "Discipline deleted completely from database." });
     }
-    
-    // --- INSTRUCTORS MANAGEMENT ---
 
-    [HttpGet("instructors/list")]
-    public async Task<IActionResult> Getinstructors(CancellationToken ct)
+    // ==========================================
+    // INSTRUCTORS MANAGEMENT
+    // ==========================================
+
+    [HttpGet("instructors")]
+    public async Task<IActionResult> GetInstructors(CancellationToken ct)
     {
-        var instructorList = await adminServices.GetAllInstructors(ct);
-        if (instructorList is null)
-        {
-            return NotFound("Instructors not found.");
-        }
-        return Ok(instructorList);
+        var instructors = await adminServices.GetAllInstructors(ct);
+        return Ok(instructors);
     }
-    
+
     [HttpGet("instructors/{id:int}")]
     public async Task<IActionResult> GetInstructor(int id, CancellationToken ct)
     {
-        var instructor = await adminServices.GetInstructor(id, ct);
-        if (instructor is false) 
-            return NotFound($"Instructor with ID {id} not found.");
+        // NOTE: Ensure GetInstructor in IAdminServices returns Task<User?> instead of Task<bool>
+        var instructorExists = await adminServices.GetInstructor(id, ct);
+        if (!instructorExists)
+            return NotFound(new { message = $"Instructor with ID {id} not found." });
 
-        return Ok(instructor);
+        return Ok(instructorExists);
     }
 
-    [HttpPost("instructors/create")]
+    [HttpPost("instructors")]
     public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto dto, CancellationToken ct)
     {
-        var instructor = new User 
-        { 
-            Email = dto.Email, 
+        // Map DTO to domain model inside controller (or pass DTO directly to service)
+        var instructor = new User
+        {
+            Email = dto.Email,
             Name = dto.FirstName,
             LastName = dto.LastName,
-            Role = Role.Instructor,
             IsActive = true
         };
-        
-        instructor.PasswordHash = passwordHasher.HashPassword(instructor, dto.Password);
-        
-        var result = await adminServices.NewInstructor(instructor, ct);
-        if (!result) 
-            return BadRequest("Could not add instructor. A user with that email already exists.");
 
-        return Ok(new { message = "Instructor created successfully." });
+        var success = await adminServices.NewInstructor(instructor, ct);
+        if (!success)
+            return BadRequest(new { message = "Could not add instructor. A user with that email already exists." });
+
+        return StatusCode(StatusCodes.Status201Created, new { message = "Instructor created successfully." });
     }
 
     [HttpPut("instructors/{id:int}")]
-    public async Task<IActionResult> UpdateInstructor(int id, [FromBody] User instructor, CancellationToken ct)
+    public async Task<IActionResult> UpdateInstructor(int id, [FromBody] UpdateInstructorDto dto, CancellationToken ct)
     {
-        if (id != instructor.Id)
-            return BadRequest("ID in route does not match entity ID.");
+        if (id != dto.Id)
+            return BadRequest(new { message = "ID in route does not match body ID." });
 
-        var result = await adminServices.UpdateInstructor(instructor, ct);
-        if (!result) 
-            return NotFound($"Instructor with ID {instructor.Id} not found.");
+        var instructor = new User
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            LastName = dto.LastName,
+            Email = dto.Email
+        };
+
+        var success = await adminServices.UpdateInstructor(instructor, ct);
+        if (!success)
+            return NotFound(new { message = $"Instructor with ID {id} not found." });
 
         return Ok(new { message = "Instructor details updated successfully." });
     }
@@ -128,32 +128,33 @@ public class AdminController(
     [HttpDelete("instructors/{id:int}")]
     public async Task<IActionResult> RemoveInstructor(int id, CancellationToken ct)
     {
-        var result = await adminServices.DeleteInstructor(id, ct);
-        if (!result) 
-            return NotFound($"Instructor with ID {id} not found.");
+        var success = await adminServices.DeleteInstructor(id, ct);
+        if (!success)
+            return NotFound(new { message = $"Instructor with ID {id} not found." });
 
         return Ok(new { message = "Instructor removed successfully." });
     }
-    
-    //Reports
-    [HttpGet("reports/sessions")]
-    public async Task<IActionResult> GetSessions(CancellationToken ct)
-    {
-        var sessions = await adminServices.RegistrationReports(ct);
 
-        if (sessions is null || !sessions.Any())
-        {
-            return NotFound("No sessions found to generate the report.");
-        }
-        return Ok(sessions);
+    // ==========================================
+    // REPORTS & ANALYTICS
+    // ==========================================
+
+    [HttpGet("reports/sessions")]
+    public async Task<IActionResult> GetSessionsReport(CancellationToken ct)
+    {
+        var report = await adminServices.RegistrationReports(ct);
+        if (report is null || !report.Any())
+            return NotFound(new { message = "No sessions found to generate the report." });
+
+        return Ok(report);
     }
-    
+
     [HttpGet("reports/revenue")]
-    public async Task<IActionResult> GetRevenue(CancellationToken ct)
+    public async Task<IActionResult> GetRevenueReport(CancellationToken ct)
     {
         var report = await adminServices.TotalRevenue(ct);
-        
-        var response = new 
+
+        var response = new
         {
             CancellationRevenue = report[0],
             SubscriptionRevenue = report[1],
@@ -163,15 +164,13 @@ public class AdminController(
         return Ok(response);
     }
 
-    [HttpGet("reports/bestrated")]
-    public async Task<IActionResult> GetMostPopular(CancellationToken ct)
+    [HttpGet("reports/best-rated")]
+    public async Task<IActionResult> GetMostPopularReport(CancellationToken ct)
     {
         var sessions = await adminServices.MostPopularClass(ct);
         if (!sessions.Any())
-        {
             return NoContent();
-        }
-        
+
         return Ok(sessions);
     }
 }
