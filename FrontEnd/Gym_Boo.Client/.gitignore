@@ -1,3 +1,22 @@
+# Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+
+# Cypress coverage
+coverage/
+.nyc_output/
+
+# Cypress image diff reports
+cypress-image-diff-screenshots/
+cypress-image-diff-html-report/
+
+# .NET / Selenium test output
+e2e-selenium/**/bin/
+e2e-selenium/**/obj/
+TestResults/
+*.trx
+
 # Logs
 logs
 *.log

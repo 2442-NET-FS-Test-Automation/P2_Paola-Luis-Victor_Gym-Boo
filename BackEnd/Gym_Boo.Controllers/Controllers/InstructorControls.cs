@@ -1,133 +1,75 @@
-﻿using Gym_Boo.Controllers.DTOs;
-using Gym_Boo.Controllers.Services.Interfaces;
+﻿using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using GymBoo.ControllerApi.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Gym_Boo.Controllers.Controllers;
+
+namespace Gym_Boo.Controllers;
 
 [ApiController]
-[Route("api/instructor")]
-//[Authorize(Roles = "Instructor")]
-public class InstructorControls(IInstructorServices instructorServices) : ControllerBase
+[Route("api/[controller]")]
+[Authorize(Roles = "Instructor")]
+public class InstructorController : ControllerBase
 {
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> ShowInstructor(int id, CancellationToken ct)
-    {
-        var instructor = await instructorServices.GetInstructor(id, ct);
-        
-        if (instructor is null) 
-            return NotFound($"Instructor with ID {id} not found.");
+    private readonly IInstructorServices _instructorService;
 
-        return Ok(instructor);
+    public InstructorController(IInstructorServices instructorService)
+    {
+        _instructorService = instructorService;
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetInstructor(int id, CancellationToken ct)
+    {
+        var instructor = await _instructorService.GetInstructor(id, ct);
+        return instructor != null ? Ok(instructor) : NotFound();
     }
 
     [HttpPost("sessions")]
-    public async Task<IActionResult> CreateSession([FromBody] NewSessionDto dto, CancellationToken ct)
+    public async Task<IActionResult> CreateSession([FromBody] Session session, CancellationToken ct)
     {
-        // 1. Basic time validation
-        if (dto.EndTime <= dto.StartTime)
-        {
-            return BadRequest("Session end time must be after the start time.");
-        }
-
-        // 2. Map DTO to entity
-        var session = new Session
-        {
-            Start = dto.StartTime,
-            End = dto.EndTime,
-            Slots = dto.Slots,
-            CancellationFee = dto.CancellationFee,
-            ClassId = dto.ClassId,
-            InstructorId = dto.InstructorId,
-            PlaceId = dto.PlaceId
-        };
-        
-        var success = await instructorServices.NewSession(session, ct);
-        if (!success)
-        {
-            return BadRequest("Failed to create session. Check schedule for collisions or invalid references.");
-        }
-        
-        // 3. Return 201 Created with the generated entity
-        return CreatedAtAction(nameof(ShowInstructor), new { id = session.InstructorId }, session);
+        var result = await _instructorService.NewSession(session, ct);
+        return result ? Ok() : BadRequest("Could not create session due to time conflict or invalid data.");
     }
 
     [HttpGet("sessions/{id:int}/attendance")]
     public async Task<IActionResult> GetAttendance(int id, CancellationToken ct)
     {
-        var attendance = await instructorServices.GetAttendance(id, ct);
-        
-        if (attendance is null)
-        {
-            return NotFound($"No sessions found.");
-        }
-
+        var attendance = await _instructorService.GetAttendance(id, ct);
         return Ok(attendance);
     }
 
-    [HttpGet("sessions/list")]
-    public async Task<IActionResult> GetNextSessions(int insId, CancellationToken ct)
+    [HttpGet("{instructorId:int}/upcoming-sessions")]
+    public async Task<IActionResult> GetUpcomingSessions(int instructorId, CancellationToken ct)
     {
-        var next = await instructorServices.GetUpcomingSessionsForInstructor(insId, ct);
-        
-        if (next is null || !next.Any())
-        {
-            return NotFound("No upcoming sessions.");
-        }
-    
-        return Ok(next);
+        var sessions = await _instructorService.GetUpcomingSessionsForInstructor(instructorId, ct);
+        return Ok(sessions);
     }
 
-    [HttpGet("options/classes")]
+    [HttpGet("class-options")]
     public async Task<IActionResult> GetClassOptions(CancellationToken ct)
     {
-        var classes =
-            await instructorServices.GetClassOptions(ct);
-
-        return Ok(classes);
+        return Ok(await _instructorService.GetClassOptions(ct));
     }
 
-    [HttpGet("options/places")]
+    [HttpGet("place-options")]
     public async Task<IActionResult> GetPlaceOptions(CancellationToken ct)
     {
-        var places =
-            await instructorServices.GetPlaceOptions(ct);
-
-        return Ok(places);
+        return Ok(await _instructorService.GetPlaceOptions(ct));
     }
 
-    [HttpDelete("sessions/delete")]
+    [HttpDelete("sessions/{id:int}")]
     public async Task<IActionResult> DeleteSession(int id, CancellationToken ct)
     {
-        var res = await instructorServices.DeleteSession(id, ct);
-
-        if (res is false)
-        {
-            return null;
-        }
-
-        return Ok(res);
+        var result = await _instructorService.DeleteSession(id, ct);
+        return result ? NoContent() : NotFound();
     }
 
-    [HttpPatch("enrollments/toggle-attendance")]
-    public async Task<IActionResult> TakeAttendance(TakingAttendanceDTO takingAttendanceDTO)
+    [HttpPost("attendance")]
+    public async Task<IActionResult> TakeAttendance([FromBody] TakingAttendanceDTO dto, CancellationToken ct)
     {
-        try
-        {
-            bool result = await instructorServices.TakeAttendance(takingAttendanceDTO);
-
-            return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var result = await _instructorService.TakeAttendance(dto, ct);
+        return result ? Ok() : BadRequest("Invalid attendance request.");
     }
 }

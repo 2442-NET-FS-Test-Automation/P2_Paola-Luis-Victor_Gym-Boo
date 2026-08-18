@@ -116,6 +116,21 @@ function App() {
             element={<AdminAnalytics />} />
 
           <Route
+            path="/admin"
+            element={
+              <Navigate
+                to="/admin/analytics"
+                replace
+              />
+            }
+          />
+
+          <Route
+            path="/admin/analytics"
+            element={<AdminAnalytics />}
+          />
+
+          <Route
             path="/admin/catalog"
             element={<AdminCatalog />}
           />
