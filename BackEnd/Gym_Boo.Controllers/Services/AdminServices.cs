@@ -1,5 +1,5 @@
-﻿using Gym_Boo.Data.DTOs;
-using Gym_Boo.Controllers.Services.Interfaces;
+﻿using Gym_Boo.Controllers.Services.Interfaces;
+using Gym_Boo.Data.DTOs;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories.Interfaces;
@@ -21,38 +21,47 @@ public class AdminServices : IAdminServices
         return _repo.GetAllDisciplinesAsync(ct);
     }
 
-    public async Task<bool> NewDisciplineAsync(string discipline, CancellationToken ct)
+    public async Task<Discipline> NewDisciplineAsync(string discipline, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(discipline)) return false;
+        if (string.IsNullOrWhiteSpace(discipline))
+            throw new ArgumentException("Discipline name cannot be empty.", nameof(discipline));
 
         var normalizedName = discipline.Trim().ToLower();
         if (await _repo.DisciplineExistsByNameAsync(normalizedName, ct))
-        {
-            return false;
-        }
+            throw new InvalidOperationException($"Discipline '{normalizedName}' already exists.");
 
         var entity = new Discipline { Name = normalizedName, Available = true };
         await _repo.AddDisciplineAsync(entity, ct);
         await _repo.SaveChangesAsync(ct);
 
-        return true;
+        return entity;
     }
 
-    public Task<bool> DeleteDiscipline(string discipline, CancellationToken ct)
+    public async Task UpdateDiscipline(int id, string newName, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(discipline)) return Task.FromResult(false);
-        return _repo.DeleteDisciplineByNameAsync(discipline.Trim().ToLower(), ct);
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new ArgumentException("New discipline name cannot be empty.", nameof(newName));
+
+        var success = await _repo.UpdateDisciplineNameAsync(id, newName.Trim().ToLower(), ct);
+        if (!success)
+            throw new KeyNotFoundException($"Discipline with ID {id} was not found.");
     }
 
-    public Task<bool> ToggleDiscipline(int id, CancellationToken ct)
+    public async Task ToggleDiscipline(int id, CancellationToken ct)
     {
-        return _repo.ToggleDisciplineAvailabilityAsync(id, ct);
+        var success = await _repo.ToggleDisciplineAvailabilityAsync(id, ct);
+        if (!success)
+            throw new KeyNotFoundException($"Discipline with ID {id} was not found.");
     }
 
-    public Task<bool> UpdateDiscipline(int id, string newName, CancellationToken ct)
+    public async Task DeleteDiscipline(string discipline, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(newName)) return Task.FromResult(false);
-        return _repo.UpdateDisciplineNameAsync(id, newName.Trim().ToLower(), ct);
+        if (string.IsNullOrWhiteSpace(discipline))
+            throw new ArgumentException("Discipline name cannot be empty.", nameof(discipline));
+
+        var success = await _repo.DeleteDisciplineByNameAsync(discipline.Trim().ToLower(), ct);
+        if (!success)
+            throw new KeyNotFoundException($"Discipline '{discipline}' was not found.");
     }
 
     // Instructors
@@ -61,72 +70,80 @@ public class AdminServices : IAdminServices
         return _repo.GetUsersByRoleAsync(Role.Instructor, ct);
     }
 
-    public Task<bool> GetInstructor(int id, CancellationToken ct)
+    public async Task<User> GetInstructorById(int id, CancellationToken ct)
     {
-        return _repo.UserExistsByIdAndRoleAsync(id, Role.Instructor, ct);
+        var instructor = await _repo.GetUserByIdAndRoleAsync(id, Role.Instructor, ct);
+        if (instructor == null)
+            throw new KeyNotFoundException($"Instructor with ID {id} was not found.");
+
+        return instructor;
     }
 
-    public async Task<bool> NewInstructor(User newInstructor, CancellationToken ct)
+    public async Task<User> NewInstructor(CreateInstructorDto dto, CancellationToken ct)
     {
-        if (newInstructor == null || string.IsNullOrWhiteSpace(newInstructor.Email)) return false;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
+            throw new ArgumentException("Instructor details and valid email are required.");
 
-        if (await _repo.UserExistsByEmailAsync(newInstructor.Email, ct))
+        if (await _repo.UserExistsByEmailAsync(dto.Email, ct))
+            throw new InvalidOperationException($"A user with email '{dto.Email}' already exists.");
+
+        var instructor = new User
         {
-            return false;
-        }
+            Email = dto.Email,
+            Name = dto.FirstName,
+            LastName = dto.LastName,
+            Role = Role.Instructor,
+            IsActive = true
+        };
 
-        newInstructor.Role = Role.Instructor;
-        await _repo.AddUserAsync(newInstructor, ct);
+        await _repo.AddUserAsync(instructor, ct);
         await _repo.SaveChangesAsync(ct);
 
-        return true;
+        return instructor;
     }
 
-    public Task<bool> DeleteInstructor(int id, CancellationToken ct)
+    public async Task UpdateInstructor(UpdateInstructorDto dto, CancellationToken ct)
     {
-        return _repo.DeleteUserByIdAndRoleAsync(id, Role.Instructor, ct);
-    }
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
 
-    public async Task<bool> UpdateInstructor(User instructor, CancellationToken ct)
-    {
-        if (instructor == null) return false;
+        var target = await _repo.GetUserByIdAndRoleAsync(dto.Id, Role.Instructor, ct);
+        if (target == null)
+            throw new KeyNotFoundException($"Instructor with ID {dto.Id} was not found.");
 
-        var target = await _repo.GetUserByIdAndRoleAsync(instructor.Id, Role.Instructor, ct);
-        if (target == null) return false;
-
-        target.Name = instructor.Name;
-        target.LastName = instructor.LastName;
-        target.Email = instructor.Email;
+        target.Name = dto.Name;
+        target.LastName = dto.LastName;
+        target.Email = dto.Email;
 
         await _repo.SaveChangesAsync(ct);
-        return true;
     }
 
-    // Revenue & Analytics
-// Revenue & Analytics
-    public async Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
+    public async Task DeleteInstructor(int id, CancellationToken ct)
     {
-        return await _repo.GetMostPopularClassesAsync(5, ct);
+        var success = await _repo.DeleteUserByIdAndRoleAsync(id, Role.Instructor, ct);
+        if (!success)
+            throw new KeyNotFoundException($"Instructor with ID {id} was not found.");
     }
 
-    public async Task<List<DisciplineReportDto>> RegistrationReports(CancellationToken ct)
+    // Reports & Analytics
+    public Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
     {
-        return await _repo.GetRegistrationReportsAsync(ct);
+        return _repo.GetMostPopularClassesAsync(5, ct);
     }
 
-    public async Task<double[]> TotalRevenue(CancellationToken ct)
+    public Task<List<DisciplineReportDto>> RegistrationReports(CancellationToken ct)
+    {
+        return _repo.GetRegistrationReportsAsync(ct);
+    }
+
+    public async Task<RevenueReportDto> TotalRevenue(CancellationToken ct)
     {
         var limitDate = DateTime.UtcNow.AddDays(-30);
 
-        var cancellationRev = await _repo.GetCancellationRevenueAsync(limitDate, ct);
-        var subscriptionRev = await _repo.GetSubscriptionRevenueAsync(limitDate, ct);
-        var totalRev = cancellationRev + subscriptionRev;
+        var cancellationRevenue = await _repo.GetCancellationRevenueAsync(limitDate, ct);
+        var subscriptionRevenue = await _repo.GetSubscriptionRevenueAsync(limitDate, ct);
+        var totalRevenue = cancellationRevenue + subscriptionRevenue;
 
-        return new double[]
-        {
-            (double)cancellationRev,
-            (double)subscriptionRev,
-            (double)totalRev
-        };
+        return new RevenueReportDto(cancellationRevenue, subscriptionRevenue, totalRevenue);
     }
 }
