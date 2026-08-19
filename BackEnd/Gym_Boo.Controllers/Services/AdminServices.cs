@@ -1,225 +1,132 @@
-﻿using Gym_Boo.Controllers.DTOs;
+﻿using Gym_Boo.Data.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
-using Microsoft.EntityFrameworkCore;
+using Gym_Boo.Data.Repositories.Interfaces;
 
 namespace Gym_Boo.Controllers.Services;
 
 public class AdminServices : IAdminServices
 {
-    private readonly GymBooDbContext _db;
+    private readonly IAdminRepository _repo;
 
-    public AdminServices(GymBooDbContext dbContext)
+    public AdminServices(IAdminRepository repo)
     {
-        _db = dbContext;
+        _repo = repo;
     }
 
-    //Disciplines
-
-    public async Task<List<Discipline>> GetAllDisciplines(CancellationToken ct)
+    // Disciplines
+    public Task<List<Discipline>> GetAllDisciplines(CancellationToken ct)
     {
-        var res = _db.Disciplines.ToListAsync(ct);
-        if (!res.Result.Any())
-        {
-            return null;
-        }
-
-        return await res;
+        return _repo.GetAllDisciplinesAsync(ct);
     }
-    
+
     public async Task<bool> NewDisciplineAsync(string discipline, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(discipline)) return false;
 
         var normalizedName = discipline.Trim().ToLower();
-        if (await _db.Disciplines.AnyAsync(d => d.Name == normalizedName, ct))
+        if (await _repo.DisciplineExistsByNameAsync(normalizedName, ct))
         {
             return false;
         }
 
-        var newDiscipline = new Discipline { Name = normalizedName, Available = true };
-        _db.Disciplines.Add(newDiscipline);
-        await _db.SaveChangesAsync(ct);
+        var entity = new Discipline { Name = normalizedName, Available = true };
+        await _repo.AddDisciplineAsync(entity, ct);
+        await _repo.SaveChangesAsync(ct);
 
         return true;
     }
 
-    public async Task<bool> DeleteDiscipline(string discipline, CancellationToken ct)
+    public Task<bool> DeleteDiscipline(string discipline, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(discipline)) return false;
-
-        var normalizedName = discipline.Trim().ToLower();
-        var disciplineToDelete = await _db.Disciplines
-            .FirstOrDefaultAsync(d => d.Name == normalizedName, ct);
-
-        if (disciplineToDelete == null)
-        {
-            return false;
-        }
-
-        _db.Disciplines.Remove(disciplineToDelete);
-        await _db.SaveChangesAsync(ct);
-
-        return true;
+        if (string.IsNullOrWhiteSpace(discipline)) return Task.FromResult(false);
+        return _repo.DeleteDisciplineByNameAsync(discipline.Trim().ToLower(), ct);
     }
 
-    public async Task<bool> ToggleDiscipline(int id, CancellationToken ct)
-    { 
-        
-        await _db.Disciplines
-            .Where(d => d.Id == id)
-            .ExecuteUpdateAsync(s => s.SetProperty(d => d.Available, d => !d.Available), ct);
-        
-        await _db.SaveChangesAsync(ct);
-
-        return true;
+    public Task<bool> ToggleDiscipline(int id, CancellationToken ct)
+    {
+        return _repo.ToggleDisciplineAvailabilityAsync(id, ct);
     }
 
-    public async Task<bool> UpdateDiscipline(int id, string newName, CancellationToken ct)
+    public Task<bool> UpdateDiscipline(int id, string newName, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(newName)) return false;
-
-        var target = await _db.Disciplines.FirstOrDefaultAsync(d => d.Id == id, ct);
-
-        if (target == null)
-        {
-            return false;
-        }
-
-        target.Name = newName.Trim().ToLower();
-        await _db.SaveChangesAsync(ct);
-
-        return true;
+        if (string.IsNullOrWhiteSpace(newName)) return Task.FromResult(false);
+        return _repo.UpdateDisciplineNameAsync(id, newName.Trim().ToLower(), ct);
     }
 
-    //Instructors
-
-    public async Task<List<User>> GetAllInstructors(CancellationToken ct)
+    // Instructors
+    public Task<List<User>> GetAllInstructors(CancellationToken ct)
     {
-        var res = _db.Users.Where(i => i.Role == Role.Instructor).ToListAsync(ct);
-        if (!res.Result.Any())
-        {
-            return null;
-        }
-
-        return await res;
+        return _repo.GetUsersByRoleAsync(Role.Instructor, ct);
     }
-    
-    public async Task<bool> GetInstructor(int id, CancellationToken ct)
+
+    public Task<bool> GetInstructor(int id, CancellationToken ct)
     {
-        return await _db.Users.AnyAsync(i => i.Id == id, ct);
+        return _repo.UserExistsByIdAndRoleAsync(id, Role.Instructor, ct);
     }
 
     public async Task<bool> NewInstructor(User newInstructor, CancellationToken ct)
     {
-        if (newInstructor == null) return false;
+        if (newInstructor == null || string.IsNullOrWhiteSpace(newInstructor.Email)) return false;
 
-        var normalizedName = newInstructor.Name?.Trim().ToLower();
-        var normalizedLastName = newInstructor.LastName?.Trim().ToLower();
-
-        var instructorExist = await _db.Users.AnyAsync(i =>
-            i.Name.ToLower() == normalizedName &&
-            i.LastName.ToLower() == normalizedLastName &&
-            i.Email == newInstructor.Email, ct);
-
-        if (instructorExist)
+        if (await _repo.UserExistsByEmailAsync(newInstructor.Email, ct))
         {
             return false;
         }
 
-        _db.Users.Add(newInstructor);
-        await _db.SaveChangesAsync(ct);
+        newInstructor.Role = Role.Instructor;
+        await _repo.AddUserAsync(newInstructor, ct);
+        await _repo.SaveChangesAsync(ct);
+
         return true;
     }
 
-    public async Task<bool> DeleteInstructor(int id, CancellationToken ct)
+    public Task<bool> DeleteInstructor(int id, CancellationToken ct)
     {
-        var instructorToDelete = await _db.Users.FirstOrDefaultAsync(i => i.Id == id, ct);
-
-        if (instructorToDelete == null)
-        {
-            return false;
-        }
-
-        _db.Users.Remove(instructorToDelete);
-        await _db.SaveChangesAsync(ct);
-
-        return true;
+        return _repo.DeleteUserByIdAndRoleAsync(id, Role.Instructor, ct);
     }
 
     public async Task<bool> UpdateInstructor(User instructor, CancellationToken ct)
     {
         if (instructor == null) return false;
 
-        var exists = await _db.Users.AnyAsync(i => i.Id == instructor.Id, ct);
-        if (!exists) return false;
+        var target = await _repo.GetUserByIdAndRoleAsync(instructor.Id, Role.Instructor, ct);
+        if (target == null) return false;
 
-        _db.Users.Update(instructor);
-        await _db.SaveChangesAsync(ct);
+        target.Name = instructor.Name;
+        target.LastName = instructor.LastName;
+        target.Email = instructor.Email;
+
+        await _repo.SaveChangesAsync(ct);
         return true;
     }
-    
-    //Analytics & Reports
 
-public async Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
-{
-    return await _db.Sessions
-        .OrderByDescending(s => s.Reviews.Average(r => (double?)r.Rating) ?? 0.0)
-        .Select(s => new MostRatedDto(
-            s.Id,
-            s.Class.Name,
-            s.Instructor.Name,
-            s.Reviews.Average(r => (double?)r.Rating) ?? 0.0
-        )).Take(5)
-        .ToListAsync(ct);
-}
+    // Revenue & Analytics
+// Revenue & Analytics
+    public async Task<List<MostRatedDto>> MostPopularClass(CancellationToken ct)
+    {
+        return await _repo.GetMostPopularClassesAsync(5, ct);
+    }
 
-public async Task<List<DisciplineReportDto>> RegistrationReports(CancellationToken ct)
-{
-    var report = await _db.Disciplines
-        .OrderByDescending(d => d.Classes
-            .SelectMany(c => c.Sessions)
-            .SelectMany(s => s.Enrollments)
-            .Count())
-        .Select(d => new DisciplineReportDto(
-            d.Name,
-            d.Classes
-                .SelectMany(c => c.Sessions)
-                .SelectMany(s => s.Enrollments)
-                .Count()
-        ))
-        .ToListAsync(ct);
-
-    return report;
-}
+    public async Task<List<DisciplineReportDto>> RegistrationReports(CancellationToken ct)
+    {
+        return await _repo.GetRegistrationReportsAsync(ct);
+    }
 
     public async Task<double[]> TotalRevenue(CancellationToken ct)
     {
-        // Calculamos la fecha y hora de hace exactamente 30 días
         var limitDate = DateTime.UtcNow.AddDays(-30);
 
-        // 1. Ingreso por cancelaciones de sesiones de los últimos 3 días
-        var cancellationRev = await _db.Enrollments
-            .Where(e => e.CancellationFeeApplied && e.Session.Start >= limitDate)
-            .Select(e => e.Session.CancellationFee)
-            .SumAsync(ct);
-        
-        // 2. Ingreso por suscripciones creadas/iniciadas en los últimos 3 días
-        var subscriptionRev = await _db.MemberSubscriptions
-            .Where(ms => ms.StartDate >= limitDate)
-            .Select(ms => ms.Plan.Price)
-            .SumAsync(ct);
-
-        // 3. Suma de ambos
+        var cancellationRev = await _repo.GetCancellationRevenueAsync(limitDate, ct);
+        var subscriptionRev = await _repo.GetSubscriptionRevenueAsync(limitDate, ct);
         var totalRev = cancellationRev + subscriptionRev;
 
-        // Retornamos el array con los 3 valores casteados a double
-        return new double[] 
-        { 
-            (double)cancellationRev, 
-            (double)subscriptionRev, 
-            (double)totalRev 
+        return new double[]
+        {
+            (double)cancellationRev,
+            (double)subscriptionRev,
+            (double)totalRev
         };
     }
 }
