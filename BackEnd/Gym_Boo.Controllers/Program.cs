@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Gym_Boo.Data.Enums;
+using Gym_Boo.Data.Repositories;
+using Gym_Boo.Data.Repositories.Interfaces;
 
 // Serilog
 Log.Logger = new LoggerConfiguration()
@@ -52,13 +54,14 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IPasswordHasher<User>,PasswordHasher<User>>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
 
     
 
     // Persistency
     // DbContext (Scoped) + IDbContextFactory(Singleton) 
     // For concurrent operations (if applies)
-    builder.Services.AddPersistence(builder.Configuration);
+    builder.Services.AddPersistence(builder.Configuration, builder.Environment.IsEnvironment("Testing"));
    
     // Application Services
     builder.Services.AddApplicationServices();
@@ -209,3 +212,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program { }
