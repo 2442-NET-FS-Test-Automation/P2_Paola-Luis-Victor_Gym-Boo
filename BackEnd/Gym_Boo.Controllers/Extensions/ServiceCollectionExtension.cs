@@ -12,8 +12,25 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Registers data access with its lifecycles
     /// </summary>
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration, bool useInMemoryDatabase = false)
     {
+        if (useInMemoryDatabase)
+        {
+            services.AddDbContext<GymBooDbContext>(options =>
+            {
+                options.UseInMemoryDatabase("GymBooTests");
+            },
+            contextLifetime: ServiceLifetime.Scoped,
+            optionsLifetime: ServiceLifetime.Singleton);
+
+            services.AddDbContextFactory<GymBooDbContext>(options =>
+            {
+                options.UseInMemoryDatabase("GymBooTests");
+            });
+
+            return services;
+        }
+
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         // FIX: Evita que falle el comando 'ef migrations' si la cadena de conexión 
