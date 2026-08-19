@@ -1,9 +1,9 @@
-﻿using Gym_Boo.Controllers.Services.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using GymBoo.ControllerApi.DTOs;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Boo.Controllers;
 
@@ -23,14 +23,25 @@ public class InstructorController : ControllerBase
     public async Task<IActionResult> GetInstructor(int id, CancellationToken ct)
     {
         var instructor = await _instructorService.GetInstructor(id, ct);
-        return instructor != null ? Ok(instructor) : NotFound();
+        return instructor != null ? Ok(instructor) : NotFound($"Instructor with ID {id} was not found.");
     }
 
     [HttpPost("sessions")]
     public async Task<IActionResult> CreateSession([FromBody] Session session, CancellationToken ct)
     {
-        var result = await _instructorService.NewSession(session, ct);
-        return result ? Ok() : BadRequest("Could not create session due to time conflict or invalid data.");
+        try
+        {
+            await _instructorService.NewSession(session, ct);
+            return StatusCode(StatusCodes.Status201Created);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
     }
 
     [HttpGet("sessions/{id:int}/attendance")]
@@ -62,14 +73,40 @@ public class InstructorController : ControllerBase
     [HttpDelete("sessions/{id:int}")]
     public async Task<IActionResult> DeleteSession(int id, CancellationToken ct)
     {
-        var result = await _instructorService.DeleteSession(id, ct);
-        return result ? NoContent() : NotFound();
+        try
+        {
+            await _instructorService.DeleteSession(id, ct);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpPost("attendance")]
     public async Task<IActionResult> TakeAttendance([FromBody] TakingAttendanceDTO dto, CancellationToken ct)
     {
-        var result = await _instructorService.TakeAttendance(dto, ct);
-        return result ? Ok() : BadRequest("Invalid attendance request.");
+        try
+        {
+            await _instructorService.TakeAttendance(dto, ct);
+            return Ok(new { message = "Attendance updated successfully." });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

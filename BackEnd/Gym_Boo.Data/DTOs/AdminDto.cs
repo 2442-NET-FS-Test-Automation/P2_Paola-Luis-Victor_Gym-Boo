@@ -1,5 +1,5 @@
-namespace Gym_Boo.Controllers.DTOs;
-
+namespace Gym_Boo.Data.DTOs;
+    
 public record UpdateInstructorDto(
     int Id,
     string Name,
@@ -31,6 +31,3 @@ public record MostRatedDto(
     string InstructorName,
     double AverageRating
 );
-
-
-public record DisciplineDto(string Name);

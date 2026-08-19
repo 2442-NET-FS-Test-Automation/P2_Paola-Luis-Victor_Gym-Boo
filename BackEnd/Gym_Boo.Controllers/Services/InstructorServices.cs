@@ -6,7 +6,6 @@ using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories;
 using Gym_Boo.Data.Repositories.Interfaces;
 using GymBoo.ControllerApi.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Controllers.Services;
 
@@ -28,9 +27,14 @@ public class InstructorServices : IInstructorServices
         return await _instructorRepository.GetUserByIdAsync(id, ct);
     }
 
-    public async Task<bool> NewSession(Session session, CancellationToken ct)
+    public async Task NewSession(Session session, CancellationToken ct)
     {
-        if (session.Start >= session.End) return false;
+        ArgumentNullException.ThrowIfNull(session);
+
+        if (session.Start >= session.End)
+        {
+            throw new ArgumentException("Session start time must be earlier than the end time.", nameof(session));
+        }
 
         bool isOccupied = await _instructorRepository.HasSessionOverlapAsync(
             session.PlaceId,
@@ -39,18 +43,13 @@ public class InstructorServices : IInstructorServices
             session.End,
             ct);
 
-        if (isOccupied) return false;
+        if (isOccupied)
+        {
+            throw new InvalidOperationException("The venue or instructor is already booked for this time period.");
+        }
 
-        try
-        {
-            await _instructorRepository.AddSessionAsync(session, ct);
-            await _instructorRepository.SaveChangesAsync(ct);
-            return true;
-        }
-        catch (DbUpdateException)
-        {
-            return false;
-        }
+        await _instructorRepository.AddSessionAsync(session, ct);
+        await _instructorRepository.SaveChangesAsync(ct);
     }
 
     public async Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct)
@@ -74,8 +73,7 @@ public class InstructorServices : IInstructorServices
 
     public async Task<List<UpcomingSessionDto>> GetUpcomingSessionsForInstructor(int instructorId, CancellationToken ct)
     {
-        var sessions =
-            await _instructorRepository.GetUpcomingSessionsByInstructorAsync(instructorId, DateTime.UtcNow, ct);
+        var sessions = await _instructorRepository.GetUpcomingSessionsByInstructorAsync(instructorId, DateTime.UtcNow, ct);
 
         return sessions.Select(s => new UpcomingSessionDto(
             s.Id,
@@ -99,31 +97,23 @@ public class InstructorServices : IInstructorServices
         return places.Select(p => new PlaceOptionDto(p.Id, p.Name)).ToList();
     }
 
-    public async Task<bool> DeleteSession(int id, CancellationToken ct)
+    public async Task DeleteSession(int id, CancellationToken ct)
     {
-        try
-        {
-            var session = await _instructorRepository.GetSessionByIdAsync(id, ct);
-            if (session == null) return false;
+        var session = await _instructorRepository.GetSessionByIdAsync(id, ct)
+                      ?? throw new KeyNotFoundException($"Session with ID {id} was not found.");
 
-            _instructorRepository.DeleteSession(session);
-            await _instructorRepository.SaveChangesAsync(ct);
-            return true;
-        }
-        catch (DbUpdateException)
-        {
-            return false;
-        }
+        _instructorRepository.DeleteSession(session);
+        await _instructorRepository.SaveChangesAsync(ct);
     }
 
-    public async Task<bool> TakeAttendance(TakingAttendanceDTO dto, CancellationToken ct = default)
+    public async Task TakeAttendance(TakingAttendanceDTO dto, CancellationToken ct = default)
     {
-        if (dto == null) return false;
-
-        var enrollment = await _enrollmentRepository.GetByIdWithSessionAsync(dto.EnrollmentId)
-                         ?? throw new ArgumentException("Invalid enrollment Id");
+        ArgumentNullException.ThrowIfNull(dto);
 
         Validator.ValidateObject(dto, new ValidationContext(dto), validateAllProperties: true);
+
+        var enrollment = await _enrollmentRepository.GetByIdWithSessionAsync(dto.EnrollmentId)
+                         ?? throw new KeyNotFoundException($"Enrollment with ID {dto.EnrollmentId} was not found.");
 
         if (DateTime.UtcNow < enrollment.Session.Start)
         {
@@ -140,12 +130,10 @@ public class InstructorServices : IInstructorServices
         }
         else
         {
-            return false;
+            throw new ArgumentException($"Invalid attendance action '{dto.Action}'. Supported values are 'attended' or 'not attended'.", nameof(dto));
         }
 
         await _enrollmentRepository.UpdateAsync(enrollment);
         await _instructorRepository.SaveChangesAsync(ct);
-
-        return true;
     }
 }

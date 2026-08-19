@@ -28,4 +28,8 @@
     <ProjectReference Include="..\..\Gym_Boo.Controllers\Gym_Boo.Controllers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="InstructorTest\" />
+  </ItemGroup>
+
 </Project>
