@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.ControllerApi.Services;
 
-class SessionService : ISessionService
+public class SessionService : ISessionService
 {
     private readonly ISessionRepository _repo;
     private readonly GymBooDbContext _db;
