@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.11" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.17" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
@@ -20,6 +21,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Gym_Boo.Data\Gym_Boo.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Seed\gymboo-seed-data.json" />
   </ItemGroup>
 
 </Project>
