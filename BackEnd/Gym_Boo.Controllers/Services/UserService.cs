@@ -1,21 +1,21 @@
 using Gym_Boo.Data;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
+using Gym_Boo.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Gym_Boo.Controllers.Services;
 
 public class UserService : IUserService
 {
-    private readonly GymBooDbContext _db;
+    private readonly IUserRepository _users;
     private readonly IPasswordHasher<User> _passwordHasher;
 
     public UserService(
-        GymBooDbContext db,
+        IUserRepository users,
         IPasswordHasher<User> passwordHasher)
     {
-        _db = db;
+        _users = users;
         _passwordHasher = passwordHasher;
     }
 
@@ -27,8 +27,7 @@ public class UserService : IUserService
     {
         string normalizedEmail = email.Trim().ToLowerInvariant();
 
-        bool emailExists = await _db.Users
-            .AnyAsync(user => user.Email == normalizedEmail);
+        bool emailExists = await _users.EmailExistsAsync(normalizedEmail);
 
         if (emailExists)
         {
@@ -44,12 +43,9 @@ public class UserService : IUserService
             IsActive = true
         };
 
-        member.PasswordHash =
-            _passwordHasher.HashPassword(member, password);
+        member.PasswordHash = _passwordHasher.HashPassword(member, password);
 
-        _db.Members.Add(member);
-
-        await _db.SaveChangesAsync();
+        await _users.AddMemberAsync(member);
 
         return null;
     }
@@ -60,9 +56,7 @@ public class UserService : IUserService
     {
         string normalizedEmail = email.Trim().ToLowerInvariant();
 
-        User? user = await _db.Users
-            .SingleOrDefaultAsync(user =>
-                user.Email == normalizedEmail);
+        User? user = await _users.GetByEmailAsync(normalizedEmail);
 
         if (user is null)
         {

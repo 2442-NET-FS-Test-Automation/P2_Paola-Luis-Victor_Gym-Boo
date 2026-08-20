@@ -6,7 +6,7 @@ using Gym_Boo.Data.Repositories;
 
 namespace Gym_Boo.ControllerApi.Services;
 
-class ReviewService : IReviewService
+public class ReviewService : IReviewService
 {
     private readonly IReviewRepository _reviewRepo;
     private readonly IEnrollmentRepository _enrollmentRepo;
