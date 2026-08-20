@@ -188,7 +188,7 @@ private readonly Mock<IAdminServices> _adminServicesMock;
     {
         // Arrange
         int routeId = 1;
-        var updateDto = new Gym_Boo.Data.DTOs.UpdateInstructorDto(2, "Jane", "Doe", "jane@test.com"); // Id = 2
+        var updateDto = new Gym_Boo.Data.DTOs.UpdateInstructorDto(2, "Jane", "Doe", "jane@test.com", true); // Id = 2
 
         // Act
         var result = await _controller.UpdateInstructor(routeId, updateDto, CancellationToken.None);
@@ -204,7 +204,7 @@ private readonly Mock<IAdminServices> _adminServicesMock;
     {
         // Arrange
         int instructorId = 1;
-        var updateDto = new Gym_Boo.Data.DTOs.UpdateInstructorDto(1, "Jane", "Doe", "jane@test.com"); // Id = 1
+        var updateDto = new Gym_Boo.Data.DTOs.UpdateInstructorDto(1, "Jane", "Doe", "jane@test.com", true); // Id = 1
 
         _adminServicesMock
             .Setup(s => s.UpdateInstructor(updateDto, It.IsAny<CancellationToken>()))

@@ -42,7 +42,8 @@ public class SessionService : ISessionService
                 .Average(r => (decimal?)r.Rating) ?? 0.0m
         })
         .ToListAsync())
-        .ToDictionary(x => x.FullName, x => x.AverageRating);
+        .GroupBy(x => x.FullName)
+        .ToDictionary(x => x.Key, x => x.Average(r => r.AverageRating));
 
 
         // Mapeamos las entidades al DTO requerido

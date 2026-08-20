@@ -3,16 +3,21 @@ using Gym_Boo.Data.DTOs;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Gym_Boo.Controllers.Services;
 
 public class AdminServices : IAdminServices
 {
     private readonly IAdminRepository _repo;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public AdminServices(IAdminRepository repo)
+    public AdminServices(
+        IAdminRepository repo,
+        IPasswordHasher<User> passwordHasher)
     {
         _repo = repo;
+        _passwordHasher = passwordHasher;
     }
 
     // Disciplines
@@ -87,14 +92,16 @@ public class AdminServices : IAdminServices
         if (await _repo.UserExistsByEmailAsync(dto.Email, ct))
             throw new InvalidOperationException($"A user with email '{dto.Email}' already exists.");
 
-        var instructor = new User
+        var instructor = new Instructor
         {
-            Email = dto.Email,
-            Name = dto.FirstName,
-            LastName = dto.LastName,
+            Email = dto.Email.Trim().ToLowerInvariant(),
+            Name = dto.FirstName.Trim(),
+            LastName = dto.LastName.Trim(),
             Role = Role.Instructor,
             IsActive = true
         };
+
+        instructor.PasswordHash = _passwordHasher.HashPassword(instructor, dto.Password);
 
         await _repo.AddUserAsync(instructor, ct);
         await _repo.SaveChangesAsync(ct);
@@ -114,6 +121,7 @@ public class AdminServices : IAdminServices
         target.Name = dto.Name;
         target.LastName = dto.LastName;
         target.Email = dto.Email;
+        target.IsActive = dto.IsActive;
 
         await _repo.SaveChangesAsync(ct);
     }

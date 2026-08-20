@@ -4,7 +4,8 @@ public record UpdateInstructorDto(
     int Id,
     string Name,
     string LastName,
-    string Email
+    string Email,
+    bool IsActive
 );
 
 public record CreateInstructorDto(

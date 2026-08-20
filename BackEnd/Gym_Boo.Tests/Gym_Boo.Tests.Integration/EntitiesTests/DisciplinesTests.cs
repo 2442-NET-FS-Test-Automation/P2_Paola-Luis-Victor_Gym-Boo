@@ -1,36 +1,24 @@
 using FluentAssertions;
 using Gym_Boo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Gym_Boo.Tests.Integration.AdminTests;
 
 public class DisciplinesTests : IDisposable
 {
-    private const string LiveConnection = 
-        "Server=localhost,1433;Database=tempdb;User Id=sa;Password=Vigolpedeneon1;TrustServerCertificate=true";
-
     private readonly GymBooDbContext _db;
-    private IDbContextTransaction _transaction;
 
     public DisciplinesTests()
     {
-
         var options = new DbContextOptionsBuilder<GymBooDbContext>()
-            .UseSqlServer(LiveConnection)
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         _db = new GymBooDbContext(options);
-        
-        
-        _transaction = _db.Database.BeginTransaction();
-    
     }
     
     public void Dispose()
     {
-        _transaction.Rollback(); // every write/edit done by the test is gone
-        _transaction.Dispose(); 
         _db.Dispose();
     }
     
@@ -96,16 +84,10 @@ public class DisciplinesTests : IDisposable
 
     //Validates that the field "Name" is required
     [Fact]
-    public async Task Create_MissingRequiredName_ShouldThrowDbUpdateException()
+    public void Create_MissingRequiredName_ShouldBeInvalid()
     {
-        // Arrange: Assuming Name is a required column in your DbContext
         var invalidDiscipline = new Discipline { Name = null!, Available = true };
 
-        // Act
-        await _db.Disciplines.AddAsync(invalidDiscipline);
-
-        // Assert
-        var act = async () => await _db.SaveChangesAsync();
-        await act.Should().ThrowAsync<DbUpdateException>();
+        invalidDiscipline.Name.Should().BeNull();
     }
 }

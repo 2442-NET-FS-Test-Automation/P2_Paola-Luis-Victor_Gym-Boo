@@ -20,8 +20,8 @@ public class ReservationIntegrationTests : IClassFixture<CustomWebApplicationFac
     {
         var payload = new
         {
-            sessionId = 1,
-            memberId = 1
+            sessionId = 17,
+            memberId = 5
         };
 
         var response = await _client.PostAsJsonAsync("/api/reservations", payload);
@@ -35,7 +35,7 @@ public class ReservationIntegrationTests : IClassFixture<CustomWebApplicationFac
         var payload = new
         {
             sessionId = 9999,
-            memberId = 1
+            memberId = 5
         };
 
         var response = await _client.PostAsJsonAsync("/api/reservations", payload);
@@ -48,7 +48,7 @@ public class ReservationIntegrationTests : IClassFixture<CustomWebApplicationFac
     {
         var payload = new
         {
-            sessionId = 1,
+            sessionId = 17,
             memberId = 9999
         };
 

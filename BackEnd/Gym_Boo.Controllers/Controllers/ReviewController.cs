@@ -22,7 +22,7 @@ public class ReviewsController : ControllerBase
     // POST /api/reviews/session
     // POST /api/reviews/facility
     [HttpPost("{reviewType}")]
-    //[Authorize(Roles = "Member")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateReview(string reviewType, [FromBody] CreateReviewDto reviewDto)
     {
         try

@@ -42,7 +42,8 @@ try
     ));
 
     builder.Services.AddOpenApi();
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddApplicationPart(typeof(Gym_Boo.Controllers.Controllers.AuthController).Assembly);
     
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -153,7 +154,11 @@ public partial class Program
             user.Email = dto.Email;
             user.Role = dto.Role;
             user.IsActive = dto.IsActive;
-            user.PasswordHash = hasher.HashPassword(user, dto.SeedPasswordKey);
+            var seedPassword = dto.SeedPasswordKey == "GYMBOO_DEFAULT_PASSWORD"
+                ? "Password123!"
+                : dto.SeedPasswordKey;
+
+            user.PasswordHash = hasher.HashPassword(user, seedPassword);
 
             userEntities.Add(user);
         }

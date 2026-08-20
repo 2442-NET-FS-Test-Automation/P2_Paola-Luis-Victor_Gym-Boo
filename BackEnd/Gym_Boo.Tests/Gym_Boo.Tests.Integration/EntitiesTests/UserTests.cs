@@ -1,38 +1,25 @@
 using FluentAssertions;
-using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Gym_Boo.Tests.Integration.AdminTests;
 
-public class UserTests
+public class UserTests : IDisposable
 {
-    private const string LiveConnection = 
-        "Server=localhost,1433;Database=tempdb;User Id=sa;Password=Vigolpedeneon1;TrustServerCertificate=true";
-
     private readonly GymBooDbContext _db;
-    private IDbContextTransaction _transaction;
     
     public UserTests()
     {
-
         var options = new DbContextOptionsBuilder<GymBooDbContext>()
-            .UseSqlServer(LiveConnection)
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         _db = new GymBooDbContext(options);
-        
-        
-        _transaction = _db.Database.BeginTransaction();
-    
     }
     
     public void Dispose()
     {
-        _transaction.Rollback(); // every write/edit done by the test is gone
-        _transaction.Dispose(); 
         _db.Dispose();
     }
 
@@ -56,7 +43,7 @@ public class UserTests
         _db.SaveChanges();
         
         //Assert
-        _db.Users.Find(InsTest).Should().NotBeNull();
+        _db.Users.Find(InsTest.Id).Should().NotBeNull();
     }
 
     [Fact]

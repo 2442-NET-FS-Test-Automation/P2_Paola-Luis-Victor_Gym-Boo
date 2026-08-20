@@ -3,6 +3,7 @@ using Gym_Boo.Data.DTOs;
 using Gym_Boo.Data.Entities;
 using Gym_Boo.Data.Enums;
 using Gym_Boo.Data.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 
 namespace Gym_Boo.Tests.Integration.AdminTests;
@@ -10,12 +11,18 @@ namespace Gym_Boo.Tests.Integration.AdminTests;
 public class AdminServicesTests
 {
     private readonly Mock<IAdminRepository> _repoMock;
+    private readonly Mock<IPasswordHasher<User>> _passwordHasherMock;
     private readonly AdminServices _service;
 
     public AdminServicesTests()
     {
         _repoMock = new Mock<IAdminRepository>();
-        _service = new AdminServices(_repoMock.Object);
+        _passwordHasherMock = new Mock<IPasswordHasher<User>>();
+        _passwordHasherMock
+            .Setup(h => h.HashPassword(It.IsAny<User>(), It.IsAny<string>()))
+            .Returns("hashed-password");
+
+        _service = new AdminServices(_repoMock.Object, _passwordHasherMock.Object);
     }
 
     #region Disciplines Tests
@@ -265,6 +272,7 @@ public class AdminServicesTests
         Assert.Equal("Doe", result.LastName);
         Assert.Equal(Role.Instructor, result.Role);
         Assert.True(result.IsActive);
+        Assert.Equal("hashed-password", result.PasswordHash);
         _repoMock.Verify(r => r.AddUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         _repoMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -281,7 +289,7 @@ public class AdminServicesTests
     public async Task UpdateInstructor_NotFound_ThrowsKeyNotFoundException()
     {
         // Arrange
-        var dto = new UpdateInstructorDto(1, "Jane", "Doe", "jane@test.com");
+        var dto = new UpdateInstructorDto(1, "Jane", "Doe", "jane@test.com", true);
         _repoMock.Setup(r => r.GetUserByIdAndRoleAsync(dto.Id, Role.Instructor, It.IsAny<CancellationToken>()))
                  .ReturnsAsync((User?)null);
 
@@ -294,7 +302,7 @@ public class AdminServicesTests
     public async Task UpdateInstructor_ValidDto_UpdatesAndSaves()
     {
         // Arrange
-        var dto = new UpdateInstructorDto(1, "Jane", "Smith", "jane.smith@test.com");
+        var dto = new UpdateInstructorDto(1, "Jane", "Smith", "jane.smith@test.com", false);
         var existingUser = new User { Id = 1, Name = "John", LastName = "Doe", Email = "john@test.com", Role = Role.Instructor };
 
         _repoMock.Setup(r => r.GetUserByIdAndRoleAsync(dto.Id, Role.Instructor, It.IsAny<CancellationToken>()))
@@ -307,6 +315,7 @@ public class AdminServicesTests
         Assert.Equal("Jane", existingUser.Name);
         Assert.Equal("Smith", existingUser.LastName);
         Assert.Equal("jane.smith@test.com", existingUser.Email);
+        Assert.False(existingUser.IsActive);
         _repoMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -17,7 +17,7 @@ public class ReservationCancellationIntegrationTests : IClassFixture<CustomWebAp
     [Fact]
     public async Task CancelReservation_WhenBeforeCutoff_Returns200AndCancelledWithoutFee()
     {
-        var response = await _client.DeleteAsync("/api/reservations/1?userId=1");
+        var response = await _client.DeleteAsync("/api/reservations/8?userId=4");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -25,7 +25,7 @@ public class ReservationCancellationIntegrationTests : IClassFixture<CustomWebAp
     [Fact]
     public async Task CancelReservation_WhenInsideCutoff_Returns200AndCancelledWithFee()
     {
-        var response = await _client.DeleteAsync("/api/reservations/2?userId=1");
+        var response = await _client.DeleteAsync("/api/reservations/9?userId=4");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
