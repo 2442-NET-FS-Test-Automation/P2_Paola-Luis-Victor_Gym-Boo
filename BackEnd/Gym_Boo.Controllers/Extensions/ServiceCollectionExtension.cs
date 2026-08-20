@@ -81,6 +81,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminRepository,  AdminRepository>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
         services.AddScoped<IInstructorServices, InstructorServices>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

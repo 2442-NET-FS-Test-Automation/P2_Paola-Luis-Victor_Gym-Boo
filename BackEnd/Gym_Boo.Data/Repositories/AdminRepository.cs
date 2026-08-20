@@ -119,22 +119,23 @@ public class AdminRepository : IAdminRepository
     public async Task<List<MostRatedDto>> GetMostPopularClassesAsync(int limit, CancellationToken ct)
     {
         return await _db.Sessions
-            .AsNoTracking()
+            .OrderByDescending(s => s.Reviews.Average(r => (double?)r.Rating) ?? 0.0)
             .Select(s => new MostRatedDto(
                 s.Id,
                 s.Class.Name,
                 s.Instructor.Name,
                 s.Reviews.Average(r => (double?)r.Rating) ?? 0.0
-            ))
-            .OrderByDescending(dto => dto.AverageRating)
-            .Take(limit)
+            )).Take(5)
             .ToListAsync(ct);
     }
 
     public async Task<List<DisciplineReportDto>> GetRegistrationReportsAsync(CancellationToken ct)
     {
-        return await _db.Disciplines
-            .AsNoTracking()
+         return await _db.Disciplines
+            .OrderByDescending(d => d.Classes
+                .SelectMany(c => c.Sessions)
+                .SelectMany(s => s.Enrollments)
+                .Count())
             .Select(d => new DisciplineReportDto(
                 d.Name,
                 d.Classes
@@ -142,7 +143,6 @@ public class AdminRepository : IAdminRepository
                     .SelectMany(s => s.Enrollments)
                     .Count()
             ))
-            .OrderByDescending(dto => dto.TotalEnrollments)
             .ToListAsync(ct);
     }
 

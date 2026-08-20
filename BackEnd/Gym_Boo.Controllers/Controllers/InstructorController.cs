@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Gym_Boo.Controllers.DTOs;
 using Gym_Boo.Controllers.Services.Interfaces;
 using Gym_Boo.Data.Entities;
 using GymBoo.ControllerApi.DTOs;
@@ -8,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gym_Boo.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-[Authorize(Roles = "Instructor")]
+[Route("api/instructor")]
+//[Authorize(Roles = "Instructor")]
 public class InstructorController : ControllerBase
 {
     private readonly IInstructorServices _instructorService;
@@ -27,11 +28,11 @@ public class InstructorController : ControllerBase
     }
 
     [HttpPost("sessions")]
-    public async Task<IActionResult> CreateSession([FromBody] Session session, CancellationToken ct)
+    public async Task<IActionResult> CreateSession([FromBody] NewSessionDto nSession, CancellationToken ct)
     {
         try
         {
-            await _instructorService.NewSession(session, ct);
+            await _instructorService.NewSession(nSession, ct);
             return StatusCode(StatusCodes.Status201Created);
         }
         catch (ArgumentException ex)
@@ -51,26 +52,27 @@ public class InstructorController : ControllerBase
         return Ok(attendance);
     }
 
-    [HttpGet("{instructorId:int}/upcoming-sessions")]
-    public async Task<IActionResult> GetUpcomingSessions(int instructorId, CancellationToken ct)
+    public record tmpDTO (int insId);
+    [HttpGet("sessions/upcoming-sessions")]
+    public async Task<IActionResult> GetUpcomingSessions([FromQuery] tmpDTO name, CancellationToken ct)
     {
-        var sessions = await _instructorService.GetUpcomingSessionsForInstructor(instructorId, ct);
+        var sessions = await _instructorService.GetUpcomingSessionsForInstructor(name.insId, ct);
         return Ok(sessions);
     }
 
-    [HttpGet("class-options")]
+    [HttpGet("options/classes")]
     public async Task<IActionResult> GetClassOptions(CancellationToken ct)
     {
         return Ok(await _instructorService.GetClassOptions(ct));
     }
 
-    [HttpGet("place-options")]
+    [HttpGet("options/places")]
     public async Task<IActionResult> GetPlaceOptions(CancellationToken ct)
     {
         return Ok(await _instructorService.GetPlaceOptions(ct));
     }
 
-    [HttpDelete("sessions/{id:int}")]
+    [HttpDelete("sessions/delete")]
     public async Task<IActionResult> DeleteSession(int id, CancellationToken ct)
     {
         try
@@ -84,7 +86,7 @@ public class InstructorController : ControllerBase
         }
     }
 
-    [HttpPost("attendance")]
+    [HttpPost("enrollments/toggle-attendance")]
     public async Task<IActionResult> TakeAttendance([FromBody] TakingAttendanceDTO dto, CancellationToken ct)
     {
         try

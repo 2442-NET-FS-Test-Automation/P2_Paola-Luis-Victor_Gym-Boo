@@ -14,14 +14,14 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
     // DISCIPLINES
     // ==========================================
 
-    [HttpGet("disciplines")]
+    [HttpGet("disciplines/list")]
     public async Task<IActionResult> GetDisciplinesList(CancellationToken ct)
     {
         var result = await adminServices.GetAllDisciplines(ct);
         return Ok(result);
     }
 
-    [HttpPost("disciplines")]
+    [HttpPost("disciplines/create")]
     public async Task<IActionResult> CreateDiscipline([FromBody] DisciplineDto dto, CancellationToken ct)
     {
         var discipline = await adminServices.NewDisciplineAsync(dto.Name, ct);
@@ -53,7 +53,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
     // INSTRUCTORS
     // ==========================================
 
-    [HttpGet("instructors")]
+    [HttpGet("instructors/list")]
     public async Task<IActionResult> GetInstructors(CancellationToken ct)
     {
         var instructors = await adminServices.GetAllInstructors(ct);
@@ -67,7 +67,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         return Ok(instructor);
     }
 
-    [HttpPost("instructors")]
+    [HttpPost("instructors/create")]
     public async Task<IActionResult> CreateInstructor([FromBody] Data.DTOs.CreateInstructorDto dto, CancellationToken ct)
     {
         var createdInstructor = await adminServices.NewInstructor(dto, ct);
@@ -109,7 +109,7 @@ public class AdminController(IAdminServices adminServices) : ControllerBase
         return Ok(report);
     }
 
-    [HttpGet("reports/best-rated")]
+    [HttpGet("reports/bestrated")]
     public async Task<IActionResult> GetMostPopularReport(CancellationToken ct)
     {
         var sessions = await adminServices.MostPopularClass(ct);

@@ -104,7 +104,7 @@ export const getInstructorSessions = async (
 ): Promise<InstructorSession[]> => {
   try {
     const { data } = await api.get<UpcomingSessionDto[]>(
-      "/api/instructor/sessions/list",
+      "/api/instructor/sessions/upcoming-sessions",
       {
         params: {
           insId: instructorId,

@@ -27,11 +27,11 @@ public class InstructorServices : IInstructorServices
         return await _instructorRepository.GetUserByIdAsync(id, ct);
     }
 
-    public async Task NewSession(Session session, CancellationToken ct)
+    public async Task NewSession(NewSessionDto session, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(session);
 
-        if (session.Start >= session.End)
+        if (session.StartTime >= session.EndTime)
         {
             throw new ArgumentException("Session start time must be earlier than the end time.", nameof(session));
         }
@@ -39,8 +39,8 @@ public class InstructorServices : IInstructorServices
         bool isOccupied = await _instructorRepository.HasSessionOverlapAsync(
             session.PlaceId,
             session.InstructorId,
-            session.Start,
-            session.End,
+            session.StartTime,
+            session.EndTime,
             ct);
 
         if (isOccupied)
@@ -48,7 +48,17 @@ public class InstructorServices : IInstructorServices
             throw new InvalidOperationException("The venue or instructor is already booked for this time period.");
         }
 
-        await _instructorRepository.AddSessionAsync(session, ct);
+        Session nSession = new();
+
+        nSession.InstructorId = session.InstructorId;
+        nSession.ClassId = session.ClassId;
+        nSession.Start = session.StartTime;
+        nSession.End = session.EndTime;
+        nSession.CancellationFee = session.CancellationFee;
+        nSession.Slots = session.Slots;
+        nSession.PlaceId = session.PlaceId;
+
+        await _instructorRepository.AddSessionAsync(nSession, ct);
         await _instructorRepository.SaveChangesAsync(ct);
     }
 

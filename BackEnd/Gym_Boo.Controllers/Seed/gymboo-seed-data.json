@@ -3,8 +3,7 @@
   "description": "GymBoo demo seed data. User passwords must be hashed by the application/import pipeline using the configured IPasswordHasher<User> before persistence.",
   "users": [
     {
-      "id": 1,
-      "type": "User",
+      "type": "Admin",
       "name": "Michael",
       "lastName": "Johnson",
       "email": "admin@gymboo.com",
@@ -13,7 +12,6 @@
       "seedPasswordKey": "GYMBOO_DEFAULT_PASSWORD"
     },
     {
-      "id": 2,
       "type": "Instructor",
       "name": "James",
       "lastName": "Wilson",
@@ -23,7 +21,6 @@
       "seedPasswordKey": "GYMBOO_DEFAULT_PASSWORD"
     },
     {
-      "id": 3,
       "type": "Instructor",
       "name": "Emily",
       "lastName": "Davis",
@@ -33,7 +30,6 @@
       "seedPasswordKey": "GYMBOO_DEFAULT_PASSWORD"
     },
     {
-      "id": 4,
       "type": "Member",
       "name": "Sarah",
       "lastName": "Brown",
@@ -43,7 +39,6 @@
       "seedPasswordKey": "GYMBOO_DEFAULT_PASSWORD"
     },
     {
-      "id": 5,
       "type": "Member",
       "name": "Daniel",
       "lastName": "Miller",
@@ -55,13 +50,11 @@
   ],
   "subscriptionPlans": [
     {
-      "id": 1,
       "name": "Standard Monthly",
       "price": 49.99,
       "recurrence": "Monthly"
     },
     {
-      "id": 2,
       "name": "Premium Annual",
       "price": 499.99,
       "recurrence": "Yearly"
@@ -69,132 +62,109 @@
   ],
   "places": [
     {
-      "id": 1,
       "name": "Main Training Hall",
       "maxCapacity": 30
     },
     {
-      "id": 2,
       "name": "Mind & Body Studio",
       "maxCapacity": 20
     },
     {
-      "id": 3,
       "name": "Functional Zone",
       "maxCapacity": 18
     },
     {
-      "id": 4,
       "name": "Cycling Room",
       "maxCapacity": 25
     },
     {
-      "id": 5,
       "name": "Strength Room",
       "maxCapacity": 15
     }
   ],
   "disciplines": [
     {
-      "id": 1,
       "name": "CrossFit",
       "available": true
     },
     {
-      "id": 2,
       "name": "Yoga",
       "available": true
     },
     {
-      "id": 3,
       "name": "HIIT",
       "available": true
     },
     {
-      "id": 4,
       "name": "Pilates",
       "available": true
     },
     {
-      "id": 5,
       "name": "Strength Training",
       "available": true
     },
     {
-      "id": 6,
       "name": "Indoor Cycling",
       "available": true
     }
   ],
   "classes": [
     {
-      "id": 1,
       "name": "CrossFit Fundamentals",
       "description": "Introduction to functional movements and basic lifting techniques.",
       "disciplineId": 1
     },
     {
-      "id": 2,
       "name": "CrossFit Performance",
       "description": "High-intensity workout focused on strength and endurance.",
       "disciplineId": 1
     },
     {
-      "id": 3,
       "name": "Morning Flow Yoga",
       "description": "A relaxing flow to improve flexibility and mobility.",
       "disciplineId": 2
     },
     {
-      "id": 4,
       "name": "Power Yoga",
       "description": "Dynamic yoga practice designed to build strength and balance.",
       "disciplineId": 2
     },
     {
-      "id": 5,
       "name": "HIIT Express",
       "description": "Fast-paced interval workout completed in 30 minutes.",
       "disciplineId": 3
     },
     {
-      "id": 6,
       "name": "HIIT Burn",
       "description": "Full-body interval training with maximum calorie burn.",
       "disciplineId": 3
     },
     {
-      "id": 7,
       "name": "Pilates Core",
       "description": "Improve posture, stability, and core strength.",
       "disciplineId": 4
     },
     {
-      "id": 8,
       "name": "Pilates Balance",
       "description": "Low-impact class focused on coordination and flexibility.",
       "disciplineId": 4
     },
     {
-      "id": 9,
       "name": "Upper Body Strength",
       "description": "Resistance training focused on chest, shoulders, back, and arms.",
       "disciplineId": 5
     },
     {
-      "id": 10,
       "name": "Lower Body Strength",
       "description": "Strength session emphasizing legs, glutes, and core stability.",
       "disciplineId": 5
     },
     {
-      "id": 11,
       "name": "Beginner Cycling",
       "description": "Indoor cycling session for new riders.",
       "disciplineId": 6
     },
     {
-      "id": 12,
       "name": "Endurance Ride",
       "description": "Long-distance cycling workout with progressive intensity.",
       "disciplineId": 6
@@ -202,42 +172,36 @@
   ],
   "availabilities": [
     {
-      "id": 1,
       "instructorId": 2,
       "dayOfWeek": "Monday",
       "startTime": "07:00:00",
       "endTime": "12:00:00"
     },
     {
-      "id": 2,
       "instructorId": 2,
       "dayOfWeek": "Wednesday",
       "startTime": "07:00:00",
       "endTime": "12:00:00"
     },
     {
-      "id": 3,
       "instructorId": 2,
       "dayOfWeek": "Friday",
       "startTime": "07:00:00",
       "endTime": "12:00:00"
     },
     {
-      "id": 4,
       "instructorId": 3,
       "dayOfWeek": "Tuesday",
       "startTime": "16:00:00",
       "endTime": "20:00:00"
     },
     {
-      "id": 5,
       "instructorId": 3,
       "dayOfWeek": "Thursday",
       "startTime": "16:00:00",
       "endTime": "20:00:00"
     },
     {
-      "id": 6,
       "instructorId": 3,
       "dayOfWeek": "Saturday",
       "startTime": "08:00:00",
@@ -246,167 +210,150 @@
   ],
   "sessions": [
     {
-      "id": 1,
       "classId": 1,
       "instructorId": 2,
       "placeId": 1,
-      "start": "2026-05-04T08:00:00Z",
-      "end": "2026-05-04T09:00:00Z",
+      "start": "2026-08-20T08:00:00Z",
+      "end": "2026-08-20T09:00:00Z",
       "slots": 20,
       "cancellationFee": 15.0
     },
     {
-      "id": 2,
       "classId": 3,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-05-05T17:00:00Z",
-      "end": "2026-05-05T18:00:00Z",
+      "start": "2026-08-21T17:00:00Z",
+      "end": "2026-08-21T18:00:00Z",
       "slots": 18,
       "cancellationFee": 10.0
     },
     {
-      "id": 3,
       "classId": 5,
       "instructorId": 2,
       "placeId": 3,
-      "start": "2026-05-20T09:00:00Z",
-      "end": "2026-05-20T10:00:00Z",
+      "start": "2026-08-19T09:00:00Z",
+      "end": "2026-08-19T10:00:00Z",
       "slots": 18,
       "cancellationFee": 15.0
     },
     {
-      "id": 4,
       "classId": 7,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-06-02T17:00:00Z",
-      "end": "2026-06-02T18:00:00Z",
+      "start": "2026-08-18T17:00:00Z",
+      "end": "2026-08-18T18:00:00Z",
       "slots": 15,
       "cancellationFee": 10.0
     },
     {
-      "id": 5,
       "classId": 9,
       "instructorId": 2,
       "placeId": 5,
-      "start": "2026-06-10T08:00:00Z",
-      "end": "2026-06-10T09:00:00Z",
+      "start": "2026-08-18T08:00:00Z",
+      "end": "2026-08-18T09:00:00Z",
       "slots": 15,
       "cancellationFee": 15.0
     },
     {
-      "id": 6,
       "classId": 11,
       "instructorId": 3,
       "placeId": 4,
-      "start": "2026-06-13T09:00:00Z",
-      "end": "2026-06-13T10:00:00Z",
+      "start": "2026-08-19T09:00:00Z",
+      "end": "2026-08-19T10:00:00Z",
       "slots": 20,
       "cancellationFee": 10.0
     },
     {
-      "id": 7,
       "classId": 2,
       "instructorId": 2,
       "placeId": 1,
-      "start": "2026-06-24T08:00:00Z",
-      "end": "2026-06-24T09:00:00Z",
+      "start": "2026-08-20T08:00:00Z",
+      "end": "2026-08-20T09:00:00Z",
       "slots": 25,
       "cancellationFee": 15.0
     },
     {
-      "id": 8,
       "classId": 4,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-07-02T17:00:00Z",
-      "end": "2026-07-02T18:00:00Z",
+      "start": "2026-08-21T17:00:00Z",
+      "end": "2026-08-21T18:00:00Z",
       "slots": 18,
       "cancellationFee": 10.0
     },
     {
-      "id": 9,
       "classId": 6,
       "instructorId": 2,
       "placeId": 3,
-      "start": "2026-07-15T09:00:00Z",
-      "end": "2026-07-15T10:00:00Z",
+      "start": "2026-08-24T09:00:00Z",
+      "end": "2026-08-24T10:00:00Z",
       "slots": 18,
       "cancellationFee": 15.0
     },
     {
-      "id": 10,
       "classId": 8,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-07-18T17:00:00Z",
-      "end": "2026-07-18T18:00:00Z",
+      "start": "2026-08-24T17:00:00Z",
+      "end": "2026-08-24T18:00:00Z",
       "slots": 15,
       "cancellationFee": 10.0
     },
     {
-      "id": 11,
       "classId": 1,
       "instructorId": 2,
       "placeId": 1,
-      "start": "2026-07-29T08:00:00Z",
-      "end": "2026-07-29T09:00:00Z",
+      "start": "2026-08-25T08:00:00Z",
+      "end": "2026-08-25T09:00:00Z",
       "slots": 20,
       "cancellationFee": 15.0
     },
     {
-      "id": 12,
       "classId": 3,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-07-30T17:00:00Z",
-      "end": "2026-07-30T18:00:00Z",
+      "start": "2026-08-26T17:00:00Z",
+      "end": "2026-08-26T18:00:00Z",
       "slots": 18,
       "cancellationFee": 10.0
     },
     {
-      "id": 13,
       "classId": 10,
       "instructorId": 2,
       "placeId": 5,
-      "start": "2026-08-03T08:00:00Z",
-      "end": "2026-08-03T09:00:00Z",
+      "start": "2026-08-27T08:00:00Z",
+      "end": "2026-08-27T09:00:00Z",
       "slots": 15,
       "cancellationFee": 15.0
     },
     {
-      "id": 14,
       "classId": 12,
       "instructorId": 3,
       "placeId": 4,
-      "start": "2026-08-04T18:00:00Z",
-      "end": "2026-08-04T19:00:00Z",
+      "start": "2026-08-28T18:00:00Z",
+      "end": "2026-08-28T19:00:00Z",
       "slots": 20,
       "cancellationFee": 10.0
     },
     {
-      "id": 15,
       "classId": 5,
       "instructorId": 2,
       "placeId": 3,
-      "start": "2026-08-12T09:00:00Z",
-      "end": "2026-08-12T10:00:00Z",
+      "start": "2026-08-28T09:00:00Z",
+      "end": "2026-08-28T10:00:00Z",
       "slots": 18,
       "cancellationFee": 15.0
     },
     {
-      "id": 16,
       "classId": 7,
       "instructorId": 3,
       "placeId": 2,
-      "start": "2026-08-13T17:00:00Z",
-      "end": "2026-08-13T18:00:00Z",
+      "start": "2026-08-14T17:00:00Z",
+      "end": "2026-08-14T18:00:00Z",
       "slots": 15,
       "cancellationFee": 10.0
     },
     {
-      "id": 17,
       "classId": 2,
       "instructorId": 2,
       "placeId": 1,
@@ -416,7 +363,6 @@
       "cancellationFee": 15.0
     },
     {
-      "id": 18,
       "classId": 4,
       "instructorId": 3,
       "placeId": 2,
@@ -426,7 +372,6 @@
       "cancellationFee": 10.0
     },
     {
-      "id": 19,
       "classId": 9,
       "instructorId": 2,
       "placeId": 5,
@@ -436,7 +381,6 @@
       "cancellationFee": 15.0
     },
     {
-      "id": 20,
       "classId": 11,
       "instructorId": 3,
       "placeId": 4,
@@ -448,14 +392,12 @@
   ],
   "memberSubscriptions": [
     {
-      "id": 1,
       "memberId": 4,
       "planId": 1,
       "startDate": "2026-07-01T00:00:00Z",
       "expirationDate": "2026-08-01T00:00:00Z"
     },
     {
-      "id": 2,
       "memberId": 5,
       "planId": 2,
       "startDate": "2026-01-01T00:00:00Z",
@@ -464,47 +406,41 @@
   ],
   "enrollments": [
     {
-      "id": 1,
       "memberId": 4,
       "sessionId": 1,
       "enrollmentDateTime": "2026-05-02T12:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 2,
       "memberId": 4,
       "sessionId": 3,
       "enrollmentDateTime": "2026-05-18T09:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 3,
       "memberId": 4,
       "sessionId": 5,
       "enrollmentDateTime": "2026-06-08T14:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 4,
       "memberId": 4,
       "sessionId": 7,
       "enrollmentDateTime": "2026-06-22T10:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 5,
       "memberId": 4,
       "sessionId": 9,
       "enrollmentDateTime": "2026-07-13T13:30:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 6,
       "memberId": 4,
       "sessionId": 11,
       "enrollmentDateTime": "2026-07-25T10:15:00Z",
@@ -512,7 +448,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 7,
       "memberId": 4,
       "sessionId": 13,
       "enrollmentDateTime": "2026-07-28T15:20:00Z",
@@ -520,7 +455,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 8,
       "memberId": 4,
       "sessionId": 17,
       "enrollmentDateTime": "2026-08-20T09:15:00Z",
@@ -528,7 +462,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 9,
       "memberId": 4,
       "sessionId": 20,
       "enrollmentDateTime": "2026-09-20T11:15:00Z",
@@ -536,7 +469,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 10,
       "memberId": 4,
       "sessionId": 8,
       "enrollmentDateTime": "2026-06-29T09:00:00Z",
@@ -544,39 +476,34 @@
       "cancellationFeeApplied": true
     },
     {
-      "id": 11,
       "memberId": 5,
       "sessionId": 2,
       "enrollmentDateTime": "2026-05-03T11:30:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 12,
       "memberId": 5,
       "sessionId": 4,
       "enrollmentDateTime": "2026-05-30T08:45:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 13,
       "memberId": 5,
       "sessionId": 6,
       "enrollmentDateTime": "2026-06-10T12:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 14,
       "memberId": 5,
       "sessionId": 10,
       "enrollmentDateTime": "2026-07-16T13:00:00Z",
-      "status": "Completed",
+      "status": "Enrolled",
       "cancellationFeeApplied": false
     },
     {
-      "id": 15,
       "memberId": 5,
       "sessionId": 12,
       "enrollmentDateTime": "2026-07-26T10:30:00Z",
@@ -584,7 +511,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 16,
       "memberId": 5,
       "sessionId": 14,
       "enrollmentDateTime": "2026-08-01T14:00:00Z",
@@ -592,7 +518,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 17,
       "memberId": 5,
       "sessionId": 18,
       "enrollmentDateTime": "2026-08-25T10:00:00Z",
@@ -600,7 +525,6 @@
       "cancellationFeeApplied": false
     },
     {
-      "id": 18,
       "memberId": 5,
       "sessionId": 19,
       "enrollmentDateTime": "2026-09-25T16:00:00Z",
@@ -610,7 +534,6 @@
   ],
   "reviews": [
     {
-      "id": 1,
       "enrollmentId": 1,
       "sessionId": 1,
       "reviewType": "Class",
@@ -619,7 +542,6 @@
       "createdAt": "2026-05-04T09:15:00Z"
     },
     {
-      "id": 2,
       "enrollmentId": 1,
       "sessionId": 1,
       "reviewType": "Instructor",
@@ -628,7 +550,6 @@
       "createdAt": "2026-05-04T09:16:00Z"
     },
     {
-      "id": 3,
       "enrollmentId": 2,
       "sessionId": 3,
       "reviewType": "Class",
@@ -637,7 +558,6 @@
       "createdAt": "2026-05-20T10:10:00Z"
     },
     {
-      "id": 4,
       "enrollmentId": 3,
       "sessionId": 5,
       "reviewType": "Instructor",
@@ -646,7 +566,6 @@
       "createdAt": "2026-06-10T09:20:00Z"
     },
     {
-      "id": 5,
       "enrollmentId": 4,
       "sessionId": 7,
       "reviewType": "Class",
@@ -655,7 +574,6 @@
       "createdAt": "2026-06-24T09:15:00Z"
     },
     {
-      "id": 6,
       "enrollmentId": 11,
       "sessionId": 2,
       "reviewType": "Class",
@@ -664,7 +582,6 @@
       "createdAt": "2026-05-05T18:10:00Z"
     },
     {
-      "id": 7,
       "enrollmentId": 11,
       "sessionId": 2,
       "reviewType": "Instructor",
@@ -673,7 +590,6 @@
       "createdAt": "2026-05-05T18:11:00Z"
     },
     {
-      "id": 8,
       "enrollmentId": 12,
       "sessionId": 4,
       "reviewType": "Class",
@@ -682,7 +598,6 @@
       "createdAt": "2026-06-02T18:10:00Z"
     },
     {
-      "id": 9,
       "enrollmentId": 13,
       "sessionId": 6,
       "reviewType": "Class",
@@ -691,7 +606,6 @@
       "createdAt": "2026-06-13T10:15:00Z"
     },
     {
-      "id": 10,
       "enrollmentId": 13,
       "sessionId": 6,
       "reviewType": "Instructor",
@@ -700,7 +614,6 @@
       "createdAt": "2026-06-13T10:16:00Z"
     },
     {
-      "id": 11,
       "enrollmentId": 2,
       "sessionId": 3,
       "reviewType": "Instructor",
@@ -709,7 +622,6 @@
       "createdAt": "2026-05-20T10:11:00Z"
     },
     {
-      "id": 12,
       "enrollmentId": 12,
       "sessionId": 4,
       "reviewType": "Instructor",

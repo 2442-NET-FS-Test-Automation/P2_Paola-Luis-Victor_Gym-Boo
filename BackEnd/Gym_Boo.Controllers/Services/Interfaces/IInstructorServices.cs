@@ -7,7 +7,7 @@ namespace Gym_Boo.Controllers.Services.Interfaces;
 public interface IInstructorServices
 {
     Task<User?> GetInstructor(int id, CancellationToken ct);
-    Task NewSession(Session session, CancellationToken ct);
+    Task NewSession(NewSessionDto session, CancellationToken ct);
     Task<SessionAttendanceResponseDto> GetAttendance(int id, CancellationToken ct);
     Task<List<UpcomingSessionDto>> GetUpcomingSessionsForInstructor(int instructorId, CancellationToken ct);
     Task<List<ClassOptionDto>> GetClassOptions(CancellationToken ct);
